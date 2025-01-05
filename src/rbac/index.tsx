@@ -2,6 +2,9 @@ import { createBrowserRouter, Navigate } from "react-router-dom";
 import Test from "../pages/Test";
 import Login from "../pages/Login";
 import Dashboard from "../pages/Dashboard";
+import Users from "../pages/Users";
+import Vehicles from "../pages/Vehicles";
+import Rentals from "../pages/Rentals";
 
 const userRole = "admin";
 
@@ -15,16 +18,16 @@ const RBAC: any[] = [
     element: <ProtectedRoute element={<Dashboard />} allowedRoles={["admin", "emplooyee", "customer"]} />,
   },
   {
-    path: "/user",
-    element: <ProtectedRoute element={<Test />} allowedRoles={["admin"]} />,
+    path: "/users",
+    element: <ProtectedRoute element={<Users />} allowedRoles={["admin"]} />,
   },
   {
-    path: "/vehicle",
-    element: <ProtectedRoute element={<Test />} allowedRoles={["admin", "emoloyee"]} />,
+    path: "/vehicles",
+    element: <ProtectedRoute element={<Vehicles />} allowedRoles={["admin", "emoloyee"]} />,
   },
   {
-    path: "/rental",
-    element: <ProtectedRoute element={<Test />} allowedRoles={["customer"]} />,
+    path: "/rentals",
+    element: <ProtectedRoute element={<Rentals />} allowedRoles={["admin","customer"]} />,
   },
   {
     path:"/track/:id",

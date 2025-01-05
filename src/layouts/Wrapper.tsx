@@ -14,18 +14,16 @@ import {
 import {
   Bars3Icon,
   BellIcon,
-  CalendarIcon,
-  ChartPieIcon,
   Cog6ToothIcon,
-  DocumentDuplicateIcon,
-  FolderIcon,
   HomeIcon,
   UsersIcon,
   XMarkIcon,
   RectangleGroupIcon,
   TruckIcon,
 } from '@heroicons/react/24/outline'
-import { ChevronDownIcon, MagnifyingGlassIcon } from '@heroicons/react/20/solid'
+import { ChevronDownIcon } from '@heroicons/react/20/solid'
+import { useNavigate } from 'react-router-dom'
+import { Toaster } from 'react-hot-toast';
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ')
@@ -39,8 +37,10 @@ interface IWrapper {
 const Wrapper:FC<IWrapper> = ({children, currentTab}) => {
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
+  const navigate = useNavigate()
+
   const navigation = [
-    { name: 'Dashboard', href: '#', icon: HomeIcon, current: currentTab === "dashboard" },
+    { name: 'Dashboard', href: '', icon: HomeIcon, current: currentTab === "dashboard" },
     { name: 'Rentals', href: '#', icon: RectangleGroupIcon, current: currentTab === "rentals"  },
     { name: 'Vehicles', href: '#', icon: TruckIcon, current: currentTab === "vehicles"  },
     { name: 'Users', href: '#', icon: UsersIcon, current: currentTab === "users"  },
@@ -88,7 +88,7 @@ const Wrapper:FC<IWrapper> = ({children, currentTab}) => {
                         {navigation.map((item) => (
                           <li key={item.name}>
                             <a
-                              href={item.href}
+                              onClick={()=>navigate(`/${item.name.toLowerCase()}`)}
                               className={classNames(
                                 item.current
                                   ? 'bg-gray-800 text-white'
@@ -137,7 +137,7 @@ const Wrapper:FC<IWrapper> = ({children, currentTab}) => {
                     {navigation.map((item) => (
                       <li key={item.name}>
                         <a
-                          href={item.href}
+                          onClick={()=>navigate(`/${item.name.toLowerCase()}`)}
                           className={classNames(
                             item.current
                               ? 'bg-gray-800 text-white'
@@ -241,6 +241,7 @@ const Wrapper:FC<IWrapper> = ({children, currentTab}) => {
           </main>
         </div>
       </div>
+      <Toaster />
     </>
   )
 }
