@@ -1,25 +1,19 @@
-import { AxiosRequestConfig } from "axios";
-import useDatum from "../useDatum.ts"
+import useVehicleStore from "../../stores/useVehicles";
+import { IVehicle } from "../../interfaces/shared";
+import apiClient from "../../services/api-client";
+import { useQuery } from "@tanstack/react-query";
 
-export interface IVechiles {
-	id: string,
-	make: string,
-	model: string,
-	year: string,
-	licensePlate: string,
-	dailyRate: number,
-
-}
 
 const useGetVehicles = () => {
-	const endpoint = "/vehicles"
-	const queryKey = ["vehicles"]
-	const requestConfig: AxiosRequestConfig = {
-		headers: {
-		  Authorization: `${localStorage.getItem("authToken")}`,
-		},
-	  };
-	return useDatum<IVechiles[]>(queryKey, endpoint, requestConfig)
-}
+  const endpoint = "/vehicles";
+  const queryKey = ["vehicles"];
 
-export default useGetVehicles
+  const setVehicles = useVehicleStore((state) => state.setVehicles);
+  return useQuery({queryKey, 
+	queryFn: async () => {
+    const { data } = await apiClient.get<IVehicle[]>(endpoint);
+    setVehicles(data);
+  }});
+};
+
+export default useGetVehicles;

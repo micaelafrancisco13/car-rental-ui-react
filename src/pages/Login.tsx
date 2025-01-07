@@ -4,9 +4,14 @@ import useAuthLogin from "../hooks/auth/useAuthLogin";
 import toast, { Toaster } from "react-hot-toast";
 import { AxiosError } from "axios";
 import { useNavigate } from "react-router-dom";
+import { setJwt } from "../services/api-client";
 
 const Login = () => {
     const navigate = useNavigate();
+    const authToken = localStorage.getItem("authToken"); // Check for auth token
+    if (authToken) {
+        navigate("/dashboard")
+    }
 
     const { mutate, isPending } = useAuthLogin();
     
@@ -15,21 +20,22 @@ const Login = () => {
         password: Yup.string(),
     });
 
+    const saveToken = (token: string) => {
+        localStorage.setItem("authToken", token);
+        setJwt(token)
+    };
+
     const handleSubmit = (values: {email: string, password: string}) => {
         mutate(values, {
-            onSuccess: (_data) => {
+            onSuccess: (data) => {
+                saveToken(data)
                 toast.success("Login Success")
                 navigate("/dashboard")
             },
             onError: (error) => {
                 const err = error as AxiosError
-                switch (err.status) {
-                    case 401:
-                        toast.error("Invalid Email or Pasword")
-                        break;
-                    default:
-                        toast.error("Something went wrong.Please try again later.")    
-                }
+                const errMsg = err.response?.data || ""
+                toast.error(String(errMsg))    
             }
         })
     }

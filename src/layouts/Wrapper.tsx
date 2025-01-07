@@ -24,6 +24,8 @@ import {
 import { ChevronDownIcon } from '@heroicons/react/20/solid'
 import { useNavigate } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast';
+import VehicleFormModal from '../components/modal/UpsertVehicle'
+import { setJwt } from '../services/api-client'
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ')
@@ -46,13 +48,19 @@ const Wrapper:FC<IWrapper> = ({children, currentTab}) => {
     { name: 'Users', href: '#', icon: UsersIcon, current: currentTab === "users"  },
   ]
 
+  const logout = () => {
+      localStorage.removeItem("authToken");
+      setJwt(null);
+      navigate("/")
+  }
   const userNavigation = [
-    { name: 'Your profile', href: '#' },
-    { name: 'Sign out', href: '#' },
+    { name: 'Your profile', href: () => {} },
+    { name: 'Sign out', href: () =>logout() },
   ]
   return (
     <>
       <div>
+      <VehicleFormModal />
       <Dialog open={sidebarOpen} onClose={setSidebarOpen} className="relative z-50 lg:hidden">
           <DialogBackdrop
             transition
@@ -221,12 +229,12 @@ const Wrapper:FC<IWrapper> = ({children, currentTab}) => {
                   >
                     {userNavigation.map((item) => (
                       <MenuItem key={item.name}>
-                        <a
-                          href={item.href}
+                        <button
+                          onClick={() => item.href()}
                           className="block px-3 py-1 text-sm/6 text-gray-900 data-[focus]:bg-gray-50 data-[focus]:outline-none"
                         >
                           {item.name}
-                        </a>
+                        </button>
                       </MenuItem>
                     ))}
                   </MenuItems>

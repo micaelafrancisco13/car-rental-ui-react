@@ -1,12 +1,14 @@
 import EmptyStates from "../components/feedback/EmptyState";
 import TableLoading from "../components/loaders/TableLoading";
+import useUserStore from "../stores/useUsers";
 import useGetUsers from "../hooks/user/useGetUsers";
 import Wrapper from "../layouts/Wrapper";
+import { useModalStore } from "../stores/useGlobal";
 
 const Users = () => {
-	const { data, isFetching } = useGetUsers()
-    const people = data || []
-
+	const { isFetching } = useGetUsers()
+    const people = useUserStore((state) => state.users)
+    const { toggleModal } = useModalStore();
     const headers: string[] = ["id","Name", "Email", "Phone Number", "Role", "Action"]
 
     return (

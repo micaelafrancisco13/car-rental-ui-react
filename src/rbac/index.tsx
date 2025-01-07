@@ -9,6 +9,11 @@ import Rentals from "../pages/Rentals";
 const userRole = "admin";
 
 const ProtectedRoute = ({ element, allowedRoles }: { element: JSX.Element; allowedRoles: string[] }) => {
+  const authToken = localStorage.getItem("authToken"); // Check for auth token
+
+  if (!authToken) {
+    return <Navigate to="/" />;
+  }
   return allowedRoles.includes(userRole) ? element : <Navigate to="/" />;
 };
 

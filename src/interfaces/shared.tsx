@@ -1,3 +1,5 @@
+import { AvailabilityStatus, BookingStatus, DeliveryType, PaymentStatus, TripStatus } from "../utils/enums"
+
 interface IBase {
     id: string
     createdAt: string
@@ -10,4 +12,56 @@ export interface IUsersDetails extends IBase {
     email: string
     phoneNumber: string
     role: string
+}
+
+export interface IVehicle extends IBase {
+	make: string,
+	model: string,
+	year: string,
+	licensePlate: string,
+	dailyRate: number,
+    briefDescription?: string,
+    detailedDescription: string,
+    features: string[],
+    images: string[],
+    availabilityStatus: AvailabilityStatus
+}
+
+export interface IBooking extends IBase {
+    bookerId: string,
+    booker: IUsersDetails
+    vehicleId?: string,
+    vehicle: IVehicle,
+    startLocation: string,
+    endLocation: string,
+    startTime: Date,
+    endDate: Date,
+    totalPrince: number,
+    status: BookingStatus,
+    paymentStatus: PaymentStatus,
+    deliveryType: DeliveryType,
+    // fleetTracking: Fle
+}
+
+export interface IFleetTracking extends IBase {
+    bookingId: string,
+    booking: string,
+    bookerLatitutde: number,
+    bookerLongitude: number,
+    tripStatus: TripStatus,
+    lastUpdatedAt: Date,
+}
+
+//Form
+export interface IVehicleForm extends IBase {
+    id: string
+    make: string
+    model: string
+    year: number
+    licensePlate: string
+    features: string
+    dailyRate: number
+    availability: string
+    briefDescription?: string
+    detailedDescription: string
 }
