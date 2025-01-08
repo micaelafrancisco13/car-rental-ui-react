@@ -1,4 +1,4 @@
-import { PlusIcon, RectangleGroupIcon, TruckIcon, UserGroupIcon } from '@heroicons/react/20/solid'
+import { PlusIcon } from '@heroicons/react/20/solid'
 import { FC } from 'react'
 
 interface IEmptyStates {

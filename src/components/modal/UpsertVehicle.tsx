@@ -1,15 +1,13 @@
-import { useEffect, useState } from 'react';
-import { Formik, Field, Form, ErrorMessage, FormikHelpers } from 'formik';
+import { useState } from 'react';
+import { Formik, Field, Form, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import { useModalStore } from '../../stores/useGlobal';
-import { IVehicle } from '../../interfaces/shared';
 import useVehicleStore from '../../stores/useVehicles';
 import useAddVehicle from '../../hooks/vehicle/useAddVehicle';
 import toast from 'react-hot-toast';
 import { AxiosError } from 'axios';
 import LoadingButton from '../loaders/LoadingButton';
 import useUpdateVehicle from '../../hooks/vehicle/useUpdateVehicle';
-import useUpdateStatus from '../../hooks/vehicle/useUpdateStatus';
 
 const VehicleFormModal: React.FC = () => {
   const { isOpen, toggleModal } = useModalStore(); 
@@ -54,13 +52,6 @@ const VehicleFormModal: React.FC = () => {
     model:"",
     year: "",
 }
-
-  // Sync image preview with form values (in case the image is uploaded and then the form is resubmitted)
-//   useEffect(() => {
-//     if (formValues.image) {
-//       setImagePreview(URL.createObjectURL(formValues.image));
-//     }
-//   }, [formValues.image]);
 
   return (
     <>

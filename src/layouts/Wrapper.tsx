@@ -24,7 +24,6 @@ import {
 import { ChevronDownIcon } from '@heroicons/react/20/solid'
 import { useNavigate } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast';
-import VehicleFormModal from '../components/modal/UpsertVehicle'
 import { setJwt } from '../services/api-client'
 
 function classNames(...classes: string[]) {
@@ -60,7 +59,6 @@ const Wrapper:FC<IWrapper> = ({children, currentTab}) => {
   return (
     <>
       <div>
-      <VehicleFormModal />
       <Dialog open={sidebarOpen} onClose={setSidebarOpen} className="relative z-50 lg:hidden">
           <DialogBackdrop
             transition

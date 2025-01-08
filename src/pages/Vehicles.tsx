@@ -10,12 +10,12 @@ import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import useUpdateStatus from "../hooks/vehicle/useUpdateStatus";
 import toast from "react-hot-toast";
 import { AxiosError } from "axios";
+import VehicleFormModal from "../components/modal/UpsertVehicle";
 
 const Vehicles = () => {
 	const {  isFetching } = useGetVehicles()
     const { toggleModal } = useModalStore();
 
-    // const vehicles = useVehicleStore((state) => state.vehicles);
     const {
         vehicles,
         currentPage,
@@ -80,6 +80,7 @@ const Vehicles = () => {
     }
     return (
         <Wrapper currentTab={"vehicles"}>
+        <VehicleFormModal />
         <div className="px-4 sm:px-6 lg:px-8">
             <div className="sm:flex sm:items-center">
                 <div className="sm:flex-auto">

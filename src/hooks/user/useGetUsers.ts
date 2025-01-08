@@ -1,26 +1,24 @@
 import { AxiosRequestConfig } from "axios";
-import useDatum from "../useDatum.ts"
-
-export interface IUsers {
-	id: string,
-	firstName: string,
-	lastName: string,
-	email: string,
-	phoneNumber: string,
-	role: "ADMIN" | "EMPLOYEE" | "BOOKER",
-	createdAt: string,
-	updatedAt: string,
-}
+import useUserStore from "../../stores/useUsers";
+import { IUsersDetails } from "../../interfaces/shared";
+import apiClient from "../../services/api-client";
+import { useQuery } from "@tanstack/react-query";
 
 const useGetUsers = () => {
-	const endpoint = "/users"
-	const queryKey = ["users"]
-	const requestConfig: AxiosRequestConfig = {
-		headers: {
-		  Authorization: `${localStorage.getItem("authToken")}`,
-		},
-	  };
-	return useDatum<IUsers[]>(queryKey, endpoint, requestConfig)
-}
+  const endpoint = "/users";
+  const queryKey = ["users"];
+  const requestConfig: AxiosRequestConfig = {
+    headers: {
+      Authorization: `${localStorage.getItem("authToken")}`,
+    },
+  };
 
-export default useGetUsers
+  const setUsers = useUserStore((state) => state.setUsers);
+  return useQuery({queryKey, 
+	queryFn: async () => {
+    const { data } = await apiClient.get<IUsersDetails[]>(endpoint, requestConfig);
+    setUsers(data);
+  }});
+};
+
+export default useGetUsers;
