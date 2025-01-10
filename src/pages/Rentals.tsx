@@ -2,13 +2,14 @@ import EmptyStates from "../components/feedback/EmptyState";
 import TableLoading from "../components/loaders/TableLoading";
 import useGetBookings from "../hooks/booking/useGetBookings";
 import Wrapper from "../layouts/Wrapper";
+import useBookingStore from "../stores/useBookings";
 
 const Rentals = () => {
-	const { data, isFetching } = useGetBookings()
-    const bookings = data
-
+	const { isFetching } = useGetBookings()
+    const {
+        bookings
+    } =useBookingStore();
     const headers: string[] = ["id","Booking #", "Booker", "Vehicle", "Action"]
-    console.log({bookings})
     return (
         <Wrapper currentTab={"rentals"}>
         <div className="px-4 sm:px-6 lg:px-8">
@@ -52,7 +53,7 @@ const Rentals = () => {
                         {bookings.map((booking) => (
                         <tr key={booking.id} >
                             <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm text-gray-900 sm:pl-0">
-                            {`${booking.bookingNumber}`}
+                            {`${booking.bookerId}`}
                             </td>
                             <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-900">
                             {`${booking?.vehicle?.make} ${booking?.vehicle?.model} ${booking?.vehicle?.year}`}

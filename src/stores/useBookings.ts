@@ -4,12 +4,12 @@ import { IBooking } from '../interfaces/shared';
 interface BookingStore {
     bookings: IBooking[];
     track: IBooking | null;
-
+    selectedBooker: IBooking | null,
     currentPage: number;
     itemsPerPage: number;
     paginated: IBooking[];
 
-
+  
     setBookings: (bookings: IBooking[]) => void;
     setBooking: (booking: IBooking) => void;
 
@@ -23,6 +23,7 @@ interface BookingStore {
 
 const useBookingStore = create<BookingStore>((set, get) => ({
     bookings: [],
+    selectedBooker: null,
     track: null,
 
     currentPage: 1,

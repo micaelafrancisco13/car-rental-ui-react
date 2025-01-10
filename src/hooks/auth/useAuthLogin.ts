@@ -6,4 +6,13 @@ const useAuthLogin = () => {
     return useMutationDatum<string>(endpoint);
   };
   
-export default useAuthLogin;
+  const useAuthRegister = () => {
+    const endpoint = "/auth/register";
+  
+    return useMutationDatum<string>(endpoint);
+  };
+  
+export {
+  useAuthLogin,
+  useAuthRegister
+};

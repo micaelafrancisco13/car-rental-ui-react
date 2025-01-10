@@ -5,6 +5,7 @@ import Dashboard from "../pages/Dashboard";
 import Users from "../pages/Users";
 import Vehicles from "../pages/Vehicles";
 import Rentals from "../pages/Rentals";
+import Register from "../pages/Register";
 
 const userRole = "admin";
 
@@ -20,7 +21,7 @@ const ProtectedRoute = ({ element, allowedRoles }: { element: JSX.Element; allow
 const RBAC: any[] = [
   {
     path: "/dashboard",
-    element: <ProtectedRoute element={<Dashboard />} allowedRoles={["admin", "emplooyee", "customer"]} />,
+    element: <ProtectedRoute element={<Dashboard />} allowedRoles={["admin", "emplooyee", "booker"]} />,
   },
   {
     path: "/users",
@@ -31,8 +32,12 @@ const RBAC: any[] = [
     element: <ProtectedRoute element={<Vehicles />} allowedRoles={["admin", "emoloyee"]} />,
   },
   {
+    path: "/vehicles/available",
+    element: <ProtectedRoute element={<Vehicles />} allowedRoles={["booker"]} />,
+  },
+  {
     path: "/rentals",
-    element: <ProtectedRoute element={<Rentals />} allowedRoles={["admin","customer"]} />,
+    element: <ProtectedRoute element={<Rentals />} allowedRoles={["admin","booker"]} />,
   },
   {
     path:"/track/:id",
@@ -41,6 +46,10 @@ const RBAC: any[] = [
   {
     path: "/",
     element: <Login />,
+  },
+  {
+    path: "/register",
+    element: <Register />,
   }
 ];
 

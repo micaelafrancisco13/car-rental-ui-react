@@ -21,7 +21,6 @@ const Users = () => {
         setPage,
         setItemsPerPage,
         setPaginatedUsers,
-        setUsers,
     } = useUserStore();
     const [searchQuery, setSearchQuery] = useState(""); 
     const [filteredPeople, setFilteredPeople] = useState(people); 

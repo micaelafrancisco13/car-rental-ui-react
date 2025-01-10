@@ -14,7 +14,6 @@ import {
 import {
   Bars3Icon,
   BellIcon,
-  Cog6ToothIcon,
   HomeIcon,
   UsersIcon,
   XMarkIcon,
@@ -38,14 +37,20 @@ interface IWrapper {
 const Wrapper:FC<IWrapper> = ({children, currentTab}) => {
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
+  const userRole = "admin"
   const navigate = useNavigate()
-
   const navigation = [
     { name: 'Dashboard', href: '', icon: HomeIcon, current: currentTab === "dashboard" },
-    { name: 'Rentals', href: '#', icon: RectangleGroupIcon, current: currentTab === "rentals"  },
-    { name: 'Vehicles', href: '#', icon: TruckIcon, current: currentTab === "vehicles"  },
-    { name: 'Users', href: '#', icon: UsersIcon, current: currentTab === "users"  },
+   
   ]
+
+  if (userRole === "admin") {
+    navigation.push(
+      { name: 'Rentals', href: '#', icon: RectangleGroupIcon, current: currentTab === "rentals"  },
+      { name: 'Vehicles', href: '#', icon: TruckIcon, current: currentTab === "vehicles"  },
+      { name: 'Users', href: '#', icon: UsersIcon, current: currentTab === "users"  },
+    )
+  }
 
   const logout = () => {
       localStorage.removeItem("authToken");
@@ -53,7 +58,7 @@ const Wrapper:FC<IWrapper> = ({children, currentTab}) => {
       navigate("/")
   }
   const userNavigation = [
-    { name: 'Your profile', href: () => {} },
+    // { name: 'Your profile', href: () => {} },
     { name: 'Sign out', href: () =>logout() },
   ]
   return (
@@ -81,11 +86,12 @@ const Wrapper:FC<IWrapper> = ({children, currentTab}) => {
               {/* Sidebar component, swap this element with another sidebar if you like */}
               <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-gray-900 px-6 pb-4 ring-1 ring-white/10">
                 <div className="flex h-16 shrink-0 items-center">
-                  <img
+                  {/* <img
                     alt="Your Company"
                     src="https://tailwindui.com/plus/img/logos/mark.svg?color=indigo&shade=500"
                     className="h-8 w-auto"
-                  />
+                  /> */}
+                  Logo Here
                 </div>
                 <nav className="flex flex-1 flex-col">
                   <ul role="list" className="flex flex-1 flex-col gap-y-7">
@@ -110,13 +116,13 @@ const Wrapper:FC<IWrapper> = ({children, currentTab}) => {
                       </ul>
                     </li>
                     <li className="mt-auto">
-                      <a
+                      {/* <a
                         href="#"
                         className="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-400 hover:bg-gray-800 hover:text-white"
                       >
                         <Cog6ToothIcon aria-hidden="true" className="size-6 shrink-0" />
                         Settings
-                      </a>
+                      </a> */}
                     </li>
                   </ul>
                 </nav>
@@ -130,11 +136,12 @@ const Wrapper:FC<IWrapper> = ({children, currentTab}) => {
           {/* Sidebar component, swap this element with another sidebar if you like */}
           <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-gray-900 px-6 pb-4">
             <div className="flex h-16 shrink-0 items-center">
-              <img
+              {/* <img
                 alt="Your Company"
                 src="https://tailwindui.com/plus/img/logos/mark.svg?color=indigo&shade=500"
                 className="h-8 w-auto"
-              />
+              /> */}
+              Logo Here
             </div>
             <nav className="flex flex-1 flex-col">
               <ul role="list" className="flex flex-1 flex-col gap-y-7">
@@ -159,13 +166,13 @@ const Wrapper:FC<IWrapper> = ({children, currentTab}) => {
                   </ul>
                 </li>
                 <li className="mt-auto">
-                  <a
+                  {/* <a
                     href="#"
                     className="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-400 hover:bg-gray-800 hover:text-white"
                   >
                     <Cog6ToothIcon aria-hidden="true" className="size-6 shrink-0" />
                     Settings
-                  </a>
+                  </a> */}
                 </li>
               </ul>
             </nav>
@@ -209,14 +216,14 @@ const Wrapper:FC<IWrapper> = ({children, currentTab}) => {
                 <Menu as="div" className="relative">
                   <MenuButton className="-m-1.5 flex items-center p-1.5">
                     <span className="sr-only">Open user menu</span>
-                    <img
+                    {/* <img
                       alt=""
                       src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
                       className="size-8 rounded-full bg-gray-50"
-                    />
+                    /> */}
                     <span className="hidden lg:flex lg:items-center">
                       <span aria-hidden="true" className="ml-4 text-sm/6 font-semibold text-gray-900">
-                        Tom Cook
+                        User Name
                       </span>
                       <ChevronDownIcon aria-hidden="true" className="ml-2 size-5 text-gray-400" />
                     </span>
@@ -240,7 +247,7 @@ const Wrapper:FC<IWrapper> = ({children, currentTab}) => {
               </div>
             </div>
           </div>
-          <main className="py-10">
+          <main className="py-8">
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 {children}
             </div>

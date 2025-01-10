@@ -7,6 +7,7 @@ interface ITablePagination {
     itemsPerPage: number
     totalNumber: number
     currentPage: number
+    isGrid?: boolean
 }
 const TablePagination:FC<ITablePagination> = ({
     handleNext,
@@ -15,6 +16,7 @@ const TablePagination:FC<ITablePagination> = ({
     itemsPerPage,
     totalNumber,
     currentPage,
+    isGrid = false,
 }) => {
     return (
       <nav
@@ -29,14 +31,18 @@ const TablePagination:FC<ITablePagination> = ({
            
           </p> */}
           <span className="relative inline-flex items-center text-black mr-3 text-sm text-gray-700">
-            <label>
-                {` Items per page:`}
-            <select onChange={(e) => handleItemsPerPageChange(Number(e.target.value))} value={itemsPerPage}>
-                <option value={5}>5</option>
-                <option value={10}>10</option>
-                <option value={15}>15</option>
-            </select>
-            </label>
+           {
+                  !isGrid &&
+                (<label>
+                    {` Items per page:`}
+                <select onChange={(e) => handleItemsPerPageChange(Number(e.target.value))} value={itemsPerPage}>
+                        <option value={5}>5</option>
+                        <option value={10}>10</option>
+                        <option value={15}>15</option>
+                </select>
+                </label>)
+           }
+           
         </span>
         </div>
         <div className="flex flex-1 justify-between sm:justify-end">

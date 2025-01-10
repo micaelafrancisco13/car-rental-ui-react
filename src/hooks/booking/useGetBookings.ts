@@ -1,48 +1,24 @@
 import { AxiosRequestConfig } from "axios";
-import useDatum from "../useDatum.ts"
-import { IUsers } from "../user/useGetUsers.ts";
-import { IVechiles } from "../vehicle/useGetVehicles.ts";
-
-enum BookingStatus {
-	PENDING,
-	ACCEPTED,
-	IN_PROGRESS,
-	COMPLETED,
-	CANCELLED,
-  }
-  
-enum PaymentStatus {
-	PENDING,
-	PAID,
-	FAILED,
-  }
-  
-export interface IBookings {
-	id: string,
-	bookerId: string,
-	bookingNumber: string,
-	booker: IUsers
-	vehicle: IVechiles
-	vechileId: string,
-	startLocation: string,
-	endLocation: string,
-	totalPrice: string,
-	stauts: BookingStatus,
-	paymentStatus: PaymentStatus,
-	createdAt: string,
-	updatedAt: string,
-}
+import { IBooking } from "../../interfaces/shared";
+import apiClient from "../../services/api-client";
+import { useQuery } from "@tanstack/react-query";
+import useBookingStore from "../../stores/useBookings";
 
 const useGetBookings = () => {
-	const queryKey = ["bookings"]
-	const endpoint = "/bookings"
-	const query: (string | Record<string, never>)[] =[]
-	const requestConfig: AxiosRequestConfig = {
-		headers: {
-		  Authorization: `${localStorage.getItem("authToken")}`,
-		},
-	  };
-	return useDatum<IBookings[]>(queryKey, endpoint, requestConfig)
-}
+  const endpoint = "/bookings";
+  const queryKey = ["bookings"];
+  const requestConfig: AxiosRequestConfig = {
+    headers: {
+      Authorization: `${localStorage.getItem("authToken")}`,
+    },
+  };
 
-export default useGetBookings
+  const setBookings = useBookingStore((state) => state.setBookings);
+  return useQuery({queryKey, 
+	queryFn: async () => {
+    const { data } = await apiClient.get<IBooking[]>(endpoint, requestConfig);
+    setBookings(data);
+  }});
+};
+
+export default useGetBookings;
