@@ -1,17 +1,11 @@
 import "./App.css"
-import { createBrowserRouter, RouterProvider } from "react-router-dom"
-import Test from "./components/pages/Test.tsx"
+import { RouterProvider } from "react-router-dom"
+import routerRBAC from "./rbac/index.tsx"
 
 function App() {
-	const router = createBrowserRouter([
-		{
-			path: "/",
-			element: <Test />
-		}
-	])
 	return (
-		<>
-			<RouterProvider router={router} />
+		<>	
+			<RouterProvider router={routerRBAC} />
 		</>
 	)
 }

@@ -1,4 +1,4 @@
-import useTest from "../../hooks/useTest.ts"
+import useTest from "../hooks/useTest.ts"
 
 function Test() {
 
