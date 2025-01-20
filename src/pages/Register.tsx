@@ -1,11 +1,12 @@
-import { ErrorMessage, Field, Form, Formik } from "formik";
+import { Form, Formik } from "formik";
 import * as Yup from "yup";
 import {useAuthRegister} from "../hooks/auth/useAuthLogin";
 import toast, { Toaster } from "react-hot-toast";
 import { AxiosError } from "axios";
 import { useNavigate } from "react-router-dom";
-import { setJwt } from "../services/api-client";
-import LoadingButton from "../components/loaders/LoadingButton";
+// import { setJwt } from "../services/api-client";
+// import { IUsersDetails } from "../interfaces/shared";
+// import { jwtDecode } from "jwt-decode";
 
 const Register = () => {
     const navigate = useNavigate();
@@ -22,10 +23,9 @@ const Register = () => {
         email: Yup.string().required("Email is required").email("Invalid email"),
         phoneNumber: Yup.number().test(
                 "len",
-                "Phone number must be exactly 10 digits",
+                "Phone number must be exactly 9 digits",
                 (value) => value?.toString().length === 10
             ).typeError("Phone number must be a valid number"),
-        role: Yup.string().required("Role is required"),
         password: Yup.string()
             .required("Password is a required field")
             .min(8, "Password must be at least 8 characters")
@@ -36,20 +36,21 @@ const Register = () => {
             .oneOf([Yup.ref('password'), undefined], 'Passwords must match'),
         
     });
+    
+    // const saveToken = (token: string) => {
+    //     localStorage.setItem("authToken", token);
+    //     const decoded:IUsersDetails = jwtDecode(token)
+    //     localStorage.setItem("role", decoded.role.toLowerCase());
+    //     setJwt(token)
+    // };
 
-    const saveToken = (token: string, role: string) => {
-        localStorage.setItem("authToken", token);
-        localStorage.setItem("role", role);
-        setJwt(token)
-    };
-
-    const handleSubmit = (values: {email: string, password: string}) => {
-        mutate(values, {
-            onSuccess: (data) => {
-              const { token, role } = data
-                saveToken(token, role)
+    const handleSubmit = (values: any) => {
+      const { confirmPassword, ...filteredValues } = values;
+        mutate({...filteredValues, phoneNumber: `0${values.phoneNumber}`, latitude: 1, longitude: 1}, {
+            onSuccess: () => {
+                // saveToken(data)
                 toast.success("Register Success")
-                navigate("/dashboard")
+                navigate("/")
             },
             onError: (error) => {
                 const err = error as AxiosError
@@ -76,105 +77,159 @@ const Register = () => {
             <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-xl">
             <Formik
                 validationSchema={schema}
-                initialValues={{ email: "", password: "" }}
+                initialValues={{ firstName: "", lastName: "", email: "",phoneNumber:"", password:"", confirmPassword:"", role: "BOOKER" }}
                 onSubmit={handleSubmit}
             >
             {({
-            // errors,
+            errors,
             // // touched,
-            // handleChange,
-            // handleBlur,
+            handleChange,
+            handleBlur,
             // handleSubmit,
             }) => (
                 <>
                 
-                <Form className="h-5/6 overflow-hidden text-black">
-                  <div className="space-y-6 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-500 scrollbar-track-gray-200  w-full max-h-96 ">
+                <Form className="space-y-6">
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                    <div className="flex flex-col">
-                      <label htmlFor="firstName" className="text-sm font-medium text-gray-700">
-                        First Name
-                      </label>
-                      <Field
-                        type="text"
-                        id="firstName"
-                        name="firstName" 
-                        className="mt-1 p-2 border border-gray-300 rounded-md"
-                      />
-                      <ErrorMessage name="firstName" component="div" className="text-red-600 text-sm" />
+                  <div>
+                    <label htmlFor="firstName" className="block text-sm/6 font-medium text-gray-900">
+                            First Name
+                        </label>
+                        <div className="mt-2">
+                            <input
+                            id="firstName"
+                            name="firstName"
+                            type="text"
+                            required
+                            className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            />
+                        </div>
+                        {errors.firstName && (
+                            <p className="text-red-500 text-sm mt-1">{errors.firstName}</p>
+                        )}
                     </div>
 
-                    <div className="flex flex-col">
-                      <label htmlFor="lastName" className="text-sm font-medium text-gray-700">
-                        Last Name
-                      </label>
-                      <Field
-                        type="text"
-                        id="lastName"
-                        name="lastName"
-                        className="mt-1 p-2 border border-gray-300 rounded-md"
-                      />
-                      <ErrorMessage name="lastName" component="div" className="text-red-600 text-sm" />
+                    <div>
+                    <label htmlFor="lastName" className="block text-sm/6 font-medium text-gray-900">
+                            Last Name
+                        </label>
+                        <div className="mt-2">
+                            <input
+                            id="lastName"
+                            name="lastName"
+                            type="text"
+                            required
+                            className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            />
+                        </div>
+                        {errors.lastName && (
+                            <p className="text-red-500 text-sm mt-1">{errors.lastName}</p>
+                        )}
                     </div>
-
-                    <div className="flex flex-col">
-                      <label htmlFor="email" className="text-sm font-medium text-gray-700">
-                        Email
-                      </label>
-                      <Field
-                        type="email"
-                        id="email"
-                        name="email"
-                        className="mt-1 p-2 border border-gray-300 rounded-md"
-                      />
-                      <ErrorMessage name="email" component="div" className="text-red-600 text-sm" />
+                    <div>
+                    <label htmlFor="email" className="block text-sm/6 font-medium text-gray-900">
+                            Email address
+                        </label>
+                        <div className="mt-2">
+                            <input
+                            id="email"
+                            name="email"
+                            type="email"
+                            required
+                            autoComplete="email"
+                            className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            />
+                        </div>
+                        {errors.email && (
+                            <p className="text-red-500 text-sm mt-1">{errors.email}</p>
+                        )}
                     </div>
-
-                    <div className="flex flex-col">
-                      <label htmlFor="phoneNumber" className="text-sm font-medium text-gray-700">
-                        Phone Number
-                      </label>
-                      <Field
-                        type="number"
-                        id="phoneNumber"
-                        name="phoneNumber"
-                        className="mt-1 p-2 border border-gray-300 rounded-md"
-                      />
-                      <ErrorMessage name="phoneNumber" component="div" className="text-red-600 text-sm" />
+        
+                    <div>
+                    <div className="flex items-center justify-between">
+                        <label htmlFor="password" className="block text-sm/6 font-medium text-gray-900">
+                        Password
+                        </label>
+                    </div>
+                    <div className="mt-2">
+                        <input
+                        id="password"
+                        name="password"
+                        type="password"
+                        required
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        autoComplete="current-password"
+                        className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                        />
+                    </div>
+                        {errors.password && (
+                            <p className="text-red-500 text-sm mt-1">{errors.password}</p>
+                        )}
                     </div>
                     
-                    <div className="flex flex-col">
-                      <label htmlFor="passowrd" className="text-sm font-medium text-gray-700">
-                        Password
-                      </label>
-                      <Field
-                        type="passowrd"
-                        id="passowrd"
-                        name="passowrd"
-                        className="mt-1 p-2 border border-gray-300 rounded-md"
-                      />
-                      <ErrorMessage name="passowrd" component="div" className="text-red-600 text-sm" />
-                    </div>
-
-                    <div className="flex flex-col">
-                      <label htmlFor="confirmPassword" className="text-sm font-medium text-gray-700">
+                    <div>
+                    <div className="flex items-center justify-between">
+                        <label htmlFor="confirmPassword" className="block text-sm/6 font-medium text-gray-900">
                         Confirm Password
-                      </label>
-                      <Field
-                        type="password"
+                        </label>
+                    </div>
+                    <div className="mt-2">
+                        <input
                         id="confirmPassword"
                         name="confirmPassword"
-                        className="mt-1 p-2 border border-gray-300 rounded-md"
-                      />
-                      <ErrorMessage name="confirmPassword" component="div" className="text-red-600 text-sm" />
+                        type="password"
+                        required
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                        />
+                    </div>
+                        {errors.confirmPassword && (
+                            <p className="text-red-500 text-sm mt-1">{errors.confirmPassword}</p>
+                        )}
+                    </div>
+                    
+                    <div>
+                    <label htmlFor="phoneNumber" className="block text-sm/6 font-medium text-gray-900">
+                            Phone NUmber
+                        </label>
+                        <div className="mt-2">
+                            <input
+                            id="phoneNumber"
+                            name="phoneNumber"
+                            type="number"
+                            required
+                            className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            />
+                        </div>
+                        {errors.phoneNumber && (
+                            <p className="text-red-500 text-sm mt-1">{errors.phoneNumber}</p>
+                        )}
                     </div>
                   </div>
-                  </div>
-                  <LoadingButton 
-                    isLoading={isPending}
-                    text={`Create an account`}
-                  />
+                  <div>
+                        <button
+                            type="submit"
+                            className="flex w-full justify-center rounded-md bg-indigo-700 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                        >
+                            { isPending && (<svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>)}
+                            Register
+                        </button>
+                    </div>
+
                 </Form>
                 </>
             )}

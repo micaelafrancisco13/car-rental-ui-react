@@ -17,6 +17,7 @@
     "@tanstack/react-query-devtools": "^5.62.12",
     "axios": "^1.7.9",
     "formik": "^2.4.6",
+    "jwt-decode": "^4.0.0",
     "leaflet": "^1.9.4",
     "prettier": "^3.4.2",
     "react": "^19.0.0-rc.1",

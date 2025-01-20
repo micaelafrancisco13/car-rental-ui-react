@@ -5,6 +5,8 @@ import toast, { Toaster } from "react-hot-toast";
 import { AxiosError } from "axios";
 import { useNavigate } from "react-router-dom";
 import { setJwt } from "../services/api-client";
+import { jwtDecode } from "jwt-decode";
+import { IUsersDetails } from "../interfaces/shared";
 
 const Login = () => {
     const navigate = useNavigate();
@@ -20,17 +22,17 @@ const Login = () => {
         password: Yup.string(),
     });
 
-    const saveToken = (token: string, role: string) => {
+    const saveToken = (token: string) => {
         localStorage.setItem("authToken", token);
-        localStorage.setItem("role", role.toLowerCase());
+        const decoded:IUsersDetails = jwtDecode(token)
+        localStorage.setItem("role", decoded.role.toLowerCase());
         setJwt(token)
     };
 
     const handleSubmit = (values: {email: string, password: string}) => {
         mutate(values, {
             onSuccess: (data) => {
-                const { token, role } = data 
-                saveToken(token, role)
+                saveToken(data)
                 toast.success("Login Success")
                 navigate("/dashboard")
             },
