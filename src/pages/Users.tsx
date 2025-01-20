@@ -1,16 +1,16 @@
 import EmptyStates from "../components/feedback/EmptyState";
 import TableLoading from "../components/loaders/TableLoading";
 import useUserStore from "../stores/useUsers";
-import useGetUsers from "../hooks/user/useGetUsers";
+import { useGetUsers } from "../hooks/user/useGetUsers";
 import Wrapper from "../layouts/Wrapper";
-import { useModalStore } from "../stores/useGlobal";
+import { useGlobalStore } from "../stores/useGlobal";
 import UserFormModal from "../components/modal/UpsertUser";
 import { useEffect, useState } from "react";
 import TablePagination from "../components/pagination/Table";
 
 const Users = () => {
 	const { isFetching } = useGetUsers()
-    const { toggleModal } = useModalStore();
+    const { toggleModal } = useGlobalStore();
     const headers: string[] = ["id","Name", "Email", "Phone Number", "Role", "Action"]
 
 

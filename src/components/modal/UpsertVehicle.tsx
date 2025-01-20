@@ -1,18 +1,19 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Formik, Field, Form, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
-import { useModalStore } from '../../stores/useGlobal';
+import { useGlobalStore } from '../../stores/useGlobal';
 import useVehicleStore from '../../stores/useVehicles';
 import useAddVehicle from '../../hooks/vehicle/useAddVehicle';
 import toast from 'react-hot-toast';
-import { AxiosError } from 'axios';
+import axios, { AxiosError } from 'axios';
 import LoadingButton from '../loaders/LoadingButton';
 import useUpdateVehicle from '../../hooks/vehicle/useUpdateVehicle';
 
 const VehicleFormModal: React.FC = () => {
-  const { isOpen, toggleModal } = useModalStore(); 
+  const { isOpen, toggleModal } = useGlobalStore(); 
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-
+  const [isChangeImage, setIsChangeImage] = useState<boolean>(false);
+  
   const validationSchema = Yup.object({
     make: Yup.string().required('Make is required'),
     model: Yup.string().required('Model is required'),
@@ -38,6 +39,22 @@ const VehicleFormModal: React.FC = () => {
       setImagePreview(URL.createObjectURL(file));
     }
   };
+
+  const handleImageUpload = async (file: File | undefined) => {
+    // const file = e.target.files?.[0]; 
+    const cloudName = "ddikg10os"
+
+    if (file) {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('upload_preset', 'car_rental');  // Replace with your preset from Cloudinary
+      
+
+      const response = await axios.post(`https://api.cloudinary.com/v1_1/${cloudName}/upload`, formData)
+      return response.data.url || ""
+    }
+    return
+  };
   const initialValues = vehicle ? 
   { 
     ...vehicle,
@@ -47,12 +64,15 @@ const VehicleFormModal: React.FC = () => {
     detailedDescription: "",
     features: "",
     images: [],
+    image: undefined,
     licensePlate: "",
     make: "",
     model:"",
     year: "",
 }
-
+  useEffect(() => {
+    setImagePreview(vehicle?.images[0] || "")
+  }, [vehicle?.images])
   return (
     <>
       {isOpen && (
@@ -81,42 +101,43 @@ const VehicleFormModal: React.FC = () => {
             <Formik
               initialValues={initialValues} 
               validationSchema={validationSchema}
-              onSubmit={(values) => {
+              onSubmit={async (values) => {
+                const imageUrl = await handleImageUpload(values.image)
                 const formValues = {
                   ...Object.fromEntries(
-                    Object.entries(values).filter(([key]) => !["id", "createdAt", "updatedAt","availabilityStatus"].includes(key))
+                    Object.entries(values).filter(([key]) => !["id", "createdAt", "updatedAt","availabilityStatus", "image"].includes(key))
                   ),
-                  images: [
-                    "https://example.com/images/toyota-camry-1.jpg",],
+                  images: [imageUrl || ""],
                   features: values.features.split(",")
                 }
-                if (vehicle) {
-                  updateVehicles([{id: vehicle.id, vehicle: formValues}],  {
-                    onSuccess: (data) => {
-                        updateVehicle(data[0].id, data[0])
-                        toggleModal();
-                        toast.success("Vehicle has been successfully updated.")
-                    },
-                    onError: (error) => {
-                        const err = error as AxiosError
-                        const errMsg = err.response?.data || ""
-                        toast.error(String(errMsg))    
-                    }
-                })
-                } else {
-                  mutate([formValues], {
-                    onSuccess: (data) => {
-                        addVehicles(data)
-                        toggleModal();
-                        toast.success("Vehicle has been successfully created.")
-                    },
-                    onError: (error) => {
-                        const err = error as AxiosError
-                        const errMsg = err.response?.data || ""
-                        toast.error(String(errMsg))    
-                    }
-                })
-                }}
+                  if (vehicle) {
+                    updateVehicles([{id: vehicle.id, vehicle: formValues}],  {
+                      onSuccess: (data) => {
+                          updateVehicle(data[0].id, data[0])
+                          toggleModal();
+                          toast.success("Vehicle has been successfully updated.")
+                      },
+                      onError: (error) => {
+                          const err = error as AxiosError
+                          const errMsg = err.response?.data || ""
+                          toast.error(String(errMsg))    
+                      }
+                  })
+                  } else {
+                    mutate([formValues], {
+                      onSuccess: (data) => {
+                          addVehicles(data)
+                          toggleModal();
+                          toast.success("Vehicle has been successfully created.")
+                      },
+                      onError: (error) => {
+                          const err = error as AxiosError
+                          const errMsg = err.response?.data || ""
+                          toast.error(String(errMsg))    
+                      }
+                  })
+                  }
+                }
                 }
               
             >
@@ -219,21 +240,33 @@ const VehicleFormModal: React.FC = () => {
                   </div>
 
                   <div className="flex flex-col">
-                    <label htmlFor="image" className="text-sm font-medium text-gray-700">
-                      Upload Image
-                    </label>
-                    <input
-                      type="file"
-                      id="image"
-                      name="image"
-                      accept="image/*"
-                      onChange={(e) => {
-                        const file = e.target.files?.[0] || null;
-                        setFieldValue('image', file);
-                        handleImageChange(e);
-                      }}
-                      className="mt-1 p-2 border border-gray-300 rounded-md"
-                    />
+                    <button 
+                      type="button"
+                      className="w-full mt-6 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                      onClick={() => {
+                      setIsChangeImage(!isChangeImage)
+                    }}>
+                      {`${ isChangeImage ? 'Cancel Upload' : 'Change Image' }`}
+                    </button>
+                 
+                    { isChangeImage && (
+                      <>
+                      <label htmlFor="image" className="text-sm font-medium text-gray-700">
+                        Upload Image
+                      </label>
+                      <input
+                        type="file"
+                        id="image"
+                        name="image"
+                        accept="image/*"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0] || null;
+                          setFieldValue('image', file);
+                          handleImageChange(e);
+                        }}
+                        className="mt-1 p-2 border border-gray-300 rounded-md"
+                      /></> )
+                    }
                     {imagePreview && (
                       <div className="mt-2">
                         <img

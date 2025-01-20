@@ -1,6 +1,6 @@
 import { Formik, Field, Form, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
-import { useModalStore } from '../../stores/useGlobal';
+import { useGlobalStore } from '../../stores/useGlobal';
 import toast from 'react-hot-toast';
 import { AxiosError } from 'axios';
 import LoadingButton from '../loaders/LoadingButton';
@@ -10,7 +10,7 @@ import useVehicleStore from '../../stores/useVehicles';
 import useBookCar from '../../hooks/booking/useBookCar';
 
 const RentCarModal: React.FC = () => {
-  const { isOpen, toggleModal } = useModalStore(); 
+  const { isOpen, toggleModal } = useGlobalStore(); 
   const today = new Date().toISOString().split("T")[0];
   const validationSchema = Yup.object({
     vehicleId: Yup.string().required("First Name is required"),

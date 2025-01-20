@@ -21,4 +21,24 @@ const useGetUsers = () => {
   }});
 };
 
-export default useGetUsers;
+const useGetMe = () => {
+  const endpoint = "/users/me";
+  const queryKey = ["me"];
+  const requestConfig: AxiosRequestConfig = {
+    headers: {
+      Authorization: `${localStorage.getItem("authToken")}`,
+    },
+  };
+
+  const setMe = useUserStore((state) => state.setMe);
+  return useQuery({queryKey, 
+	queryFn: async () => {
+    const { data } = await apiClient.get<IUsersDetails>(endpoint, requestConfig);
+    setMe(data);
+  }});
+};
+
+export {
+  useGetUsers,
+  useGetMe,
+}

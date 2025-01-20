@@ -1,17 +1,15 @@
 import { createBrowserRouter, Navigate } from "react-router-dom";
-import Test from "../pages/Test";
 import Login from "../pages/Login";
 import Dashboard from "../pages/Dashboard";
 import Users from "../pages/Users";
 import Vehicles from "../pages/Vehicles";
 import Rentals from "../pages/Rentals";
 import Register from "../pages/Register";
-
-const userRole = "admin";
+import CarTracker from "../pages/Track";
 
 const ProtectedRoute = ({ element, allowedRoles }: { element: JSX.Element; allowedRoles: string[] }) => {
   const authToken = localStorage.getItem("authToken"); // Check for auth token
-
+  const userRole = localStorage.getItem("role") || "";
   if (!authToken) {
     return <Navigate to="/" />;
   }
@@ -40,8 +38,8 @@ const RBAC: any[] = [
     element: <ProtectedRoute element={<Rentals />} allowedRoles={["admin","booker"]} />,
   },
   {
-    path:"/track/:id",
-    element: <ProtectedRoute element={<Test />} allowedRoles={["admin", "employee"]} />,
+    path:"/track",
+    element: <ProtectedRoute element={<CarTracker />} allowedRoles={["admin", "employee"]} />,
   },
   {
     path: "/",

@@ -3,13 +3,16 @@ import { IBooking } from '../interfaces/shared';
 
 interface BookingStore {
     bookings: IBooking[];
+    inProgressBookings: IBooking | null,
+    cancelledBookings: IBooking[],
+    completedBookings: IBooking[],
     track: IBooking | null;
     selectedBooker: IBooking | null,
     currentPage: number;
     itemsPerPage: number;
     paginated: IBooking[];
 
-  
+    setMyBookings: (bookings: IBooking[]) => void;
     setBookings: (bookings: IBooking[]) => void;
     setBooking: (booking: IBooking) => void;
 
@@ -26,10 +29,21 @@ const useBookingStore = create<BookingStore>((set, get) => ({
     selectedBooker: null,
     track: null,
 
+    inProgressBookings: null,
+    cancelledBookings: [],
+    completedBookings: [],
+
+
     currentPage: 1,
     itemsPerPage: 10,
     paginated: [],
 
+    setMyBookings: (bookings) => set(() => ({ 
+      bookings,
+      inProgressBookings: bookings.filter((item) => !["COMPLETED", "CANCELLED"].includes(item.status))[0],
+      completedBookings: bookings.filter((item) => item.status == "COMPLETED"),
+      cancelledBookings: bookings.filter((item) => item.status == "CANCELLED")
+    })),
     setBookings: (bookings) => set(() => ({ bookings})),
     setBooking: (track) => set(() => ({ track })),
 

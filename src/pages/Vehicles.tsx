@@ -3,7 +3,7 @@ import TableLoading from "../components/loaders/TableLoading";
 import useVehicleStore from "../stores/useVehicles";
 import useGetVehicles from "../hooks/vehicle/useGetVehicles";
 import Wrapper from "../layouts/Wrapper";
-import { useModalStore } from "../stores/useGlobal";
+import { useGlobalStore } from "../stores/useGlobal";
 import { useEffect, useState } from "react";
 import TablePagination from "../components/pagination/Table";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
@@ -14,7 +14,7 @@ import VehicleFormModal from "../components/modal/UpsertVehicle";
 
 const Vehicles = () => {
 	const {  isFetching } = useGetVehicles()
-    const { toggleModal } = useModalStore();
+    const { toggleModal } = useGlobalStore();
 
     const {
         vehicles,

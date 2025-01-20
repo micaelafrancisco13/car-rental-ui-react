@@ -37,15 +37,17 @@ const Register = () => {
         
     });
 
-    const saveToken = (token: string) => {
+    const saveToken = (token: string, role: string) => {
         localStorage.setItem("authToken", token);
+        localStorage.setItem("role", role);
         setJwt(token)
     };
 
     const handleSubmit = (values: {email: string, password: string}) => {
         mutate(values, {
             onSuccess: (data) => {
-                saveToken(data)
+              const { token, role } = data
+                saveToken(token, role)
                 toast.success("Register Success")
                 navigate("/dashboard")
             },

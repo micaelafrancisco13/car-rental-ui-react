@@ -4,12 +4,13 @@ import { IUsersDetails } from '../interfaces/shared';
 interface UserStore {
   users: IUsersDetails[];
   user: IUsersDetails | null;
-
+  me: IUsersDetails | null;
   currentPage: number;
   itemsPerPage: number;
   paginated: IUsersDetails[];
 
   setUsers: (user: IUsersDetails[]) => void;
+  setMe: (me: IUsersDetails) => void;
   addUser: (user: IUsersDetails) => void;
   addUsers: (users: IUsersDetails[]) => void;
   updateUser: (id: string, updatedUser: Partial<IUsersDetails>) => void; // Partial allows updating only some fields
@@ -24,12 +25,13 @@ interface UserStore {
 const useUserStore = create<UserStore>((set, get) => ({
   users: [],
   user: null,
-
+  me: null,
   currentPage: 1,
   itemsPerPage: 10,
   paginated: [],
 
   setUsers: (users) => set(() => ({ users })),
+  setMe: (me) => set(() => ({ me })),
   addUser: (user) => set((state) => ({
     users: [...state.users, user],
   })),

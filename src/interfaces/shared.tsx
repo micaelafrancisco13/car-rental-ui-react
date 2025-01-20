@@ -1,4 +1,4 @@
-import { BookingStatus, DeliveryType, PaymentStatus, TripStatus } from "../utils/enums"
+import { DeliveryType, TripStatus } from "../utils/enums"
 
 interface IBase {
     id: string
@@ -38,8 +38,8 @@ export interface IBooking extends IBase {
     startTime: Date,
     endDate: Date,
     totalPrince: number,
-    status: BookingStatus,
-    paymentStatus: PaymentStatus,
+    status: string,
+    paymentStatus: string,
     deliveryType: DeliveryType,
     // fleetTracking: Fle
 }
