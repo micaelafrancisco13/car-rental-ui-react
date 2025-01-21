@@ -4,12 +4,31 @@ import TableLoading from "../components/loaders/TableLoading";
 import {useGetBookings} from "../hooks/booking/useGetBookings";
 import Wrapper from "../layouts/Wrapper";
 import useBookingStore from "../stores/useBookings";
+import SelectMenu from "../components/feedback/SelectMenu";
+import { useEffect, useState } from "react";
+import TablePagination from "../components/pagination/Table";
+import BookingDetails from "../components/modal/BookingDetails";
+import { useGlobalStore } from "../stores/useGlobal";
+import { formatDate } from "../utils/helper";
 
 const Rentals = () => {
 	const { isFetching } = useGetBookings()
     const {
-        bookings
+        bookings,
+        filteredBookings,
+        currentPage,
+        itemsPerPage,
+        setPage,
+        setItemsPerPage,
+        setPaginatedBookings,
+        filterBooking,
+        setBookingDetails,
     } = useBookingStore();
+
+    const { openDetails, toggleView } = useGlobalStore()
+
+    const [statusOption, setStatus] = useState<string>("")
+    const [paymentStatusOption, setPaymentStatusOption] = useState<string>("")
 
     const getColor = (status: string) => {
         switch(status){
@@ -25,6 +44,24 @@ const Rentals = () => {
     }
 
     const headers: string[] = ["id","Booking #", "Booker", "Vehicle", "Rental Date", "Payment Status", "Action"]
+
+    useEffect(() => {
+        setPaginatedBookings();
+    }, [filteredBookings, currentPage]);
+
+    useEffect(() => {
+        filterBooking(statusOption, paymentStatusOption)
+    }, [statusOption, paymentStatusOption])
+
+    
+    const handlePageChange = (page: number) => {
+        setPage(page);
+    };
+
+    const handleItemsPerPageChange = (itemsPerPage: number) => {
+        setItemsPerPage(itemsPerPage);
+    };
+
     return (
         <Wrapper currentTab={"rentals"}>
         <div className="px-4 sm:px-6 lg:px-8">
@@ -44,13 +81,35 @@ const Rentals = () => {
                 </button>)}
                 </div> */}
             </div>
-            <div className="mt-8 flow-root">
+            <div className="mt-5 flow-root">
+            <div className="flex justify-end space-x-5 mb-2">
+                <SelectMenu 
+                    defaultValue=""
+                    handleFilter={(e:React.ChangeEvent<HTMLSelectElement>) => {
+                        setStatus(e.target.value)
+                    }}
+                    options={
+                        ["", "PENDING", "ACCEPTED", "IN_PROGRESS", "COMPLETED", "CANCELLED"]
+                    }
+                    title="Status"
+                />
+                <SelectMenu 
+                    defaultValue=""
+                    handleFilter={(e:React.ChangeEvent<HTMLSelectElement>) => {
+                        setPaymentStatusOption(e.target.value)
+                    }}
+                    options={
+                        ["", "PENDING", "PAID", "FAILED"]
+                    }
+                    title="Payment Status"
+                />
+            </div>
                 <div className="mx-4 h-5/6 overflow-hidden  overflow-x-auto  sm:-mx-6 lg:-mx-8">
                 <div className="inline-block border-2 border-indigo-100  min-w-full p-0 overflow-y-auto max-h-80 sm:max-h-96 scrollbar align-middle">
                    {
                     
                     isFetching ? <TableLoading /> :
-                    (bookings && bookings?.length > 0) ? <table className="min-w-full divide-y divide-gray-300">
+                    (filteredBookings && filteredBookings?.length > 0) ? <table className="min-w-full divide-y divide-gray-300">
                     <thead className="bg-indigo-600 sticky left-0 p-0 m-0 top-0 z-10">
                         <tr>
                             {
@@ -64,6 +123,7 @@ const Rentals = () => {
                             }
                         </tr>
                     </thead>
+
                     <tbody className="divide-y divide-gray-200">
                         {bookings.map((booking) => (
                         <tr key={booking.id} >
@@ -76,8 +136,8 @@ const Rentals = () => {
                             <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-900">
                                 {`${booking.booker?.firstName} ${booking.booker?.lastName}`}
                             </td>
-                            <td>
-                                {`${booking.startTime} ${booking.endDate}`}
+                            <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-900">
+                                {`${formatDate(booking.startDate)} - ${formatDate(booking.endDate)}`}
                             </td>
                             <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-900 grid grid-cols-1">
                             <select
@@ -100,9 +160,9 @@ const Rentals = () => {
                                     }}
                                     className={`col-start-1 row-start-1 text-${getColor(String(booking.paymentStatus))} appearance-none rounded-md bg-white py-1.5 pl-3 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6`}
                                     >
-                                    <option value={"PENDING"} className="text-green-500">PENDING</option>
+                                    <option value={"PENDING"} className="text-yellow-500">PENDING</option>
                                     <option value={"PAID"} className="text-blue-500">PAID</option>
-                                    <option value={"FAILED"}  className="text-yellow-500">FAILED</option>
+                                    <option value={"FAILED"}  className="text-red-500">FAILED</option>
                                 </select>
                                 <ChevronDownIcon
                                 aria-hidden="true"
@@ -110,6 +170,15 @@ const Rentals = () => {
                                 />
                             </td>
                             <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-sm font-medium sm:pr-0 space-x-3">
+                                <button
+                                    onClick={() => {
+                                        setBookingDetails(booking)
+                                        toggleView()
+                                    }}
+                                    className="text-indigo-600 hover:text-indigo-900">
+                                    View
+                                    
+                                </button>
                                 <a href="#" className="text-indigo-600 hover:text-indigo-900">
                                     Track
                                 </a>
@@ -124,6 +193,15 @@ const Rentals = () => {
                 </div>
             </div>
         </div>
+        {openDetails && <BookingDetails />}
+        <TablePagination 
+            handleItemsPerPageChange={(number) => handleItemsPerPageChange(number)}
+            handlePrevious={()=> handlePageChange(currentPage - 1)}
+            handleNext={()=> handlePageChange(currentPage + 1)}
+            itemsPerPage={itemsPerPage}
+            currentPage={currentPage}
+            totalNumber={filteredBookings.length}
+        />
         </Wrapper>
     )
 }

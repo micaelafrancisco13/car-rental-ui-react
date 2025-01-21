@@ -8,6 +8,7 @@ import useAddUser from '../../hooks/user/useAddUsers';
 import useUserStore from '../../stores/useUsers';
 import useVehicleStore from '../../stores/useVehicles';
 import useBookCar from '../../hooks/booking/useBookCar';
+import { calcualteTotalRate } from '../../utils/helper';
 
 const RentCarModal: React.FC = () => {
   const { isOpen, toggleModal } = useGlobalStore(); 
@@ -59,23 +60,7 @@ const RentCarModal: React.FC = () => {
   } : {
       vehicleId: '', startDate: "", endDate: ""
   }
-  const calcualteTotalRate = (startDate: string, endDate: string, rate: number) => {
-    if (!startDate || !endDate) {
-      return 1
-    }
-
-    const start = new Date(startDate);
-    const end = new Date(endDate);
-
-    if (end < start) {
-      return 1
-    }
-
-    const timeDifference = end.getTime() - start.getTime();
-    const days = timeDifference / (1000 * 60 * 60 * 24)
-    
-    return (rate*days)
-  };
+  
 //  const getLocation = () => {
 //     if (!navigator.geolocation) {
 //       return null, null;

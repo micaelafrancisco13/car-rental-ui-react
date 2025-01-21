@@ -35,7 +35,7 @@ export interface IBooking extends IBase {
     vehicle?: IVehicle,
     startLocation: string,
     endLocation: string,
-    startTime: Date,
+    startDate: Date,
     endDate: Date,
     totalPrince: number,
     status: string,

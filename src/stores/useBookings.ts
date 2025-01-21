@@ -3,11 +3,12 @@ import { IBooking } from '../interfaces/shared';
 
 interface BookingStore {
     bookings: IBooking[];
+    filteredBookings: IBooking[];
     inProgressBookings: IBooking | null,
     cancelledBookings: IBooking[],
     completedBookings: IBooking[],
     track: IBooking | null;
-    selectedBooker: IBooking | null,
+    selectedBooking: IBooking | null,
     currentPage: number;
     itemsPerPage: number;
     paginated: IBooking[];
@@ -15,6 +16,9 @@ interface BookingStore {
     setMyBookings: (bookings: IBooking[]) => void;
     setBookings: (bookings: IBooking[]) => void;
     setBooking: (booking: IBooking) => void;
+    setBookingDetails: (booking: IBooking | null) => void
+
+    filterBooking: (status: string, paymentStatus: string) => void
 
     requestBooking: (booking: IBooking) => void;
 
@@ -26,13 +30,29 @@ interface BookingStore {
 
 const useBookingStore = create<BookingStore>((set, get) => ({
     bookings: [],
-    selectedBooker: null,
+
+    filteredBookings:[],
+    selectedBooking: null,
     track: null,
 
     inProgressBookings: null,
     cancelledBookings: [],
     completedBookings: [],
 
+    filterBooking: (status, paymentStatus) => {
+      const { bookings, currentPage, itemsPerPage } = get();
+      const filteredBookings = bookings.filter((booking) => {
+        const matchesStatus = !status || booking.status === status;
+        const matchesPaymentStatus = !paymentStatus || booking.paymentStatus === paymentStatus; 
+        return matchesStatus && matchesPaymentStatus;
+      });
+
+      const startIndex = (currentPage - 1) * itemsPerPage;
+      const endIndex = startIndex + itemsPerPage;
+      const paginated = filteredBookings.slice(startIndex, endIndex);
+  
+      set(() => ({ filteredBookings, paginated }));
+    },
 
     currentPage: 1,
     itemsPerPage: 10,
@@ -44,24 +64,38 @@ const useBookingStore = create<BookingStore>((set, get) => ({
       completedBookings: bookings.filter((item) => item.status == "COMPLETED"),
       cancelledBookings: bookings.filter((item) => item.status == "CANCELLED")
     })),
-    setBookings: (bookings) => set(() => ({ bookings})),
+    setBookings: (bookings) => set(() => ({ bookings, filteredBookings:bookings})),
     setBooking: (track) => set(() => ({ track })),
+    setBookingDetails: (selectedBooking) => set(() => ({ selectedBooking })),
 
     requestBooking: (booking) => set((state) => ({ 
         bookings: [...state.bookings, booking],
     })),
 
-    setPage: (page) => set(() => ({ currentPage: page })),
-    setItemsPerPage: (itemsPerPage) => set(() => ({ itemsPerPage })),
-    
+    setPage: (page) =>
+      set((state) => {
+        const { filteredBookings, itemsPerPage } = state;
+        const startIndex = (page - 1) * itemsPerPage;
+        const endIndex = startIndex + itemsPerPage;
+        const paginated = filteredBookings.slice(startIndex, endIndex);
+        return { currentPage: page, paginated };
+      }),
+    setItemsPerPage: (itemsPerPage) =>
+      set((state) => {
+        const { currentPage, filteredBookings } = state;
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        const endIndex = startIndex + itemsPerPage;
+        const paginated = filteredBookings.slice(startIndex, endIndex);
+        return { itemsPerPage, paginated };
+      }),
+
     getPaginatedBookings: () => {
-      const { bookings, currentPage, itemsPerPage } = get();
+      const { filteredBookings, currentPage, itemsPerPage } = get();
       const startIndex = (currentPage - 1) * itemsPerPage;
       const endIndex = startIndex + itemsPerPage;
-      
-      return bookings.slice(startIndex, endIndex);
+      return filteredBookings.slice(startIndex, endIndex);
     },
-    
+
     setPaginatedBookings: () => {
       set(() => ({ paginated: get().getPaginatedBookings() }));
     },

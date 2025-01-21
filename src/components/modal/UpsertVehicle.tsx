@@ -107,7 +107,7 @@ const VehicleFormModal: React.FC = () => {
                   ...Object.fromEntries(
                     Object.entries(values).filter(([key]) => !["id", "createdAt", "updatedAt","availabilityStatus", "image"].includes(key))
                   ),
-                  images: [imageUrl || ""],
+                  images: [imageUrl || initialValues.images[0] || ""],
                   features: values.features.split(",")
                 }
                   if (vehicle) {

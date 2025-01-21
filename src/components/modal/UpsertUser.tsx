@@ -11,17 +11,21 @@ import { ChevronDownIcon } from '@heroicons/react/24/outline';
 
 const UserFormModal: React.FC = () => {
   const { isOpen, toggleModal } = useGlobalStore(); 
+  const mutationPut = useUpdateUser();
 
+  const generalSchema = {
+      firstName: Yup.string().required("First Name is required"),
+      lastName: Yup.string().required("Last Name is required"),
+      email: Yup.string().required("Email is required").email("Invalid email"),
+      phoneNumber: Yup.number().test(
+            "len",
+            "Phone number must be exactly 10 digits",
+            (value) => value?.toString().length === 10
+        ).typeError("Phone number must be a valid number"),
+      role: Yup.string().required("Role is required"),
+  }
   const validationSchema = Yup.object({
-    firstName: Yup.string().required("First Name is required"),
-    lastName: Yup.string().required("Last Name is required"),
-    email: Yup.string().required("Email is required").email("Invalid email"),
-    phoneNumber: Yup.number().test(
-          "len",
-          "Phone number must be exactly 10 digits",
-          (value) => value?.toString().length === 10
-      ).typeError("Phone number must be a valid number"),
-    role: Yup.string().required("Role is required"),
+    ...generalSchema,
     password: Yup.string()
       .required("Password is a required field")
       .min(8, "Password must be at least 8 characters")
@@ -32,12 +36,17 @@ const UserFormModal: React.FC = () => {
         .oneOf([Yup.ref('password'), undefined], 'Passwords must match'),
   });
 
+  const validationUpdateSchema = Yup.object({
+    ...generalSchema,
+  });
+
   const { mutate, isPending } = useAddUser();
-  const { mutate: updateMutate, isPending: isPendingUpdate } = useUpdateUser();
+  const { isPending: isPendingUpdate } = useUpdateUser();
 
   const {
     updateUser,
     addUsers,
+    setUser,
     user: selectedUser,
   } = useUserStore()
 
@@ -54,7 +63,10 @@ const UserFormModal: React.FC = () => {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900 bg-opacity-50">
           <div className="bg-white w-3/4 max-w-2xl p-6 rounded-lg shadow-lg relative">
             <button
-              onClick={toggleModal}
+              onClick={() => { 
+                toggleModal()
+                setUser(null)
+              }}
               className="absolute top-3 right-3 text-gray-600 hover:text-gray-900"
             >
               <svg
@@ -75,31 +87,44 @@ const UserFormModal: React.FC = () => {
             <div className='text-black font-bold text-xl mb-5'>User Form</div>
             <Formik
               initialValues={initialValues} 
-              validationSchema={validationSchema}
-              onSubmit={(values) => {
+              validationSchema={selectedUser ? validationUpdateSchema : validationSchema }
+              onSubmit={async (values) => {
                 const formValues = {
                   ...Object.fromEntries(
-                    Object.entries(values).filter(([key]) => !["id", "createdAt", "updatedAt","password", "confirmPassword"].includes(key))
+                    Object.entries(values).filter(([key]) => !["id", "createdAt", "updatedAt", "confirmPassword"].includes(key))
                   )
                 }
                 if (selectedUser) {
-                  updateMutate([{id: selectedUser.id, user: formValues}],  {
-                    onSuccess: (data) => {
-                        updateUser(data[0].id, data[0])
-                        toggleModal();
-                        toast.success("User has been successfully updated.")
-                    },
-                    onError: (error) => {
-                        const err = error as AxiosError
-                        const errMsg = err.response?.data || ""
-                        toast.error(String(errMsg))    
-                    }
-                })
+                  const updatedUser = await mutationPut.mutateAsync({
+                    id: selectedUser.id,
+                    data: formValues,
+                  });
+                  updateUser(updatedUser.id, updatedUser)
+                  setUser(null)
+                  toast.success("User has been successfully updated.")
+
+                  toggleModal()
+                //   updateMutate([{id: selectedUser.id, user: formValues}],  {
+                //     onSuccess: (data) => {
+                //         updateUser(data[0].id, data[0])
+                //         toggleModal();
+                //         setUser(null)
+
+                //         toast.success("User has been successfully updated.")
+                //     },
+                //     onError: (error) => {
+                //         const err = error as AxiosError
+                //         const errMsg = err.response?.data || ""
+                //         toast.error(String(errMsg))    
+                //     }
+                // })
                 } else {
                   mutate([formValues], {
                     onSuccess: (data) => {
                         addUsers(data)
                         toggleModal();
+                        setUser(null)
+
                         toast.success("User has been successfully created.")
                     },
                     onError: (error) => {
@@ -169,20 +194,20 @@ const UserFormModal: React.FC = () => {
                       <ErrorMessage name="phoneNumber" component="div" className="text-red-600 text-sm" />
                     </div>
                     
-                    <div className="flex flex-col">
-                      <label htmlFor="passowrd" className="text-sm font-medium text-gray-700">
+                    { !selectedUser?.id && (<div className="flex flex-col">
+                      <label htmlFor="password" className="text-sm font-medium text-gray-700">
                         Password
                       </label>
                       <Field
-                        type="passowrd"
-                        id="passowrd"
-                        name="passowrd"
+                        type="password"
+                        id="password"
+                        name="password"
                         className="mt-1 p-2 border border-gray-300 rounded-md"
                       />
-                      <ErrorMessage name="passowrd" component="div" className="text-red-600 text-sm" />
-                    </div>
+                      <ErrorMessage name="password" component="div" className="text-red-600 text-sm" />
+                    </div>)}
 
-                    <div className="flex flex-col">
+                    { !selectedUser?.id && (<div className="flex flex-col">
                       <label htmlFor="confirmPassword" className="text-sm font-medium text-gray-700">
                         Confirm Password
                       </label>
@@ -193,7 +218,7 @@ const UserFormModal: React.FC = () => {
                         className="mt-1 p-2 border border-gray-300 rounded-md"
                       />
                       <ErrorMessage name="confirmPassword" component="div" className="text-red-600 text-sm" />
-                    </div>
+                    </div>)}
                   </div>
                   <div className="text-sm text-gray-900 grid grid-cols-1">
                           <select

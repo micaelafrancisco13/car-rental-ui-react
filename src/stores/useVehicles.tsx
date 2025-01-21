@@ -9,7 +9,7 @@ interface VehicleStore {
   paginatedVehicles: IVehicle[];
 
   setVehicles: (vehicles: IVehicle[]) => void;
-  setVehicle: (vehicle: IVehicle) => void;
+  setVehicle: (vehicle: IVehicle | null) => void;
   addVehicle: (vehicle: IVehicle) => void;
   addVehicles: (vehicle: IVehicle[]) => void;
   updateVehicle: (id: string, updatedVehicle: Partial<IVehicle>) => void; // Partial allows updating only some fields
