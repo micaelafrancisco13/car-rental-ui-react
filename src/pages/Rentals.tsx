@@ -118,7 +118,7 @@ const Rentals = () => {
                         ))}
                     </tbody>
                     </table>
-                    : <EmptyStates name={"rental"} />    
+                    : <EmptyStates name={"rental"} toggleModal={()=>{}} />    
                 }
                 </div>
                 </div>

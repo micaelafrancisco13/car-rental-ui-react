@@ -183,7 +183,7 @@ const Vehicles = () => {
                         )})}
                     </tbody>
                     </table>
-                    : <EmptyStates name={"vehicle"} />    
+                    : <EmptyStates name={"vehicle"} toggleModal={()=>toggleModal()} />    
                 }
                 </div>
                 </div>
