@@ -130,7 +130,7 @@ const Users = () => {
                         ))}
                     </tbody>
                     </table>
-                    : <EmptyStates name={"user"} />    
+                    : <EmptyStates name={"user"} toggleModal={()=>toggleModal()} />    
                 }
                 </div>
                 </div>
