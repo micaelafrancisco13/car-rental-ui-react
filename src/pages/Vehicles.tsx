@@ -11,13 +11,16 @@ import useUpdateStatus from "../hooks/vehicle/useUpdateStatus";
 import toast from "react-hot-toast";
 import { AxiosError } from "axios";
 import VehicleFormModal from "../components/modal/UpsertVehicle";
+import ConfirmationDelete from "../components/feedback/ConfirmationButton";
+import { useDeleteVehicle } from "../hooks/useDelete";
 
 const Vehicles = () => {
 	const {  isFetching } = useGetVehicles()
-    const { toggleModal } = useGlobalStore();
+    const { toggleModal, toggleConfirmation, open, } = useGlobalStore();
 
     const {
         vehicles,
+        selectedVehicle,
         currentPage,
         itemsPerPage,
         setPage,
@@ -78,6 +81,23 @@ const Vehicles = () => {
                 return "gray-500"
         }
     }
+    const deleteMutation = useDeleteVehicle();
+
+    const handleDelete = () => {
+        deleteMutation.mutate({id: selectedVehicle?.id}, {
+            onSuccess: () => {
+                // Handle success
+                toast.success("Vehicle deleted successfully")
+            },
+            onError: (error) => {
+                // Handle error
+                toast.success("Error deleting vehicles")
+
+                console.error("Error deleting vehicles:", error);
+            }
+        });
+    };
+
     return (
         <Wrapper currentTab={"vehicles"}>
         <VehicleFormModal />
@@ -101,7 +121,10 @@ const Vehicles = () => {
                     
                     { vehicles.length > 0 && (<button
                         type="button"
-                        onClick={toggleModal}
+                        onClick={()=> {
+                            toggleModal()
+                            setVehicle(null)
+                        }}
                         className="block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                     >
                         Add Vehicle
@@ -175,9 +198,12 @@ const Vehicles = () => {
                                 }} className="text-indigo-600 hover:text-indigo-900">
                                     Edit
                                 </button>
-                                <a href="#" className="text-indigo-600 hover:text-indigo-900">
+                                <button onClick={()=> {
+                                    setVehicle(vehicle)
+                                    toggleConfirmation()
+                                }}className="text-indigo-600 hover:text-indigo-900">
                                     Delete
-                                </a>
+                                </button>
                             </td>
                         </tr>
                         )})}
@@ -198,6 +224,9 @@ const Vehicles = () => {
             />
             
         </div>
+        {open && <ConfirmationDelete handleConfirm={()=> {
+            handleDelete()
+        }} />}
         </Wrapper>
     )
 }

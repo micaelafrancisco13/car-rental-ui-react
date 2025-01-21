@@ -10,6 +10,7 @@ interface UserStore {
   paginated: IUsersDetails[];
 
   setUsers: (user: IUsersDetails[]) => void;
+  setUser: (user: IUsersDetails | null) => void;
   setMe: (me: IUsersDetails) => void;
   addUser: (user: IUsersDetails) => void;
   addUsers: (users: IUsersDetails[]) => void;
@@ -31,6 +32,7 @@ const useUserStore = create<UserStore>((set, get) => ({
   paginated: [],
 
   setUsers: (users) => set(() => ({ users })),
+  setUser: (user) => set(() => ({ user })),
   setMe: (me) => set(() => ({ me })),
   addUser: (user) => set((state) => ({
     users: [...state.users, user],

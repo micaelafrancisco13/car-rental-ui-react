@@ -7,18 +7,36 @@ import { useGlobalStore } from "../stores/useGlobal";
 import UserFormModal from "../components/modal/UpsertUser";
 import { useEffect, useState } from "react";
 import TablePagination from "../components/pagination/Table";
+import ConfirmationDelete from "../components/feedback/ConfirmationButton";
+import { useDeleteUser } from "../hooks/useDelete";
+import toast from "react-hot-toast";
 
 const Users = () => {
 	const { isFetching } = useGetUsers()
-    const { toggleModal } = useGlobalStore();
+    const { toggleModal, toggleConfirmation, open } = useGlobalStore();
     const headers: string[] = ["id","Name", "Email", "Phone Number", "Role", "Action"]
 
+    const mutationDelete = useDeleteUser();
+
+    const handleDelete = (id: string) => {
+        mutationDelete.mutate(id, {
+          onSuccess: () => {
+            toast.success("User deleted successfully.")
+          },
+          onError: (error) => {
+            toast.error("Error deleting user")
+            console.log({error})
+          }
+        });
+      };
 
     const {
         users: people,
+        user: selectedUser,
         currentPage,
         itemsPerPage,
         setPage,
+        setUser,
         setItemsPerPage,
         setPaginatedUsers,
     } = useUserStore();
@@ -119,12 +137,18 @@ const Users = () => {
                             <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-900">{person.phoneNumber}</td>
                             <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-900">{person.role}</td>
                             <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-sm font-medium sm:pr-0 space-x-3">
-                                <a href="#" className="text-indigo-600 hover:text-indigo-900">
+                                <button onClick={() => {
+                                    setUser(person)
+                                    toggleModal();
+                                }} className="text-indigo-600 hover:text-indigo-900">
                                     Edit<span className="sr-only">, {person.firstName}</span>
-                                </a>
-                                <a href="#" className="text-indigo-600 hover:text-indigo-900">
+                                </button>
+                                <button onClick={() => {
+                                    setUser(person)
+                                    toggleConfirmation()
+                                }} className="text-indigo-600 hover:text-indigo-900">
                                     Delete<span className="sr-only">, {person.firstName}</span>
-                                </a>
+                                </button>
                             </td>
                         </tr>
                         ))}
@@ -146,6 +170,9 @@ const Users = () => {
             />
         </div>
         <UserFormModal />
+        { open && <ConfirmationDelete handleConfirm={()=>{
+            handleDelete(selectedUser?.id || "")
+        }}/>}
         </Wrapper>
     )
 }

@@ -24,7 +24,7 @@ const BookerDashbaord = () => {
       } = useVehicleStore();
 
     const {
-        selectedBooker,
+        selectedBooking,
     } = useBookingStore();
 
     
@@ -138,7 +138,7 @@ const BookerDashbaord = () => {
         }}>
             <div className="bg-white shadow sm:rounded-lg px-4 py-5 ">
                 {
-                    selectedBooker ? 
+                    selectedBooking ? 
                     <div>
 
                     </div>

@@ -1,8 +1,8 @@
-import useMutationDatum from "../useMutationDatum";
-import { IVehicle } from "../../interfaces/shared";
+import { IUsersDetails } from "../../interfaces/shared";
+import useMutationPut from "../useMutationPut";
 
 const useUpdateUser = () => {
-  return useMutationDatum<IVehicle[]>("/users/update");
+  return useMutationPut<IUsersDetails>("/users");
 };
 
 export default useUpdateUser;
