@@ -54,6 +54,7 @@ const Wrapper:FC<IWrapper> = ({children, currentTab}) => {
 
   const logout = () => {
       localStorage.removeItem("authToken");
+      localStorage.removeItem("role");
       setJwt(null);
       navigate("/")
   }
