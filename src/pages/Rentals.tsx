@@ -10,6 +10,8 @@ import TablePagination from "../components/pagination/Table";
 import BookingDetails from "../components/modal/BookingDetails";
 import { useGlobalStore } from "../stores/useGlobal";
 import { formatDate } from "../utils/helper";
+import { patchBookingStatus } from "../hooks/useUpdate";
+import toast from "react-hot-toast";
 
 const Rentals = () => {
 	const { isFetching } = useGetBookings()
@@ -27,15 +29,35 @@ const Rentals = () => {
 
     const { openDetails, toggleView } = useGlobalStore()
 
+    const patchBooking = patchBookingStatus()
+
     const [statusOption, setStatus] = useState<string>("")
     const [paymentStatusOption, setPaymentStatusOption] = useState<string>("")
+    
+    const handleChangeStatus = (id: string, key: string, status: string) => {
+        const data = {
+            status,
+        }
+        patchBooking.mutate({ id, data, name: key }, {
+            onSuccess: () => {
+                toast.success('Status Change Successfully')
+            },
+            onError: (error) => {
+                toast.error('Error updating')
+                console.error('Error updating:', error);
+            }
+        });
+    }
 
     const getColor = (status: string) => {
         switch(status){
             case "PAID":
+            case "COMPLETED":
                 return "green-500"
             case "FAILED":
+            case "CANCELLED":
                 return "red-500"
+            case "IN_PROGRESS":
             case "PENDING":
                 return "yellow-500"
             default:
@@ -43,7 +65,7 @@ const Rentals = () => {
         }
     }
 
-    const headers: string[] = ["id","Booking #", "Booker", "Vehicle", "Rental Date", "Payment Status", "Action"]
+    const headers: string[] = ["id","Booking #", "Booker", "Vehicle", "Rental Date", "Status", "Payment Status", "Action"]
 
     useEffect(() => {
         setPaginatedBookings();
@@ -139,35 +161,49 @@ const Rentals = () => {
                             <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-900">
                                 {`${formatDate(booking.startDate)} - ${formatDate(booking.endDate)}`}
                             </td>
-                            <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-900 grid grid-cols-1">
-                            <select
-                                    id="location"
-                                    name="location"
-                                    defaultValue={booking.paymentStatus}
-                                    onChange={(_event) => {
-                                        // setVehicle(vehicle)
-                                        // updateVehicleStatus({availabilityStatus: event.target.value},  {
-                                        //     onSuccess: () => {
-                                        //         updateStatus(vehicle.id, event.target.value)
-                                        //         toast.success("Vehicle's status has been successfully updated.")
-                                        //     },
-                                        //     onError: (error) => {
-                                        //         const err = error as AxiosError
-                                        //         const errMsg = err.response?.data || ""
-                                        //         toast.error(String(errMsg))    
-                                        //     }
-                                        // })
-                                    }}
-                                    className={`col-start-1 row-start-1 text-${getColor(String(booking.paymentStatus))} appearance-none rounded-md bg-white py-1.5 pl-3 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6`}
-                                    >
-                                    <option value={"PENDING"} className="text-yellow-500">PENDING</option>
-                                    <option value={"PAID"} className="text-blue-500">PAID</option>
-                                    <option value={"FAILED"}  className="text-red-500">FAILED</option>
-                                </select>
-                                <ChevronDownIcon
-                                aria-hidden="true"
-                                className="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4"
-                                />
+                            <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-900">
+                                <div className="grid grid-cols-1">
+                                    <select
+                                        id="status"
+                                        name="status"
+                                        defaultValue={booking.status}
+                                        onChange={(event) => {
+                                            handleChangeStatus(booking.id, "status", event.target.value)
+                                        }}
+                                        className={`col-start-1 row-start-1 text-${getColor(String(booking.status))} appearance-none rounded-md bg-white py-1.5 pl-3 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6`}
+                                        >
+                                        <option value={"PENDING"} className="text-yellow-500">PENDING</option>
+                                        <option value={"IN_PROGRESS"} className="text-yellow-500">IN PROGRESS</option>
+                                        <option value={"ACTIVE"} className="text-blue-500">ACTIVE</option>
+                                        <option value={"COMPLETED"} className="text-green-500">COMPLETED</option>
+                                        <option value={"CANCELLED"}  className="text-red-500">CANCELLED</option>
+                                    </select>
+                                    <ChevronDownIcon
+                                    aria-hidden="true"
+                                    className="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4"
+                                    />
+                                </div>
+                            </td>
+                            <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-900 ">
+                                <div className="grid grid-cols-1">
+                                    <select
+                                        id="paymentStatus"
+                                        name="paymentStatus"
+                                        defaultValue={booking.paymentStatus}
+                                        onChange={(event) => {
+                                            handleChangeStatus(booking.id, "paymentStatus", event.target.value)
+                                        }}
+                                        className={`col-start-1 row-start-1 text-${getColor(String(booking.paymentStatus))} appearance-none rounded-md bg-white py-1.5 pl-3 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6`}
+                                        >
+                                        <option value={"PENDING"} className="text-yellow-500">PENDING</option>
+                                        <option value={"PAID"} className="text-green-500">PAID</option>
+                                        <option value={"FAILED"}  className="text-red-500">FAILED</option>
+                                    </select>
+                                    <ChevronDownIcon
+                                        aria-hidden="true"
+                                        className="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4"
+                                    />
+                                </div>
                             </td>
                             <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-sm font-medium sm:pr-0 space-x-3">
                                 <button

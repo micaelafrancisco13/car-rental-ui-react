@@ -1,3 +1,4 @@
+import AdminDashboard from "../components/AdminDashboard";
 import BookerDashbaord from "../components/BookerDashboard";
 import Wrapper from "../layouts/Wrapper";
 
@@ -12,7 +13,9 @@ const Dashboard = () => {
                     <BookerDashbaord />
                 </div> 
                 
-                :<></>
+                :<>
+                    <AdminDashboard />
+                </>
             }
         </Wrapper>
     )
