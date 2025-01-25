@@ -5,6 +5,7 @@ interface DashboardStore {
   bookingsCount: { [key: string]: number };
   bookingsPaymentCount: { [key: string]: number };
   formattedData: any,
+  result: any,
   setDashboardCount: (count:any) => void;
 }
 
@@ -13,6 +14,7 @@ const useDashboardStore = create<DashboardStore>((set) => ({
   bookingsCount:{},
   bookingsPaymentCount: {},
   formattedData: [],
+  result: [],
   setDashboardCount: (count) => set(() => ({ 
     vehicleCount: count.vehicleCount.reduce(
       (acc: any, item: { availabilityStatus: string; _count: { id: number } }) => {
@@ -36,6 +38,7 @@ const useDashboardStore = create<DashboardStore>((set) => ({
       {}
     ),
     formattedData: count.formattedData,
+    result: count.result
   })),
 }))
 

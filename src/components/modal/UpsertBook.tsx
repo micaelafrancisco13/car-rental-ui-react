@@ -4,11 +4,11 @@ import { useGlobalStore } from '../../stores/useGlobal';
 import toast from 'react-hot-toast';
 import { AxiosError } from 'axios';
 import LoadingButton from '../loaders/LoadingButton';
-import useAddUser from '../../hooks/user/useAddUsers';
-import useUserStore from '../../stores/useUsers';
 import useVehicleStore from '../../stores/useVehicles';
 import useBookCar from '../../hooks/booking/useBookCar';
 import { calcualteTotalRate } from '../../utils/helper';
+import { jwtDecode } from 'jwt-decode';
+import useBookingStore from '../../stores/useBookings';
 
 const RentCarModal: React.FC = () => {
   const { isOpen, toggleModal } = useGlobalStore(); 
@@ -45,22 +45,39 @@ const RentCarModal: React.FC = () => {
     ),
   });
 
-  const { mutate, isPending } = useAddUser();
-  const { mutate: _rentCar, isPending: isPendingUpdate } = useBookCar();
-
-  const { selectedVehicle } = useVehicleStore()
+  const { mutate: rentCar, isPending: isPendingUpdate } = useBookCar();
   const {
-    addUsers,
-    user: selectedUser,
-  } = useUserStore()
+    setMyBookings
+  } = useBookingStore()
+  const { selectedVehicle } = useVehicleStore()
 
-  const initialValues = selectedUser ? 
+  const initialValues = selectedVehicle ? 
   { 
-    ...selectedUser,
+    vehicleId:selectedVehicle.id, startDate: "", endDate: ""
   } : {
       vehicleId: '', startDate: "", endDate: ""
   }
-  
+  const getLocation = () => {
+   const details = jwtDecode(localStorage.getItem("authToken") || "")
+   return String(details.iat) || ""
+    // if (navigator.geolocation) {
+    //   navigator.geolocation.getCurrentPosition(
+    //     (position: GeolocationPosition) => {
+    //       return JSON.stringify({
+    //         latitude: position.coords.latitude,
+    //         longitude: position.coords.longitude,
+    //       });
+    //     },
+    //     (err: GeolocationPositionError) => {
+    //       console.log(err)
+    //       // setError(err.message);
+    //     }
+    //   );
+    // } else {
+    //   // setError('Geolocation is not supported by this browser.');
+    // }
+  };
+
 //  const getLocation = () => {
 //     if (!navigator.geolocation) {
 //       return null, null;
@@ -86,8 +103,8 @@ const RentCarModal: React.FC = () => {
   return (
     <>
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900 bg-opacity-50">
-          <div className="bg-white w-3/4 max-w-2xl p-6 rounded-lg shadow-lg relative">
+        <div className="fixed inset-0 z-50 flex  items-center justify-center bg-gray-900 bg-opacity-50">
+          <div className="bg-white w-3/4 overflow-y-auto h-5/6 sm:h-auto max-w-2xl p-6 rounded-lg shadow-lg relative">
             <button
               onClick={toggleModal}
               className="absolute top-3 right-3 text-gray-600 hover:text-gray-900"
@@ -132,13 +149,14 @@ const RentCarModal: React.FC = () => {
             <Formik
               initialValues={initialValues} 
               validationSchema={validationSchema}
-              onSubmit={(values) => {
+              onSubmit={async(values) => {
+                console.log({values})
                 const formValues = {
                   ...Object.fromEntries(
                     Object.entries(values).filter(([key]) => !["id", "createdAt", "updatedAt","password", "confirmPassword"].includes(key))
                   )
                 }
-                if (selectedUser) {
+                // if (selectedUser) {
                 //   updateMutate([{id: selectedUser.id, user: formValues}],  {
                 //     onSuccess: (data) => {
                 //         updateUser(data[0].id, data[0])
@@ -151,12 +169,14 @@ const RentCarModal: React.FC = () => {
                 //         toast.error(String(errMsg))    
                 //     }
                 // })
-                } else {
-                  mutate([formValues], {
+                // } else {
+                  rentCar([{...formValues, startLocation: getLocation(), endLocation: getLocation()}], {
                     onSuccess: (data) => {
-                        addUsers(data)
+                      console.log(data)
+                      setMyBookings(data)
+                      window.location.reload()
                         toggleModal();
-                        toast.success("User has been successfully created.")
+                        toast.success("Booking has been successfully created.")
                     },
                     onError: (error) => {
                         const err = error as AxiosError
@@ -165,7 +185,7 @@ const RentCarModal: React.FC = () => {
                     }
                 })
                 }}
-                }
+                // }
               
             >
               {({ values }) => (
@@ -217,7 +237,7 @@ const RentCarModal: React.FC = () => {
                   </div>
                   </div>
                   <LoadingButton 
-                    isLoading={isPending || isPendingUpdate}
+                    isLoading={isPendingUpdate}
                     text={`Book`}
                   />
                 </Form>

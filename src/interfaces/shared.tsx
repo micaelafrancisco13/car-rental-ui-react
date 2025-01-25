@@ -37,7 +37,7 @@ export interface IBooking extends IBase {
     endLocation: string,
     startDate: Date,
     endDate: Date,
-    totalPrince: number,
+    totalPrice: number,
     status: string,
     paymentStatus: string,
     deliveryType: DeliveryType,

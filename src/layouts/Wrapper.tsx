@@ -24,6 +24,8 @@ import { ChevronDownIcon } from '@heroicons/react/20/solid'
 import { useNavigate } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast';
 import { setJwt } from '../services/api-client'
+import { jwtDecode } from 'jwt-decode'
+import { IUsersDetails } from '../interfaces/shared'
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ')
@@ -62,6 +64,9 @@ const Wrapper:FC<IWrapper> = ({children, currentTab}) => {
     // { name: 'Your profile', href: () => {} },
     { name: 'Sign out', href: () =>logout() },
   ]
+
+  const userDetails:IUsersDetails = jwtDecode(localStorage.getItem("authToken") || "")
+
   return (
     <>
       <div>
@@ -224,7 +229,7 @@ const Wrapper:FC<IWrapper> = ({children, currentTab}) => {
                     /> */}
                     <span className=" lg:flex lg:items-center">
                       <span aria-hidden="true" className="ml-4 text-sm/6 font-semibold text-gray-900">
-                        User Name
+                        {`${userDetails.firstName} ${userDetails.lastName}`}
                       </span>
                       <ChevronDownIcon aria-hidden="true" className="ml-2 size-5 text-gray-400" />
                     </span>
@@ -248,7 +253,14 @@ const Wrapper:FC<IWrapper> = ({children, currentTab}) => {
               </div>
             </div>
           </div>
-          <main className="py-8">
+          <main
+          //  style={{
+          //   backgroundImage: `url('https://res.cloudinary.com/ddikg10os/image/upload/v1737823133/ai-generated-beautiful-background-for-car-rental-advertising-free-photo_ts1ulw.jpg')`,
+          //   backgroundSize: 'fill',
+          //   backgroundPosition: 'center',
+          //   backgroundRepeat: 'no-repeat',
+          // }}
+          className="py-8">
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 {children}
             </div>
