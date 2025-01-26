@@ -4,6 +4,10 @@ export const formatDate = (date: Date) => {
     return dayjs(date).format("MMM DD, YYYY")
 }
 
+export const formatDateNumber = (date: Date) => {
+  return dayjs(date).format("MM/DD/YYYY")
+}
+
 export const calcualteTotalRate = (startDate: string, endDate: string, rate: number) => {
   if (!startDate || !endDate) {
     return 1

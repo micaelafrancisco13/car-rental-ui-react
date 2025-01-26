@@ -6,9 +6,9 @@ import TableLoading from "./loaders/TableLoading";
 const AdminDashboard= () => {
 	const { isFetching } = useGetDashboard()
     
-    const { vehicleCount, bookingsCount, bookingsPaymentCount, formattedData } = useDashboardStore()
-    console.log({formattedData})
-  return (
+    const { vehicleCount, bookingsCount, bookingsPaymentCount, result } = useDashboardStore()
+
+    return (
     <div className="p-3 min-h-screen ">
       <h1 className="text-2xl text-gray-900 font-bold mb-4">Car Rental Dashboard</h1>
       {
@@ -43,10 +43,18 @@ const AdminDashboard= () => {
                 },
             },
             xaxis: {
-                categories: formattedData.map((data:any) => data.date),
+                categories: result.map((data:any) => data.formattedEndDate),
                 // categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'],
             }
-          }} series={formattedData.map((data: any) => Number(data?.totalIncome || "0"))} type="bar" height={350} />
+          }} 
+          // series={result.map((data: any) => data?.totalPrice || "0")} 
+          series={[
+            {
+              name: 'Total Income', // Legend label for the series
+              data: result.map((data: any) => parseFloat(data?.totalPrice || "0")), // Ensure values are numbers
+            },
+          ]}
+          type="bar" height={350} />
         </div>
 
         {/* Payment Status */}
@@ -89,7 +97,7 @@ const AdminDashboard= () => {
         <ReactApexChart
            type="pie" width={380}
            series={[
-                bookingsCount?.ACTIVE || 0,
+                bookingsCount?.ACCEPTED || 0,
                 bookingsCount?.COMPLETED || 0,
                 bookingsCount?.PENDING || 0,
                 bookingsCount?.CANCELLED || 0,
@@ -100,7 +108,7 @@ const AdminDashboard= () => {
                     width: 380,
                     type: 'pie',
                   },
-              labels:["ACTIVE", "COMPLETED", "PENDING", "CANCELLED", "IN PROGRESS"],
+              labels:["ACCEPTED", "COMPLETED", "PENDING", "CANCELLED", "IN PROGRESS"],
               responsive: [{
                 breakpoint: 480,
                 options: {

@@ -4,6 +4,7 @@ import usePatchData from "../usePatchData";
 
 const useUpdateStatus = () => {
   const { selectedVehicle } = useVehicleStore();
+
   return usePatchData<IVehicle>(`/vehicles/${selectedVehicle?.id || ""}/availability`);
 };
 

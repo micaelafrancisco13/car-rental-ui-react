@@ -21,7 +21,7 @@ const TablePagination:FC<ITablePagination> = ({
     return (
       <nav
         aria-label="Pagination"
-        className="flex items-center absolute bottom-0 xl:w-8/12 lg:w-7/12 sm:w-10/12 xs:w-6/12 justify-between border-t border-gray-200 bg-gray px-4 py-2 sm:py-3 sm:px-6"
+        className="flex items-center absolute bottom-0 xl:w-8/12 lg:w-7/12 sm:w-10/12 xs:w-6/12 justify-between bg-gray px-4 py-2 sm:py-3 sm:px-6"
       >
         <div className="hidden sm:block">
           {/* <p className="text-sm text-gray-700">

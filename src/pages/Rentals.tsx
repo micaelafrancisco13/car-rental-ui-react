@@ -65,7 +65,7 @@ const Rentals = () => {
         }
     }
 
-    const headers: string[] = ["id","Booking #", "Booker", "Vehicle", "Rental Date", "Status", "Payment Status", "Action"]
+    const headers: string[] = ["id", "Booker", "Vehicle", "Rental Date", "Status", "Payment Status", "Action"]
 
     useEffect(() => {
         setPaginatedBookings();
@@ -149,9 +149,9 @@ const Rentals = () => {
                     <tbody className="divide-y divide-gray-200">
                         {bookings.map((booking) => (
                         <tr key={booking.id} >
-                            <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm text-gray-900 sm:pl-0">
+                            {/* <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm text-gray-900 sm:pl-0">
                             {`${booking.bookerId}`}
-                            </td>
+                            </td> */}
                             <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-900">
                             {`${booking?.vehicle?.make} ${booking?.vehicle?.model} ${booking?.vehicle?.year}`}
                             </td>
@@ -174,7 +174,7 @@ const Rentals = () => {
                                         >
                                         <option value={"PENDING"} className="text-yellow-500">PENDING</option>
                                         <option value={"IN_PROGRESS"} className="text-yellow-500">IN PROGRESS</option>
-                                        <option value={"ACTIVE"} className="text-blue-500">ACTIVE</option>
+                                        <option value={"ACCEPTED"} className="text-blue-500">ACCEPTED</option>
                                         <option value={"COMPLETED"} className="text-green-500">COMPLETED</option>
                                         <option value={"CANCELLED"}  className="text-red-500">CANCELLED</option>
                                     </select>
