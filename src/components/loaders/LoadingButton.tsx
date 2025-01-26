@@ -11,7 +11,7 @@ const LoadingButton: FC<ILoadingButton> = ({ text, isLoading }) => {
      
         <button
             type="submit"
-            className="w-full mt-6 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+            className="w-full mt-6 px-4 py-2 bg-cyan-600 text-white rounded-md hover:bg-cyan-700"
         >
            {isLoading ? (
             <span

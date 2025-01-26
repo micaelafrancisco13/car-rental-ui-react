@@ -62,19 +62,28 @@ const Register = () => {
 
     return (
         <>
-        <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
-            <div className="sm:mx-auto sm:w-full sm:max-w-sm">
+        <div>
+            <button
+                className="text-xl text-cyan-900 uppercase font-mono font-bold absolute tracking-wider pl-5 mt-5 hover:text-cyan-700"
+                onClick={()=> navigate("/")}>
+                Home
+            </button>
+        </div>
+        <div className="flex min-h-full sm:h-screen bg-gray-100 justify-center px-6 py-12 lg:px-8">
+            <div className="bg-white px-20 shadow-xl shadow-cyan-500/50 py-5">
+            <div className="mx-auto">
+
             {/* <img
                 alt="Your Company"
                 src="https://tailwindui.com/plus/img/logos/mark.svg?color=indigo&shade=600"
                 className="mx-auto h-10 w-auto"
             /> */}
-            <h2 className="mt-10 text-center text-2xl/9 font-bold tracking-tight text-gray-900">
+            <h2 className=" mt-2 text-center uppercase font-mono text-2xl/9 font-bold tracking-tight text-gray-900">
                 Create an account
             </h2>
             </div>
     
-            <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-xl">
+            <div className="mt-5">
             <Formik
                 validationSchema={schema}
                 initialValues={{ firstName: "", lastName: "", email: "",phoneNumber:"", password:"", confirmPassword:"", role: "BOOKER" }}
@@ -102,7 +111,7 @@ const Register = () => {
                             name="firstName"
                             type="text"
                             required
-                            className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                            className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-cyan-600 sm:text-sm/6"
                             onChange={handleChange}
                             onBlur={handleBlur}
                             />
@@ -122,7 +131,7 @@ const Register = () => {
                             name="lastName"
                             type="text"
                             required
-                            className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                            className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-cyan-600 sm:text-sm/6"
                             onChange={handleChange}
                             onBlur={handleBlur}
                             />
@@ -142,7 +151,7 @@ const Register = () => {
                             type="email"
                             required
                             autoComplete="email"
-                            className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                            className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-cyan-600 sm:text-sm/6"
                             onChange={handleChange}
                             onBlur={handleBlur}
                             />
@@ -167,7 +176,7 @@ const Register = () => {
                         onChange={handleChange}
                         onBlur={handleBlur}
                         autoComplete="current-password"
-                        className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                        className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-cyan-600 sm:text-sm/6"
                         />
                     </div>
                         {errors.password && (
@@ -189,7 +198,7 @@ const Register = () => {
                         required
                         onChange={handleChange}
                         onBlur={handleBlur}
-                        className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                        className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-cyan-600 sm:text-sm/6"
                         />
                     </div>
                         {errors.confirmPassword && (
@@ -198,16 +207,21 @@ const Register = () => {
                     </div>
                     
                     <div>
+                        
                     <label htmlFor="phoneNumber" className="block text-sm/6 font-medium text-gray-900">
-                            Phone NUmber
+                            Phone Number
                         </label>
-                        <div className="mt-2">
+                        <div className="mt-2 relative">
+                            <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-500">
+                                +63
+                            </span>
+
                             <input
                             id="phoneNumber"
                             name="phoneNumber"
                             type="number"
                             required
-                            className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                            className="block w-full pl-11 rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-cyan-600 sm:text-sm/6"
                             onChange={handleChange}
                             onBlur={handleBlur}
                             />
@@ -220,7 +234,7 @@ const Register = () => {
                   <div>
                         <button
                             type="submit"
-                            className="flex w-full justify-center rounded-md bg-indigo-700 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                            className="flex w-full justify-center rounded-md bg-cyan-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-sm hover:bg-cyan-600/70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                         >
                             { isPending && (<svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -235,13 +249,14 @@ const Register = () => {
             )}
             </Formik>
     
-            <p className="mt-10 text-center text-sm/6 text-gray-500">
+            <p className="mt-3 text-center text-sm/6 text-gray-500">
                 Already have an account?{' '}
-                <button onClick={() => navigate("/")} className="font-semibold text-indigo-600 hover:text-indigo-500">
+                <button onClick={() => navigate("/login")} className="font-semibold text-cyan-600 hover:text-cyan-600/50">
                     Login here
                 </button>
             </p>
             </div>
+        </div>
         </div>
         <Toaster />
         </>
