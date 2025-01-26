@@ -1,5 +1,5 @@
 import AdminDashboard from "../components/AdminDashboard";
-import BookerDashbaord from "../components/BookerDashboard";
+import ValidateLocation from "../components/ValidateLocation";
 import Wrapper from "../layouts/Wrapper";
 
  
@@ -10,7 +10,8 @@ const Dashboard = () => {
             {
                 userRole === "booker" ? 
                 <div>
-                    <BookerDashbaord />
+                    <ValidateLocation />
+                    {/* <BookerDashbaord /> */}
                 </div> 
                 
                 :<>
