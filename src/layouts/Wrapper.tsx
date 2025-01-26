@@ -61,7 +61,7 @@ const Wrapper:FC<IWrapper> = ({children, currentTab}) => {
       navigate("/")
   }
   const userNavigation = [
-    // { name: 'Your profile', href: () => {} },
+    { name: 'Your profile', href: () => navigate("/profile") },
     { name: 'Sign out', href: () =>logout() },
   ]
 
@@ -241,6 +241,7 @@ const Wrapper:FC<IWrapper> = ({children, currentTab}) => {
                     {userNavigation.map((item) => (
                       <MenuItem key={item.name}>
                         <button
+                        type='button'
                           onClick={() => item.href()}
                           className="block px-3 py-1 text-sm/6 text-gray-900 data-[focus]:bg-gray-50 data-[focus]:outline-none"
                         >

@@ -6,6 +6,8 @@ import Vehicles from "../pages/Vehicles";
 import Rentals from "../pages/Rentals";
 import Register from "../pages/Register";
 import CarTracker from "../pages/Track";
+import HomePage from "../pages/Homepage";
+import ProfilePage from "../pages/Profile";
 
 const ProtectedRoute = ({ element, allowedRoles }: { element: JSX.Element; allowedRoles: string[] }) => {
   const authToken = localStorage.getItem("authToken"); // Check for auth token
@@ -42,12 +44,20 @@ const RBAC: any[] = [
     element: <ProtectedRoute element={<CarTracker />} allowedRoles={["admin", "employee"]} />,
   },
   {
+    path:"/profile",
+    element: <ProtectedRoute element={<ProfilePage />} allowedRoles={["booker","admin", "employee"]} />,
+  },
+  {
     path: "/",
-    element: <Login />,
+    element: <HomePage />,
   },
   {
     path: "/register",
     element: <Register />,
+  },
+  {
+    path: "/login",
+    element: <Login />,
   }
 ];
 
