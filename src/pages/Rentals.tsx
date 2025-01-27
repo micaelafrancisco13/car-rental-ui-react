@@ -89,21 +89,12 @@ const Rentals = () => {
         <div className="px-4 sm:px-6 lg:px-8">
             <div className="sm:flex sm:items-center">
                 <div className="sm:flex-auto">
-                <h1 className="text-base font-semibold text-gray-900">Rentals</h1>
+                <h1 className="text-base sm:text-2xl font-mono uppercase font-semibold text-cyan-900">Rentals</h1>
                 {/* <p className="mt-2 text-sm text-gray-700">
                     A list of all the users in your account including their name, title, email and role.
                 </p> */}
                 </div>
-                {/* <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
-                { bookings.length > 0 && (<button
-                    type="button"
-                    className="block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                >
-                    Add Vehicle
-                </button>)}
-                </div> */}
-            </div>
-            <div className="mt-5 flow-root">
+                
             <div className="flex justify-end space-x-5 mb-2">
                 <SelectMenu 
                     defaultValue=""
@@ -126,13 +117,23 @@ const Rentals = () => {
                     title="Payment Status"
                 />
             </div>
+                {/* <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
+                { bookings.length > 0 && (<button
+                    type="button"
+                    className="block rounded-md bg-cyan-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-cyan-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-600"
+                >
+                    Add Vehicle
+                </button>)}
+                </div> */}
+            </div>
+            <div className="mt-5 flow-root">
                 <div className="mx-4 h-5/6 overflow-hidden  overflow-x-auto  sm:-mx-6 lg:-mx-8">
-                <div className="inline-block border-2 border-indigo-100  min-w-full p-0 overflow-y-auto max-h-80 sm:max-h-96 scrollbar align-middle">
+                <div className="inline-block border-2 border-cyan-100  min-w-full p-0 overflow-y-auto max-h-80 sm:max-h-96 scrollbar align-middle">
                    {
                     
                     isFetching ? <TableLoading /> :
                     (filteredBookings && filteredBookings?.length > 0) ? <table className="min-w-full divide-y divide-gray-300">
-                    <thead className="bg-indigo-600 sticky left-0 p-0 m-0 top-0 z-10">
+                    <thead className="bg-cyan-600 sticky left-0 p-0 m-0 top-0 z-10">
                         <tr>
                             {
                                 headers.map((item, idx) => {
@@ -170,7 +171,7 @@ const Rentals = () => {
                                         onChange={(event) => {
                                             handleChangeStatus(booking.id, "status", event.target.value)
                                         }}
-                                        className={`col-start-1 row-start-1 text-${getColor(String(booking.status))} appearance-none rounded-md bg-white py-1.5 pl-3 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6`}
+                                        className={`col-start-1 row-start-1 text-${getColor(String(booking.status))} appearance-none rounded-md bg-white py-1.5 pl-3 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-cyan-600 sm:text-sm/6`}
                                         >
                                         <option value={"PENDING"} className="text-yellow-500">PENDING</option>
                                         <option value={"IN_PROGRESS"} className="text-yellow-500">IN PROGRESS</option>
@@ -193,7 +194,7 @@ const Rentals = () => {
                                         onChange={(event) => {
                                             handleChangeStatus(booking.id, "paymentStatus", event.target.value)
                                         }}
-                                        className={`col-start-1 row-start-1 text-${getColor(String(booking.paymentStatus))} appearance-none rounded-md bg-white py-1.5 pl-3 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6`}
+                                        className={`col-start-1 row-start-1 text-${getColor(String(booking.paymentStatus))} appearance-none rounded-md bg-white py-1.5 pl-3 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-cyan-600 sm:text-sm/6`}
                                         >
                                         <option value={"PENDING"} className="text-yellow-500">PENDING</option>
                                         <option value={"PAID"} className="text-green-500">PAID</option>
@@ -211,11 +212,11 @@ const Rentals = () => {
                                         setBookingDetails(booking)
                                         toggleView()
                                     }}
-                                    className="text-indigo-600 hover:text-indigo-900">
+                                    className="text-cyan-600 hover:text-cyan-900">
                                     View
                                     
                                 </button>
-                                <a href="#" className="text-indigo-600 hover:text-indigo-900">
+                                <a href="#" className="text-cyan-600 hover:text-cyan-900">
                                     Track
                                 </a>
                             </td>

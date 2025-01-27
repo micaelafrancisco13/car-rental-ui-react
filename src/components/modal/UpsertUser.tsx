@@ -4,7 +4,7 @@ import { useGlobalStore } from '../../stores/useGlobal';
 import toast from 'react-hot-toast';
 import { AxiosError } from 'axios';
 import LoadingButton from '../loaders/LoadingButton';
-import useAddUser from '../../hooks/user/useAddUsers';
+import { useAddUser } from '../../hooks/user/useAddUsers';
 import useUpdateUser from '../../hooks/user/useUpdateUser';
 import useUserStore from '../../stores/useUsers';
 import { ChevronDownIcon } from '@heroicons/react/24/outline';

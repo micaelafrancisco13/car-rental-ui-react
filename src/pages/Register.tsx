@@ -36,13 +36,6 @@ const Register = () => {
             .oneOf([Yup.ref('password'), undefined], 'Passwords must match'),
         
     });
-    
-    // const saveToken = (token: string) => {
-    //     localStorage.setItem("authToken", token);
-    //     const decoded:IUsersDetails = jwtDecode(token)
-    //     localStorage.setItem("role", decoded.role.toLowerCase());
-    //     setJwt(token)
-    // };
 
     const handleSubmit = (values: any) => {
       const { confirmPassword, ...filteredValues } = values;

@@ -104,19 +104,30 @@ const Vehicles = () => {
         <div className="px-4 sm:px-6 lg:px-8">
             <div className="sm:flex sm:items-center">
                 <div className="sm:flex-auto">
-                <h1 className="text-base font-semibold text-gray-900 my-3 sm:my-0">Vehicles</h1>
+                <h1 className="text-base sm:text-2xl font-mono uppercase font-semibold text-cyan-900 my-3 sm:my-0">Vehicles</h1>
                 </div>
-                <div className="flex rounded-md border-1 border-indigo-500 overflow-hidden max-w-md mx-auto font-[sans-serif]">
-                    <input type="search" onChange={handleSearch} placeholder="Search Vehicle..."
-                    className="w-full outline-none bg-white text-gray-600 text-sm px-4 py-2" />
-                    <button type='button' className="flex items-center justify-center bg-indigo-600 px-5">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192.904 192.904" width="16px" className="fill-white">
-                        <path
-                        d="m190.707 180.101-47.078-47.077c11.702-14.072 18.752-32.142 18.752-51.831C162.381 36.423 125.959 0 81.191 0 36.422 0 0 36.423 0 81.193c0 44.767 36.422 81.187 81.191 81.187 19.688 0 37.759-7.049 51.831-18.751l47.079 47.078a7.474 7.474 0 0 0 5.303 2.197 7.498 7.498 0 0 0 5.303-12.803zM15 81.193C15 44.694 44.693 15 81.191 15c36.497 0 66.189 29.694 66.189 66.193 0 36.496-29.692 66.187-66.189 66.187C44.693 147.38 15 117.689 15 81.193z">
-                        </path>
-                    </svg>
+                <div className="flex rounded-md border border-cyan-500 overflow-hidden max-w-md mx-auto font-[sans-serif]">
+                    <input 
+                        type="search" 
+                        onChange={handleSearch} 
+                        placeholder="Search Vehicle..." 
+                        className="w-full outline-none border border-cyan-500 bg-white text-gray-600 text-sm px-4 py-2 rounded-l-md" 
+                    />
+                    <button 
+                        type="button" 
+                        className="flex items-center justify-center bg-cyan-600 px-5">
+                        <svg 
+                            xmlns="http://www.w3.org/2000/svg" 
+                            viewBox="0 0 192.904 192.904" 
+                            width="16px" 
+                            className="fill-white">
+                            <path
+                                d="m190.707 180.101-47.078-47.077c11.702-14.072 18.752-32.142 18.752-51.831C162.381 36.423 125.959 0 81.191 0 36.422 0 0 36.423 0 81.193c0 44.767 36.422 81.187 81.191 81.187 19.688 0 37.759-7.049 51.831-18.751l47.079 47.078a7.474 7.474 0 0 0 5.303 2.197 7.498 7.498 0 0 0 5.303-12.803zM15 81.193C15 44.694 44.693 15 81.191 15c36.497 0 66.189 29.694 66.189 66.193 0 36.496-29.692 66.187-66.189 66.187C44.693 147.38 15 117.689 15 81.193z">
+                            </path>
+                        </svg>
                     </button>
                 </div>
+
                 <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
                     
                     { vehicles.length > 0 && (<button
@@ -125,7 +136,7 @@ const Vehicles = () => {
                             toggleModal()
                             setVehicle(null)
                         }}
-                        className="block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                        className="block rounded-md bg-cyan-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-cyan-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-600"
                     >
                         Add Vehicle
                     </button>)}
@@ -133,12 +144,12 @@ const Vehicles = () => {
             </div>
             <div className="mt-8 flow-root ">
                 <div className="mx-4 h-5/6 overflow-hidden  overflow-x-auto  sm:-mx-6 lg:-mx-8">
-                <div className="inline-block border-2 border-indigo-100  min-w-full p-0 overflow-y-auto max-h-80 sm:max-h-96 scrollbar align-middle">
+                <div className="inline-block border-2 border-cyan-100  min-w-full p-0 overflow-y-auto max-h-80 sm:max-h-96 scrollbar align-middle">
                    {
                     
                     isFetching ? <TableLoading /> :
                     vehicles.length > 0 ? <table className="min-w-full divide-y divide-gray-300 ">
-                    <thead className="bg-indigo-600 sticky left-0 p-0 m-0 top-0 z-10">
+                    <thead className="bg-cyan-600 sticky left-0 p-0 m-0 top-0 z-10">
                         <tr>
                             {
                                 headers.map((item, idx) => {
@@ -180,7 +191,7 @@ const Vehicles = () => {
                                             }
                                         })
                                     }}
-                                    className={`col-start-1 row-start-1 text-${getColor(String(vehicle.availabilityStatus))} appearance-none rounded-md bg-white py-1.5 pl-3 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6`}
+                                    className={`col-start-1 row-start-1 text-${getColor(String(vehicle.availabilityStatus))} appearance-none rounded-md bg-white py-1.5 pl-3 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-cyan-600 sm:text-sm/6`}
                                     >
                                     <option value={"AVAILABLE"} className="text-green-500">Available</option>
                                     <option value={"BOOKED"} className="text-blue-500">Booked</option>
@@ -195,13 +206,13 @@ const Vehicles = () => {
                                 <button onClick={()=> {
                                     setVehicle(vehicle)
                                     toggleModal();
-                                }} className="text-indigo-600 hover:text-indigo-900">
+                                }} className="text-cyan-600 hover:text-cyan-900">
                                     Edit
                                 </button>
                                 <button onClick={()=> {
                                     setVehicle(vehicle)
                                     toggleConfirmation()
-                                }}className="text-indigo-600 hover:text-indigo-900">
+                                }}className="text-cyan-600 hover:text-cyan-900">
                                     Delete
                                 </button>
                             </td>
