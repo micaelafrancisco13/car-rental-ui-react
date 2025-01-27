@@ -3,6 +3,7 @@ import useUserStore from "../../stores/useUsers";
 import { IUsersDetails } from "../../interfaces/shared";
 import apiClient from "../../services/api-client";
 import { useQuery } from "@tanstack/react-query";
+import { jwtDecode } from "jwt-decode";
 
 const useGetUsers = () => {
   const endpoint = "/users";
@@ -22,11 +23,14 @@ const useGetUsers = () => {
 };
 
 const useGetMe = () => {
-  const endpoint = "/users/me";
+  const token = localStorage.getItem("authToken") || ""
+
+  const decode:IUsersDetails = jwtDecode(token)
+  const endpoint = `/users/${decode.id}`;
   const queryKey = ["me"];
   const requestConfig: AxiosRequestConfig = {
     headers: {
-      Authorization: `${localStorage.getItem("authToken")}`,
+      Authorization: `${token}`,
     },
   };
 

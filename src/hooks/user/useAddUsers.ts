@@ -5,4 +5,11 @@ const useAddUser = () => {
   return useMutationDatum<IUsersDetails[]>("/users");
 };
 
-export default useAddUser;
+const changePassword = () => {
+  return useMutationDatum<IUsersDetails[]>("/auth/change-password");
+};
+
+export {
+  useAddUser, 
+  changePassword
+};
