@@ -214,7 +214,7 @@ const Profile = () => {
                                 
                                 <button type='button' 
                                         className=" mt-6 px-4 py-2 outlin-cyan-600 text-cyan-600 rounded-md hover:bg-cyan-400/50 hover:text-cyan-900"
-                                        onClick={() => handleChangePassword()}>
+                                        onClick={() => handleEditProfile()}>
                                             Cancel
                                 </button>
                             </div>
