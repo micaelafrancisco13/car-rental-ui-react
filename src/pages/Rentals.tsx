@@ -146,7 +146,7 @@ const Rentals = () => {
                     
                     isFetching ? <TableLoading /> :
                     (filteredBookings && filteredBookings?.length > 0) ? <table className="min-w-full divide-y divide-gray-300">
-                    <thead className="bg-cyan-600 sticky left-0 p-0 m-0 top-0 z-10">
+                    <thead className="bg-gradient-to-r from-cyan-600 to-cyan-700 sticky left-0 p-0 m-0 top-0 z-10">
                         <tr>
                             {
                                 headers.map((item, idx) => {

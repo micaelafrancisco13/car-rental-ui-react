@@ -18,6 +18,7 @@ import BookingsSection from "./booking/Section";
 import BookerLocationSender from "./location/BookerLocation";
 import ValidateRent from "./ValidateRent";
 import { motion } from "framer-motion";
+import BookerTrackingPage from "./location/BookerTracking";
 
 const BookerDashbaord = () => {
 	const {  isFetching } = useGetVehicles()
@@ -150,7 +151,7 @@ const BookerDashbaord = () => {
                                 <div className="md:flex space-x-10 justify-center items-center">
 
                                 <h2 className="text-2xl font-bold text-cyan-600">My Bookings</h2>
-                                <div className="flex m-1 rounded-lg border-2 border-cyan-500 overflow-hidden max-w-lg mx-auto font-[sans-serif] shadow-sm">
+                                {/* <div className="flex m-1 rounded-lg border-2 border-cyan-500 overflow-hidden max-w-lg mx-auto font-[sans-serif] shadow-sm">
                                 <input
                                     type="search"
                                     onChange={handleSearch}
@@ -172,13 +173,19 @@ const BookerDashbaord = () => {
                                         />
                                     </svg>
                                 </button>
-                            </div>
+                            </div> */}
                                 </div>
                                 <div className="mt-6  gap-4 sm:mt-5 lg:grid-cols-6 lg:grid-rows-2 space-y-3">
                                 {/* In Porgreess */}
                                 { inProgressBookings ? (
+                                    <div className="grid grid-cols-3 gap-4 w-full">
+                                    <div className="col-span-3 sm:col-span-1">
+                                        <BookerTrackingPage 
+                                            id={inProgressBookings.id}
+                                        />
+                                    </div>
                                     <motion.div
-                                        className="flex p-px"
+                                        className="flex p-px col-span-3 sm:col-span-2"
                                         initial={{ opacity: 0, y: 20 }}
                                         animate={{ opacity: 1, y: 0 }}
                                         transition={{ duration: 0.5 }}
@@ -259,7 +266,8 @@ const BookerDashbaord = () => {
                                             )}
                                         </div>
                                     </div>
-                                </motion.div>
+                                    </motion.div>
+                                    </div>
                                 ) : 
                                 <BookingVehicle 
                                     paginatedVehicles={paginatedVehicles}
@@ -280,7 +288,7 @@ const BookerDashbaord = () => {
                     ) :
                     <div className="">
                         <div className="flex m-1 rounded-md border-2 border-indigo-500 overflow-hidden max-w-lg mx-auto font-[sans-serif]">
-                            <input type="search" onChange={handleSearch} placeholder="Search User..."
+                            <input type="search" onChange={handleSearch} placeholder="Search Vehicle..."
                             className="w-full outline-none bg-white text-gray-600 text-sm px-4 py-2" />
                             <button type='button' className="flex items-center justify-center bg-indigo-600 px-5">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192.904 192.904" width="16px" className="fill-white">

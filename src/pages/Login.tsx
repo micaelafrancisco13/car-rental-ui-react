@@ -44,7 +44,7 @@ const navigate = useNavigate()
         saveToken(data);
         toast.success("Login Success");
         // Implement your navigation logic here
-        console.log('Navigate to dashboard');
+        navigate("/dashboard")
       },
       onError: (error) => {
         const err = error as AxiosError;
