@@ -94,32 +94,6 @@ const BookerLocationSender: React.FC<{ bookingId: string }> = ({ bookingId }) =>
     return () => {
       navigator.geolocation.clearWatch(watchId);
     };
-    // if (navigator.serviceWorker){
-    //     navigator.serviceWorker.register('/service-worker.js')
-    //         .then((registration) => {
-    //             console.log('Service Worker registered:', registration);
-    //             navigator.serviceWorker.controller?.postMessage('startTracking');
-    //             console.log(navigator)
-    //         })
-    //         .catch((error) => {
-    //         console.error('Service Worker registration failed:', error);
-    //         });
-    // }
-    // navigator.serviceWorker.addEventListener('message', (event) => {
-    //     console.log({event})
-
-    //     if (event.data.type === 'locationUpdate') {
-
-    //       const { latitude, longitude, speed, tripStatus } = event.data.payload;
-  
-    //         socket.emit('updateLocation', { bookingId, latitude, longitude, speed, tripStatus });
-    //     }
-    //   });
-  
-    // return () => {
-    // // Clean up
-    // navigator.serviceWorker.removeEventListener('message', () => {});
-    // };
   }, [bookingId]);
 
   return (

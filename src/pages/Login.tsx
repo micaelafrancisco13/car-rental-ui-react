@@ -1,164 +1,177 @@
-import { Form, Formik } from "formik";
-import * as Yup from "yup";
-import {useAuthLogin} from "../hooks/auth/useAuthLogin";
-import toast, { Toaster } from "react-hot-toast";
-import { AxiosError } from "axios";
-import { useNavigate } from "react-router-dom";
-import { setJwt } from "../services/api-client";
-import { jwtDecode } from "jwt-decode";
-import { IUsersDetails } from "../interfaces/shared";
+import { Form, Formik } from 'formik';
+import * as Yup from 'yup';
+import toast, { Toaster } from 'react-hot-toast';
+import { AxiosError } from 'axios';
+import { jwtDecode } from 'jwt-decode';
+import { setJwt } from '../services/api-client';
+import { IUsersDetails } from '../interfaces/shared';
+import { Lock, Mail, ArrowLeft, Loader2 } from 'lucide-react';
+import { useAuthLogin } from '../hooks/auth/useAuthLogin';
+import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
-    const navigate = useNavigate();
-    const authToken = localStorage.getItem("authToken"); // Check for auth token
-    if (authToken) {
-        navigate("/dashboard")
-    }
+const navigate = useNavigate()
+  // Handle navigation without react-router
+  const handleHomeClick = () => {
+    navigate("/")
+  };
 
-    const { mutate, isPending } = useAuthLogin();
-    
-    const schema = Yup.object().shape({
-        email: Yup.string(),
-        password: Yup.string(),
+  const handleRegisterClick = () => {
+    navigate("/register")
+  };
+
+  const { mutate, isPending } = useAuthLogin();
+
+  const schema = Yup.object().shape({
+    email: Yup.string()
+      .email('Invalid email address')
+      .required('Email is required'),
+    password: Yup.string()
+      .min(6, 'Password must be at least 6 characters')
+      .required('Password is required'),
+  });
+
+  const saveToken = (token: string) => {
+    localStorage.setItem("authToken", token);
+    const decoded: IUsersDetails = jwtDecode(token);
+    localStorage.setItem("role", decoded.role.toLowerCase());
+    setJwt(token);
+  };
+
+  const handleSubmit = (values: { email: string; password: string }) => {
+    mutate(values, {
+      onSuccess: (data) => {
+        saveToken(data);
+        toast.success("Login Success");
+        // Implement your navigation logic here
+        console.log('Navigate to dashboard');
+      },
+      onError: (error) => {
+        const err = error as AxiosError;
+        const errMsg = err.response?.data || "";
+        toast.error(String(errMsg));
+      }
     });
+  };
 
-    const saveToken = (token: string) => {
-        localStorage.setItem("authToken", token);
-        const decoded:IUsersDetails = jwtDecode(token)
-        localStorage.setItem("role", decoded.role.toLowerCase());
-        setJwt(token)
-    };
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-cyan-50 to-gray-100 flex flex-col">
+      {/* Header */}
+      <button
+        onClick={handleHomeClick}
+        className="absolute top-6 left-6 flex items-center space-x-2 text-cyan-700 hover:text-cyan-900 transition-colors duration-300"
+      >
+        <ArrowLeft className="w-4 h-4" />
+        <span className="font-medium">Back to Home</span>
+      </button>
 
-    const handleSubmit = (values: {email: string, password: string}) => {
-        mutate(values, {
-            onSuccess: (data) => {
-                saveToken(data)
-                toast.success("Login Success")
-                navigate("/dashboard")
-            },
-            onError: (error) => {
-                const err = error as AxiosError
-                const errMsg = err.response?.data || ""
-                toast.error(String(errMsg))    
-            }
-        })
-    }
+      {/* Main Content */}
+      <div className="flex-1 flex items-center justify-center px-6 py-12">
+        <div className="bg-white/80 backdrop-blur-lg w-full max-w-md rounded-2xl shadow-xl p-8 transform transition-all duration-300 hover:shadow-2xl">
+          <div className="text-center mb-8">
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome Back</h1>
+            <p className="text-gray-600">Sign in to your account to continue</p>
+          </div>
 
-    return (
-        <>
-        
-        <div>
-            <button
-                className="text-xl text-cyan-900 uppercase font-mono font-bold absolute tracking-wider pl-5 mt-5 hover:text-cyan-700"
-                onClick={()=> navigate("/")}>
-                Home
-            </button>
-        </div>
-        <div className="flex min-h-full h-screen bg-gray-100 justify-center px-6 py-12 lg:px-8">
-            <div className="bg-white px-20 shadow-xl shadow-cyan-500/50 py-5">
-            <div className="mx-auto">
-            {/* <img
-                alt="Your Company"
-                src="https://tailwindui.com/plus/img/logos/mark.svg?color=indigo&shade=600"
-                className="mx-auto h-10 w-auto"
-            /> */}
-            <h2 className="mt-10 text-center uppercase font-mono text-2xl/9 font-bold tracking-tight text-gray-900">
-                Sign in to your account
-            </h2>
-            </div>
-    
-            <div className="mt-10 mx-auto sm:max-w-md">
-            <Formik
-                validationSchema={schema}
-                initialValues={{ email: "", password: "" }}
-                onSubmit={handleSubmit}
-            >
-            {({
-            errors,
-            // touched,
-            handleChange,
-            handleBlur,
-            // handleSubmit,
-            }) => (
-                <>
-                <Form
-                    className="space-y-6"
-                >
-                    <div>
-                        <label htmlFor="email" className="block text-sm/6 font-medium text-gray-900">
-                            Email address
-                        </label>
-                        <div className="mt-2">
-                            <input
-                            id="email"
-                            name="email"
-                            type="email"
-                            required
-                            autoComplete="email"
-                            className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-cyan-600 sm:text-sm/6"
-                            onChange={handleChange}
-                            onBlur={handleBlur}
-                            />
-                        </div>
-                        {errors.email && (
-                            <p className="text-red-500 text-sm mt-1">{errors.email}</p>
-                        )}
+          <Formik
+            validationSchema={schema}
+            initialValues={{ email: "", password: "" }}
+            onSubmit={handleSubmit}
+          >
+            {({ errors, handleChange, handleBlur }) => (
+              <Form className="space-y-6">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-700 block">
+                    Email
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <Mail className="h-5 w-5 text-gray-400" />
                     </div>
-        
-                    <div>
-                    <div className="flex items-center justify-between">
-                        <label htmlFor="password" className="block text-sm/6 font-medium text-gray-900">
-                        Password
-                        </label>
+                    <input
+                      type="email"
+                      name="email"
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      className={`block w-full pl-10 px-3 py-2 border ${
+                        errors.email ? 'border-red-300' : 'border-gray-300'
+                      } rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all duration-300`}
+                      placeholder="Enter your email"
+                    />
+                  </div>
+                  {errors.email && (
+                    <p className="text-red-500 text-sm mt-1">{errors.email}</p>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-700 block">
+                    Password
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <Lock className="h-5 w-5 text-gray-400" />
                     </div>
-                    <div className="mt-2">
-                        <input
-                        id="password"
-                        name="password"
-                        type="password"
-                        required
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                        autoComplete="current-password"
-                        className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-cyan-600 sm:text-sm/6"
-                        />
-                    </div>
-                        {errors.password && (
-                            <p className="text-red-500 text-sm mt-1">{errors.password}</p>
-                        )}
-                    </div>
-        
-                    <div>
-                        <button
-                            type="submit"
-                            className="flex w-full justify-center rounded-md bg-cyan-500 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-sm hover:bg-cyan-500/50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                        >
-                            { isPending && (<svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                            </svg>)}
-                            Sign In 
-                        </button>
-                    </div>
-                </Form>
-                </>
-            )}
-            </Formik>
-    
-            <p className="mt-10 text-center text-sm/6 text-gray-500">
-                Not yet registered?{' '}
+                    <input
+                      type="password"
+                      name="password"
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      className={`block w-full pl-10 px-3 py-2 border ${
+                        errors.password ? 'border-red-300' : 'border-gray-300'
+                      } rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all duration-300`}
+                      placeholder="Enter your password"
+                    />
+                  </div>
+                  {errors.password && (
+                    <p className="text-red-500 text-sm mt-1">{errors.password}</p>
+                  )}
+                </div>
+
                 <button
-                    onClick={() => navigate("/register")}
-                className="font-semibold text-cyan-700 hover:text-cyan-700/50">
-                    Register here
+                  type="submit"
+                  disabled={isPending}
+                  className="w-full bg-gradient-to-r from-cyan-500 to-cyan-600 text-white py-2 px-4 rounded-lg
+                    font-medium hover:from-cyan-600 hover:to-cyan-700 focus:outline-none focus:ring-2 
+                    focus:ring-cyan-500 focus:ring-offset-2 transform transition-all duration-300 
+                    hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                >
+                  {isPending ? (
+                    <>
+                      <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                      Signing in...
+                    </>
+                  ) : (
+                    'Sign In'
+                  )}
                 </button>
-            </p>
-            </div>
-            </div>
+
+                <p className="text-center text-sm text-gray-600 mt-4">
+                  Don't have an account?{' '}
+                  <button
+                    onClick={handleRegisterClick}
+                    className="text-cyan-600 hover:text-cyan-700 font-medium transition-colors duration-300"
+                  >
+                    Register here
+                  </button>
+                </p>
+              </Form>
+            )}
+          </Formik>
         </div>
-        <Toaster />
-        </>
-    )
-}
+      </div>
+      <Toaster 
+        position="top-right"
+        toastOptions={{
+          duration: 3000,
+          style: {
+            background: '#363636',
+            color: '#fff',
+          },
+        }}
+      />
+    </div>
+  );
+};
 
 export default Login;

@@ -79,7 +79,7 @@ const TripMap: React.FC<ITripMap> = ({ locations, speed }) => {
         <MapContainer 
           center={position} 
           zoom={13} 
-          className="h-[400px] w-full z-0"
+          className="h-[200px] w-full z-0"
         >
           <TileLayer
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

@@ -17,6 +17,8 @@ import BookingVehicle from "./booking/BookingVehicle";
 import BookingsSection from "./booking/Section";
 import BookerLocationSender from "./location/BookerLocation";
 import ValidateRent from "./ValidateRent";
+import { motion } from "framer-motion";
+
 const BookerDashbaord = () => {
 	const {  isFetching } = useGetVehicles()
     const { isOpen, toggleConfirmation, open } = useGlobalStore()
@@ -175,27 +177,54 @@ const BookerDashbaord = () => {
                                 <div className="mt-6  gap-4 sm:mt-5 lg:grid-cols-6 lg:grid-rows-2 space-y-3">
                                 {/* In Porgreess */}
                                 { inProgressBookings ? (
-                                    <div className="flex p-px">
-                                    <div className="overflow-hidden w-full rounded-lg ring-1 ring-gray-200 shadow-lg max-lg:rounded-t-[3rem] bg-white">
-                                        <img className="h-96 w-full object-cover" src={inProgressBookings?.vehicle?.images[0]} alt="Vehicle" />
+                                    <motion.div
+                                        className="flex p-px"
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ duration: 0.5 }}
+                                    >
+                                    <div className="overflow-hidden w-full rounded-lg ring-1 ring-gray-200 shadow-lg max-lg:rounded-t-[3rem] bg-white hover:shadow-xl transition-shadow duration-300">
+                                        <motion.img
+                                        className="h-96 w-full object-cover"
+                                        src={inProgressBookings?.vehicle?.images[0]}
+                                        alt="Vehicle"
+                                        whileHover={{ scale: 1.05 }}
+                                        transition={{ duration: 0.3 }}
+                                        />
                                         <div className="p-8">
-                                            <h1 className="text-2xl font-mono font-bold text-gray-900">
-                                                {`${inProgressBookings?.vehicle?.make} ${inProgressBookings?.vehicle?.model} ${inProgressBookings?.vehicle?.licensePlate}`}
-                                            </h1>
-                                            <div className="mt-4 space-y-3">
-                                                <div className="flex space-x-4">
-                                                    <p className="text-md font-mono font-medium text-gray-700">
-                                                        <span className="font-bold">Status:</span> <span className={getStatusColor(inProgressBookings?.status || "")}>{inProgressBookings?.status}</span>
-                                                    </p>
-                                                    <p className="text-md font-mono font-medium text-gray-700">
-                                                        <span className="font-bold">Payment Status:</span> <span className={getStatusColor(inProgressBookings?.paymentStatus || "")}>{inProgressBookings?.paymentStatus}</span>
-                                                    </p>
-                                                </div>
-                                                <p className="text-md font-mono font-medium text-gray-700">
-                                                    <span className="font-bold">Rental Date:</span> <span>{(inProgressBookings?.startDate && inProgressBookings?.endDate) && `${formatDate(inProgressBookings.startDate)} - ${formatDate(inProgressBookings?.endDate)}`}</span>
+                                        <motion.h1
+                                            className="text-2xl font-mono font-bold text-gray-900"
+                                            whileHover={{ scale: 1.02 }}
+                                            transition={{ duration: 0.2 }}
+                                        >
+                                            {`${inProgressBookings?.vehicle?.make} ${inProgressBookings?.vehicle?.model} ${inProgressBookings?.vehicle?.licensePlate}`}
+                                        </motion.h1>
+                                        <div className="mt-4 space-y-3">
+                                            <div className="flex space-x-4">
+                                            <p className="text-md font-mono font-medium text-gray-700">
+                                                <span className="font-bold">Status:</span>{" "}
+                                                <span className={getStatusColor(inProgressBookings?.status || "")}>
+                                                {inProgressBookings?.status}
+                                                </span>
+                                            </p>
+                                            <p className="text-md font-mono font-medium text-gray-700">
+                                                <span className="font-bold">Payment Status:</span>{" "}
+                                                <span className={getStatusColor(inProgressBookings?.paymentStatus || "")}>
+                                                {inProgressBookings?.paymentStatus}
+                                                </span>
+                                            </p>
+                                            </div>
+                                            <p className="text-md font-mono font-medium text-gray-700">
+                                                <span className="font-bold">Rental Date:</span>{" "}
+                                                <span>
+                                                    {inProgressBookings?.startDate &&
+                                                    inProgressBookings?.endDate &&
+                                                    `${formatDate(inProgressBookings.startDate)} - ${formatDate(inProgressBookings.endDate)}`}
+                                                </span>
                                                 </p>
                                                 <p className="text-md font-mono font-medium text-gray-700">
-                                                    <span className="font-bold">Total Rate:</span> <span>{formatMoney(inProgressBookings?.totalPrice || 1)}</span>
+                                                <span className="font-bold">Total Rate:</span>{" "}
+                                                <span>{formatMoney(inProgressBookings?.totalPrice || 1)}</span>
                                                 </p>
                                             </div>
                                             {inProgressBookings?.status === "PENDING" && (
@@ -230,7 +259,7 @@ const BookerDashbaord = () => {
                                             )}
                                         </div>
                                     </div>
-                                </div>
+                                </motion.div>
                                 ) : 
                                 <BookingVehicle 
                                     paginatedVehicles={paginatedVehicles}
