@@ -124,8 +124,6 @@ const CarTracker: React.FC = () => {
                 speed={location?.speed || 0 }
               />
             </span>
-            <span>
-            </span>
         </div>
     </div>
           </div>

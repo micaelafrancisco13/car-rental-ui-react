@@ -1,11 +1,10 @@
-// AdminTrackingPage.tsx
 import React, { useEffect, useState } from 'react';
 import { useTrackingStore } from '../../stores/useTracking';
 import { useSocket } from '../../hooks/useSocket';
-import { useParams } from 'react-router-dom';
 
 import { MapContainer, TileLayer, useMapEvents, Marker, Popup } from 'react-leaflet'
 import 'leaflet/dist/leaflet.css'
+import SpeedIndicator from './SpeedIndicator';
 type GeolocationPosition = {
     lat: number
     lng: number
@@ -13,31 +12,28 @@ type GeolocationPosition = {
   
 function LocationMarker({ location }: { location: GeolocationPosition }) {
 
-    const map = useMapEvents({})  // Use map events to access the Leaflet map instance
+    const map = useMapEvents({})  
     const [position, setPosition] = useState({
       lat: location.lat,
       lng: location.lng
     })
   
-    // Effect to update marker position and fly to the new location when location data changes
     useEffect(() => {
       setPosition({
         lat: location.lat,
         lng: location.lng
       })
-      map.flyTo([location.lat, location.lng]) // Fly to the new location on the map
+      map.flyTo([location.lat, location.lng]) 
     }, [location])
   
     return position === null ? null : (
       <Marker position={position}>
-        <Popup>User is here!</Popup>
+        <Popup>You are here!</Popup>
       </Marker>
     )
   }
-const AdminTrackingPage: React.FC = () => {
+const BookerTrackingPage: React.FC<{ id: string }> = ({id}) => {
   const locations = useTrackingStore((state) => state.locations);
-
-   const { id } = useParams<{ id: string }>(); 
 
    const location = id ? locations[id] : null
   useSocket();
@@ -60,8 +56,16 @@ const AdminTrackingPage: React.FC = () => {
                 />
             </MapContainer>
             )}
+            
+            <div className="px-2 py-2 sm:px-3 flex items-center">
+                <span>
+                <SpeedIndicator 
+                    speed={location?.speed || 0 }
+                />
+                </span>
+            </div>
     </div>
   );
 };
 
-export default AdminTrackingPage;
+export default BookerTrackingPage;
