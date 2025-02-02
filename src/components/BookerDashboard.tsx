@@ -1,4 +1,3 @@
-import { PaperAirplaneIcon } from "@heroicons/react/24/outline";
 import useBookingStore from "../stores/useBookings";
 import useVehicleStore from "../stores/useVehicles";
 import useGetVehicles from "../hooks/vehicle/useGetVehicles";
@@ -16,9 +15,11 @@ import { patchBookingStatus } from "../hooks/useUpdate";
 import { formatDate, formatMoney } from "../utils/helper";
 import BookingVehicle from "./booking/BookingVehicle";
 import BookingsSection from "./booking/Section";
+import BookerLocationSender from "./location/BookerLocation";
+import ValidateRent from "./ValidateRent";
 const BookerDashbaord = () => {
 	const {  isFetching } = useGetVehicles()
-    const { toggleModal, isOpen, toggleConfirmation, open } = useGlobalStore()
+    const { isOpen, toggleConfirmation, open } = useGlobalStore()
     const {
         vehicles,
         currentPage,
@@ -27,14 +28,12 @@ const BookerDashbaord = () => {
         setPage,
         setItemsPerPage,
         setPaginatedVehicles,
-        setVehicle,
       } = useVehicleStore();
 
     const {
         selectedBooking,
     } = useBookingStore();
 
-    
 	const { isFetching: isFetchingBookings} = useMyBookings()
     const { mutate: updateVehicleStatus, isPending: isPendingStatusUpdate } = patchBookingStatus()
 
@@ -131,6 +130,9 @@ const BookerDashbaord = () => {
         <div style={{
             height: "75vh"
         }}>
+            {inProgressBookings?.id && <BookerLocationSender
+                bookingId={inProgressBookings?.id}
+            />}
             <div className="shadow sm:rounded-lg px-4 py-5 ">
                 {
                     selectedBooking ? 
@@ -259,7 +261,7 @@ const BookerDashbaord = () => {
                             </svg>
                             </button>
                         </div>
-                        <div style={{height: "65vh"}}>
+                        {/* <div style={{height: "65vh"}}>
                             <ul role="list" className="px-3 py-3 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 overflow-x-hidden overflow-y-auto h-full">
                                 {
                                 paginatedVehicles.map((vehicle) => (
@@ -301,7 +303,8 @@ const BookerDashbaord = () => {
                                 ))
                             }
                             </ul>
-                        </div>
+                        </div> */}
+                        <ValidateRent />
                     </div>
 
                 }

@@ -5,12 +5,13 @@ import Wrapper from "../layouts/Wrapper";
  
 const Dashboard = () => {
     const userRole = localStorage.getItem("role") || ""
+
     return (
         <Wrapper currentTab="dashboard">
             {
                 userRole === "booker" ? 
                 <div>
-                    <ValidateLocation />
+                     <ValidateLocation />
                     {/* <BookerDashbaord /> */}
                 </div> 
                 

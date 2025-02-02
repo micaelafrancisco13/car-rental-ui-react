@@ -40,7 +40,7 @@ const RBAC: any[] = [
     element: <ProtectedRoute element={<Rentals />} allowedRoles={["admin","booker"]} />,
   },
   {
-    path:"/track",
+    path:"/track/:id",
     element: <ProtectedRoute element={<CarTracker />} allowedRoles={["admin", "employee"]} />,
   },
   {

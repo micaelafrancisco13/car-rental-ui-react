@@ -9,11 +9,16 @@ import { useEffect, useState } from "react";
 import TablePagination from "../components/pagination/Table";
 import BookingDetails from "../components/modal/BookingDetails";
 import { useGlobalStore } from "../stores/useGlobal";
-import { formatDate } from "../utils/helper";
+import { formatDate, sendEmail } from "../utils/helper";
 import { patchBookingStatus } from "../hooks/useUpdate";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
+import useVehicleStore from "../stores/useVehicles";
 
 const Rentals = () => {
+
+    const navigate = useNavigate();
+
 	const { isFetching } = useGetBookings()
     const {
         bookings,
@@ -27,6 +32,10 @@ const Rentals = () => {
         setBookingDetails,
     } = useBookingStore();
 
+    const {
+        setVehicle
+    } = useVehicleStore();
+
     const { openDetails, toggleView } = useGlobalStore()
 
     const patchBooking = patchBookingStatus()
@@ -39,8 +48,12 @@ const Rentals = () => {
             status,
         }
         patchBooking.mutate({ id, data, name: key }, {
-            onSuccess: () => {
+            onSuccess: (data) => {
                 toast.success('Status Change Successfully')
+                sendEmail({
+                      to_email: data.booker.email, 
+                      to_name: data.booker.firstName, 
+                    })
             },
             onError: (error) => {
                 toast.error('Error updating')
@@ -216,9 +229,17 @@ const Rentals = () => {
                                     View
                                     
                                 </button>
-                                <a href="#" className="text-cyan-600 hover:text-cyan-900">
+                                <button 
+                                    onClick={()=>{
+                                        setBookingDetails(booking)
+                                        if(booking?.vehicle) {
+                                            setVehicle(booking?.vehicle)
+                                            navigate(`/track/${booking.id}`)}
+                                        }
+                                    }
+                                    className="text-cyan-600 hover:text-cyan-900">
                                     Track
-                                </a>
+                                </button>
                             </td>
                         </tr>
                         ))}

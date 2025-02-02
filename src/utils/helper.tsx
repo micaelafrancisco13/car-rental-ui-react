@@ -1,4 +1,5 @@
 import dayjs from "dayjs"
+import emailjs from '@emailjs/browser';
 
 export const formatDate = (date: Date) => {
     return dayjs(date).format("MMM DD, YYYY")
@@ -32,3 +33,21 @@ export const formatMoney = (amount: number, locale = 'en-US', currency = 'PHP') 
       currency,
     }).format(amount);
   };
+
+
+export const sendEmail = (form: { to_email: string, to_name: string} ) => {
+
+  emailjs
+    .sendForm('o1jrwsq', 'bkfqha9', JSON.stringify(form), {
+      publicKey: 'n7wUCQBkYE072lUb0',
+    })
+    .then(
+      () => {
+        console.log('SUCCESS!');
+      },
+      (error) => {
+        console.log('FAILED...', error.text);
+      },
+    );
+};
+

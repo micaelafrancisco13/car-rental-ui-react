@@ -9,7 +9,13 @@
     }
   ],
   "compilerOptions": {
-    "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
+    "target": "ES6",
+    "module": "ESNext",
+    "lib": ["DOM", "ES6", "WebWorker"], // Add "WebWorker" here
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
   }
 }
