@@ -1,9 +1,11 @@
 import { AxiosRequestConfig } from "axios";
-import { IBooking } from "../../interfaces/shared";
+import { IBooking, ITripHistory } from "../../interfaces/shared";
 import apiClient from "../../services/api-client";
 import { useQuery } from "@tanstack/react-query";
 import useBookingStore from "../../stores/useBookings";
 import useDashboardStore from "../../stores/useDashboard";
+import useVehicleStore from "../../stores/useVehicles";
+import useHistoryStore from "../../stores/useHistory";
 
 const useGetBookings = () => {
   // const {query} = useBookingStore();
@@ -21,6 +23,7 @@ const useGetBookings = () => {
   };
 
   const setBookings = useBookingStore((state) => state.setBookings);
+
   return useQuery({queryKey, 
 	queryFn: async () => {
     const { data } = await apiClient.get<IBooking[]>(endpoint, requestConfig);
@@ -32,20 +35,80 @@ const useMyBookings = () => {
   // const {query} = useBookingStore();
   let endpoint = "/bookings/my";
 
-  const queryKey = ["bookings"];
+  const queryKey = ["mybookings"];
   const requestConfig: AxiosRequestConfig = {
     headers: {
       Authorization: `${localStorage.getItem("authToken")}`,
     },
   };
+  const {
+    setVehicle
+  } = useVehicleStore()
 
   const setMyBookings = useBookingStore((state) => state.setMyBookings);
+
   return useQuery({queryKey, 
 	queryFn: async () => {
     const { data } = await apiClient.get<IBooking[]>(endpoint, requestConfig);
     setMyBookings(data);
-  }});
+    const inprogressData = data.filter(item => item.status == "IN_PROGRESS")
+    if (inprogressData.length && inprogressData[0].vehicle) {
+      setVehicle(inprogressData[0].vehicle)
+    }
+    return data
+  },
+});
 };
+
+const useGetBookingDetails = (id: string) => {
+    let endpoint = `/bookings/${id}`;
+
+    const queryKey = ["booking", id];
+    const requestConfig: AxiosRequestConfig = {
+      headers: {
+        Authorization: `${localStorage.getItem("authToken")}`,
+      },
+    };
+  
+    const setBookingDetails = useBookingStore((state) => state.setBookingDetails);
+    const { setVehicle } = useVehicleStore()
+    return useQuery({queryKey, 
+    queryFn: async () => {
+      if (!id) return
+      const { data } = await apiClient.get<IBooking[]>(endpoint, requestConfig);
+      if (data.length){
+        setBookingDetails(data[0]);
+        data[0].vehicle && setVehicle(data[0].vehicle)
+      }
+      return data
+    },
+    enabled: !!id,
+  });
+}
+
+const useBookingHistory = (id: string) => {
+  let endpoint = `/history/${id}`;
+
+    const queryKey = ["hisotry", id];
+    const requestConfig: AxiosRequestConfig = {
+      headers: {
+        Authorization: `${localStorage.getItem("authToken")}`,
+      },
+    };
+  
+    const setHistory = useHistoryStore((state) => state.setHistory);
+    return useQuery({queryKey, 
+    queryFn: async () => {
+      if (!id) return
+      const { data } = await apiClient.get<ITripHistory[]>(endpoint, requestConfig);
+      if (data.length){
+        setHistory(data);
+      }
+      return data
+    },
+    enabled: !!id,
+  });
+}
 
 const useGetDashboard = () => {
   // const {query} = useBookingStore();
@@ -69,5 +132,7 @@ const useGetDashboard = () => {
 export { 
   useGetBookings,
   useMyBookings,
-  useGetDashboard
+  useGetDashboard,
+  useGetBookingDetails,
+  useBookingHistory
 };

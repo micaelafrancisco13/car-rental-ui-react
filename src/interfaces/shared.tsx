@@ -51,8 +51,27 @@ export interface IFleetTracking extends IBase {
     bookerLongitude: number,
     tripStatus: TripStatus,
     lastUpdatedAt: Date,
+    speed: number
 }
 
+export interface ITripHistory extends IBase {
+    bookingId: string,
+    booking: string,
+    latitude: number
+    longitude: number
+    drivingDuration: number
+    speed: number
+    locations: ILocation[]
+    recordedAt: Date
+    tripStatus: string
+}
+
+export interface ILocation {
+    tripHistoryId: string
+    latitude:number
+    longitude: number
+    recordedAt: Date
+}
 //Form
 export interface IVehicleForm extends IBase {
     id: string

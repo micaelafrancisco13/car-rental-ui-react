@@ -1,64 +1,181 @@
-import React, { useState } from "react";
 import Wrapper from "../layouts/Wrapper";
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
+import useVehicleStore from "../stores/useVehicles";
+import useBookingStore from "../stores/useBookings";
+import AdminTrackingPage from "../components/location/AdminTracking";
+import { formatDate } from "../utils/helper";
+import { useBookingHistory, useGetBookingDetails } from "../hooks/booking/useGetBookings";
+import { useParams } from "react-router-dom";
+import TableLoading from "../components/loaders/TableLoading";
+import TripMap from "../components/location/TripMap";
+import useHistoryStore from "../stores/useHistory";
+import { ITripHistory } from "../interfaces/shared";
+import { useTrackingStore } from "../stores/useTracking";
+import axios from "axios";
+import { useEffect, useState } from "react";
+import SpeedIndicator from "../components/location/SpeedIndicator";
+import VehicleStatus from "../components/location/VehicleStatus";
+import VehicleHeader from "../components/location/VehicleHeader";
 
-const CarTracker: React.FC = () => {
-  const [carId, setCarId] = useState<string>("");
-  const [position, setPosition] = useState<[number, number]>([51.505, -0.09]);
+const groupTripsByDay = (trips: ITripHistory[]) => {
+  const today = new Date();
+  const yesterday = new Date(today);
+  yesterday.setDate(yesterday.getDate() - 1);
 
-  const handleTrackCar = (): void => {
-    const simulatedPosition: [number, number] = [
-      51.505 + Math.random() * 0.02 - 0.01,
-      -0.09 + Math.random() * 0.02 - 0.01,
-    ];
-    setPosition(simulatedPosition);
+  const groupedTrips = {
+    today: [] as ITripHistory[],
+    yesterday: [] as ITripHistory[],
+    earlierThisWeek: [] as ITripHistory[],
   };
-  // const mapRef = useRef(null);
-  // const latitude = 51.505;
-  // const longitude = -0.09;
 
+  trips.forEach((trip) => {
+    const tripDate = new Date(trip.recordedAt);
+
+    if (tripDate.toDateString() === today.toDateString()) {
+      groupedTrips.today.push(trip);
+    } else if (tripDate.toDateString() === yesterday.toDateString()) {
+      groupedTrips.yesterday.push(trip);
+    } else {
+      groupedTrips.earlierThisWeek.push(trip);
+    }
+  });
+
+  return groupedTrips;
+};
+const CarTracker: React.FC = () => {
+
+  const {
+    selectedVehicle,
+  } = useVehicleStore()
+
+  const {
+    selectedBooking
+  } = useBookingStore()
+  const date = selectedBooking?.startDate ? `${formatDate(selectedBooking?.startDate)}` : ""
+  const endDate = selectedBooking?.endDate ? `${formatDate(selectedBooking?.endDate)}` : ""
+  
+  const [status, setStatus] = useState<string>("offline")
+  const { id = "" } = useParams<{ id: string }>(); 
+
+  const { isFetching } = useGetBookingDetails(id);
+
+  const { isFetching: historyFetching } = useBookingHistory(id)
+
+  const { history } = useHistoryStore()
+
+  const filter = groupTripsByDay(history)
+
+
+  const locations = useTrackingStore((state) => state.locations);
+
+  const location = id ? locations[id] : null
+
+  const [nameAddress, setNameAddress] = useState<string>("offline")
+  const getNameAddress = async () => {
+    const lat = location?.latitude || ""
+    const lon = location?.longitude || ""
+    const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`;
+    try {
+      const response = await axios.get(url)
+
+      const address = response.data.display_name || "Address not found";
+      setNameAddress(address)
+
+    } catch (err) {
+
+    }
+  }
+  useEffect(() => {
+    getNameAddress()
+    if (location) {
+      
+      setStatus(location.speed < 1 ? "idle" : "moving")
+    } else {
+      setStatus("offline")
+    }
+  }, [location])
   return (
     <Wrapper currentTab="vehicle" >
-    <div className="h-screen w-5/6 flex flex-col items-center bg-gray-100">
-      <header className="w-full p-4 bg-blue-600 text-white text-center text-lg font-bold">
-        Car Tracking Dashboard
-      </header>
-
-      <div className="p-4 mt-4 w-full max-w-md">
-        <label className="block mb-2 text-gray-700 font-medium">Enter Car ID:</label>
-        <input
-          type="text"
-          value={carId}
-          onChange={(e) => setCarId(e.target.value)}
-          placeholder="e.g., CAR123"
-          className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-        <button
-          onClick={handleTrackCar}
-          className="mt-4 w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700"
-        >
-          Track Car
-        </button>
-      </div>
-
-      {/* Map Section */}
-      <div className="w-full flex-grow">
-        <MapContainer
-          center={position}
-          zoom={13}
-          className="h-5/6 w-full"
-        >
-          <TileLayer
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            attribution="&copy; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors"
-          />
-          <Marker position={position}>
-            <Popup>
-              Car {carId || "unknown"} is here.
-            </Popup>
-          </Marker>
-        </MapContainer>
+      {
+        isFetching || historyFetching && <TableLoading />
+      }
+    <div className="h-96 w-full flex flex-col items-center">
+      <VehicleHeader 
+        name={`${selectedVehicle?.make} ${selectedVehicle?.model} ${selectedVehicle?.year}`}
+        date={date}
+        endDate={endDate}
+      />
+      <div className="grid grid-cols-3 gap-4 w-full">
+        <div className="col-span-3 sm:col-span-2">
+          <div className="">
+          <div className="divide-y divide-gray-200 overflow-hidden rounded-lg bg-white shadow text-cyan-700 font-bold">
+        <div className="px-2 py-2 sm:px-2 flex items-center">
+              <span className="pr-2">{status == "offline" ? "" : nameAddress}</span>
+              <VehicleStatus 
+                status={status}
+              />
+        </div>
+        <div className="max-h-96">
+          <AdminTrackingPage />
+        </div>
+        <div className="px-2 py-2 sm:px-3 flex items-center">
+            <span>
+              <SpeedIndicator 
+                speed={location?.speed || 0 }
+              />
+            </span>
+            <span>
+            </span>
+        </div>
+    </div>
+          </div>
+        </div>
+        <div className="col-span-3 sm:col-span-1 w-full">
+          <div className="text-xl text-cyan-700 font-mono p-3">
+            Tracking History
+          </div>
+          <div className="max-h-96 overflow-y-auto text-cyan-800">
+          {history.length && 
+            <>
+              {filter.today.length > 0 && <div>Today</div>}
+              {filter.today.map((item) => {
+                return (
+                  <div className="mb-3">
+                    {<TripMap 
+                      locations={item.locations}
+                      speed={item.speed}
+                    />}
+                  </div>
+                )
+              })}
+              {filter.yesterday.length > 0 && <div>Yesterday</div>}
+              
+              {filter.yesterday.map((item) => {
+                return (
+                  <div className="mb-3">
+                    {<TripMap 
+                      locations={item.locations}
+                      speed={item.speed}
+                    />}
+                  </div>
+                )
+              })}
+              {filter.earlierThisWeek.length > 0 && <div>Earlier This week</div>}
+              
+              {filter.earlierThisWeek.map((item) => {
+                return (
+                  <div className="mb-3">
+                    {<TripMap 
+                      locations={item.locations}
+                      speed={item.speed}
+                    />}
+                  </div>
+                )
+              })}
+            </>
+          }
+          </div>
+        </div>
       </div>
     </div>
     </Wrapper>

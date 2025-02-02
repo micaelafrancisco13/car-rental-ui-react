@@ -13,6 +13,7 @@ const useGetVehicles = () => {
 	queryFn: async () => {
     const { data } = await apiClient.get<IVehicle[]>(endpoint);
     setVehicles(data);
+    return data
   }});
 };
 
