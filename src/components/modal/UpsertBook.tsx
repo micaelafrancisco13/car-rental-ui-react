@@ -150,7 +150,6 @@ const RentCarModal: React.FC = () => {
               initialValues={initialValues} 
               validationSchema={validationSchema}
               onSubmit={async(values) => {
-                console.log({values})
                 const formValues = {
                   ...Object.fromEntries(
                     Object.entries(values).filter(([key]) => !["id", "createdAt", "updatedAt","password", "confirmPassword"].includes(key))
@@ -172,7 +171,6 @@ const RentCarModal: React.FC = () => {
                 // } else {
                   rentCar([{...formValues, startLocation: getLocation(), endLocation: getLocation()}], {
                     onSuccess: (data) => {
-                      console.log(data)
                       setMyBookings(data)
                       window.location.reload()
                         toggleModal();
@@ -194,7 +192,7 @@ const RentCarModal: React.FC = () => {
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     <div className="flex flex-col">
-                      <label htmlFor="firstName" className="text-sm font-medium text-gray-700">
+                      <label htmlFor="startDate" className="text-sm font-medium text-gray-700">
                         Start Date
                       </label>
                       <Field 
@@ -212,7 +210,7 @@ const RentCarModal: React.FC = () => {
                     </div>
 
                     <div className="flex flex-col">
-                      <label htmlFor="lastName" className="text-sm font-medium text-gray-700">
+                      <label htmlFor="endDate" className="text-sm font-medium text-gray-700">
                       End Date
                       </label>
                       <Field 

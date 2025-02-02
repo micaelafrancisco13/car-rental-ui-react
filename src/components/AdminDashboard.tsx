@@ -2,22 +2,72 @@ import ReactApexChart from "react-apexcharts";
 import useDashboardStore from "../stores/useDashboard";
 import { useGetDashboard } from "../hooks/booking/useGetBookings";
 import TableLoading from "./loaders/TableLoading";
+import { Car, CreditCard, Calendar, TrendingUp } from "lucide-react";
 
 const AdminDashboard= () => {
 	const { isFetching } = useGetDashboard()
     
     const { vehicleCount, bookingsCount, bookingsPaymentCount, result } = useDashboardStore()
 
+    const stats = [
+      {
+        title: "Total Vehicles",
+        value: (vehicleCount?.AVAILABLE || 0) + (vehicleCount?.BOOKED || 0) + (vehicleCount?.MAINTENANCE || 0),
+        icon: <Car className="h-8 w-8" />
+      },
+      {
+        title: "Total Bookings",
+        value: (bookingsCount?.ACCEPTED || 0) + (bookingsCount?.COMPLETED || 0) + (bookingsCount?.PENDING || 0) + 
+               (bookingsCount?.CANCELLED || 0) + (bookingsCount?.IN_PROGRESS || 0),
+        icon: <Calendar className="h-8 w-8" />
+      },
+      {
+        title: "Total Payments",
+        value: (bookingsPaymentCount?.PAID || 0) + (bookingsPaymentCount?.PENDING || 0) + (bookingsPaymentCount?.FAILED || 0),
+        icon: <CreditCard className="h-8 w-8" />
+      },
+      {
+        title: "Revenue",
+        value: `$${result.reduce((acc: number, curr: { totalPrice: any; }) => acc + parseFloat(curr?.totalPrice || "0"), 0).toLocaleString()}`,
+        icon: <TrendingUp className="h-8 w-8" />
+      }
+    ];
     return (
-    <div className="p-3 min-h-screen ">
-      <h1 className="text-2xl text-gray-900 font-bold mb-4">Car Rental Dashboard</h1>
+    <div className="p-6 space-y-6 bg-gray-50 min-h-screen text-cyan-800 uppercase">
+       <div className="flex items-center justify-between">
+        <h1 className="text-3xl font-bold tracking-tight">Car Rental Dashboard</h1>
+      </div>
       {
         isFetching && <TableLoading /> 
       }
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {stats.map((stat, index) => (
+          <div key={index}>
+            <div className="p-3">
+              <div className="flex items-center justify-between space-x-4">
+                <div className="flex items-center space-x-4">
+                  <div className="p-2 bg-primary/10 rounded-full">
+                    {stat.icon}
+                  </div>
+                  <div>
+                    <p className="text-xs font-medium text-muted-foreground">
+                      {stat.title}
+                    </p>
+                    <h3 className="text-xl font-bold">{stat.value}</h3>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
       {/* Financial Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-gray-900">
-        <div className="bg-green-400 rounded-md bg-clip-padding backdrop-filter backdrop-blur-md bg-opacity-30 border border-gray-100 shadow-md p-4 rounded-lg">
-          <h2 className="text-lg font-semibold mb-2">Total Income</h2>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Income Chart */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <div className="mb-4">
+            <h2 className="text-xl font-semibold">Revenue Overview</h2>
+          </div>
           <ReactApexChart options={{
             chart: {
                 height: 350,
@@ -58,8 +108,10 @@ const AdminDashboard= () => {
         </div>
 
         {/* Payment Status */}
-        <div className="bg-indgo-400 rounded-md bg-clip-padding backdrop-filter backdrop-blur-md bg-opacity-30 border border-gray-100 shadow-md p-4 rounded-lg text-gray-900">
-          <h2 className="text-lg font-semibold mb-2 ">Payment Status</h2>
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <div className="mb-4">
+            <h2 className="text-xl font-semibold">Payment Status</h2>
+          </div>
           <ReactApexChart
            type="pie" width={380}
             series={[
@@ -92,8 +144,10 @@ const AdminDashboard= () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-gray-900">
 
       {/* Booking Metrics */}
-      <div className="bg-blue-400 rounded-md bg-clip-padding backdrop-filter backdrop-blur-md bg-opacity-30 border border-gray-100 p-4 rounded-lg mt-6 text-gray-900">
-        <h2 className="text-lg font-semibold mb-2">Booking Status</h2>
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <div className="mb-4">
+            <h2 className="text-xl font-semibold">Booking Status</h2>
+          </div>
         <ReactApexChart
            type="pie" width={380}
            series={[
@@ -125,8 +179,10 @@ const AdminDashboard= () => {
       </div>
 
       {/* Fleet Metrics */}
-      <div className="bg-yellow-400 rounded-md bg-clip-padding backdrop-filter backdrop-blur-md bg-opacity-30 border border-gray-100 p-4 rounded-lg mt-6 text-gray-900">
-        <h2 className="text-lg font-semibold mb-2">Fleet Status</h2>
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <div className="mb-4">
+            <h2 className="text-xl font-semibold">Booking Status</h2>
+          </div>
         <ReactApexChart
            type="pie" width={380}
             series={[

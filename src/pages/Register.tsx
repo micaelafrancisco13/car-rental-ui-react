@@ -4,6 +4,7 @@ import {useAuthRegister} from "../hooks/auth/useAuthLogin";
 import toast, { Toaster } from "react-hot-toast";
 import { AxiosError } from "axios";
 import { useNavigate } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
 // import { setJwt } from "../services/api-client";
 // import { IUsersDetails } from "../interfaces/shared";
 // import { jwtDecode } from "jwt-decode";
@@ -54,16 +55,18 @@ const Register = () => {
     }
 
     return (
-        <>
-        <div>
-            <button
-                className="text-xl text-cyan-900 uppercase font-mono font-bold absolute tracking-wider pl-5 mt-5 hover:text-cyan-700"
-                onClick={()=> navigate("/")}>
-                Home
-            </button>
-        </div>
-        <div className="flex min-h-full sm:h-screen bg-gray-100 justify-center px-6 py-12 lg:px-8">
-            <div className="bg-white px-20 shadow-xl shadow-cyan-500/50 py-5">
+        <div className="min-h-screen bg-gradient-to-br from-cyan-50 to-gray-100 flex flex-col">
+
+        <button
+        onClick={()=> navigate("/")}
+        className="absolute top-6 left-6 flex items-center space-x-2 text-cyan-700 hover:text-cyan-900 transition-colors duration-300"
+      >
+        <ArrowLeft className="w-4 h-4" />
+        <span className="font-medium">Back to Home</span>
+      </button>
+      <div className="flex-1 flex items-center justify-center px-6 py-12">
+        
+      <div className="bg-white/80 backdrop-blur-lg w-full max-w-md rounded-2xl shadow-xl p-8 transform transition-all duration-300 hover:shadow-2xl">
             <div className="mx-auto">
 
             {/* <img
@@ -71,9 +74,10 @@ const Register = () => {
                 src="https://tailwindui.com/plus/img/logos/mark.svg?color=indigo&shade=600"
                 className="mx-auto h-10 w-auto"
             /> */}
-            <h2 className=" mt-2 text-center uppercase font-mono text-2xl/9 font-bold tracking-tight text-gray-900">
-                Create an account
-            </h2>
+            <div className="text-center mb-8">
+                <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome</h1>
+                <p className="text-gray-600">Create an account to continue</p>
+            </div>
             </div>
     
             <div className="mt-5">
@@ -252,7 +256,7 @@ const Register = () => {
         </div>
         </div>
         <Toaster />
-        </>
+        </div>
     )
 }
 

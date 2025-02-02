@@ -187,8 +187,8 @@ const Rentals = () => {
                                         className={`col-start-1 row-start-1 text-${getColor(String(booking.status))} appearance-none rounded-md bg-white py-1.5 pl-3 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-cyan-600 sm:text-sm/6`}
                                         >
                                         <option value={"PENDING"} className="text-yellow-500">PENDING</option>
-                                        <option value={"IN_PROGRESS"} className="text-yellow-500">IN PROGRESS</option>
                                         <option value={"ACCEPTED"} className="text-blue-500">ACCEPTED</option>
+                                        <option value={"IN_PROGRESS"} className="text-yellow-500">IN PROGRESS</option>
                                         <option value={"COMPLETED"} className="text-green-500">COMPLETED</option>
                                         <option value={"CANCELLED"}  className="text-red-500">CANCELLED</option>
                                     </select>
