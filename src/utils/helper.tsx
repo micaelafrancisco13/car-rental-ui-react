@@ -35,10 +35,10 @@ export const formatMoney = (amount: number, locale = 'en-US', currency = 'PHP') 
   };
 
 
-export const sendEmail = (form: { to_email: string, to_name: string} ) => {
+export const sendEmail = (form: { email: string, name: string, message: string} ) => {
 
   emailjs
-    .sendForm('o1jrwsq', 'bkfqha9', JSON.stringify(form), {
+    .send('service_o1jrwsq', 'template_m3axy69', form, {
       publicKey: 'n7wUCQBkYE072lUb0',
     })
     .then(
@@ -46,7 +46,7 @@ export const sendEmail = (form: { to_email: string, to_name: string} ) => {
         console.log('SUCCESS!');
       },
       (error) => {
-        console.log('FAILED...', error.text);
+        console.log('FAILED...', error);
       },
     );
 };

@@ -14,6 +14,7 @@ import { patchBookingStatus } from "../hooks/useUpdate";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import useVehicleStore from "../stores/useVehicles";
+import dayjs from "dayjs";
 
 const Rentals = () => {
 
@@ -21,7 +22,7 @@ const Rentals = () => {
 
 	const { isFetching } = useGetBookings()
     const {
-        bookings,
+        // bookings,
         filteredBookings,
         currentPage,
         itemsPerPage,
@@ -48,15 +49,20 @@ const Rentals = () => {
             status,
         }
         patchBooking.mutate({ id, data, name: key }, {
-            onSuccess: (data) => {
+            onSuccess: (response) => {
+                console.log({response})
                 toast.success('Status Change Successfully')
                 sendEmail({
-                      to_email: data.booker.email, 
-                      to_name: data.booker.firstName, 
+                      email: response.booker.email, 
+                      name: response.booker.firstName, 
+                      message: `Your booking status has been updated to ${response.status}. 
+                                Your booking ID is ${response.id} for the ${response.vehicle?.make || ""} ${response.vehicle?.model || ""}, 
+                                scheduled for pickup on ${dayjs(response.startDate).format("DD/MM/YYYY")} and return on ${dayjs(response.endDate).format("DD/MM/YYYY")}.
+                                For more details, please log into your account. Let us know if you need any assistance!`
                     })
             },
             onError: (error) => {
-                toast.error('Error updating')
+                toast.error('Error updating' + error,)
                 console.error('Error updating:', error);
             }
         });
@@ -161,7 +167,7 @@ const Rentals = () => {
                     </thead>
 
                     <tbody className="divide-y divide-gray-200">
-                        {bookings.map((booking) => (
+                        {filteredBookings.map((booking) => (
                         <tr key={booking.id} >
                             {/* <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm text-gray-900 sm:pl-0">
                             {`${booking.bookerId}`}

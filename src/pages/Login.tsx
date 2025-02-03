@@ -79,7 +79,7 @@ const navigate = useNavigate()
             onSubmit={handleSubmit}
           >
             {({ errors, handleChange, handleBlur }) => (
-              <Form className="space-y-6">
+              <Form className="space-y-6 text-gray-700">
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-gray-700 block">
                     Email
