@@ -136,7 +136,9 @@ const CarTracker: React.FC = () => {
           {history.length && 
             <>
               {filter.today.length > 0 && <div>Today</div>}
-              {filter.today.map((item) => {
+              {filter.today.sort((a, b) => {
+                return b.recordedAt.getTime() - a.recordedAt.getTime(); 
+              }).map((item) => {
                 return (
                   <div className="mb-3">
                     {<TripMap 
