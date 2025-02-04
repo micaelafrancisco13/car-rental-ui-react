@@ -1,8 +1,26 @@
 import { useNavigate } from 'react-router-dom';
 import { Car, Calendar, MapPin, ArrowRight } from 'lucide-react';
-
+import { useState, useEffect } from 'react';
+import bg1 from '../assets/images/HomepageBG1.jpg'
+import bg2 from '../assets/images/HomepageBG2.jpg'
+import bg3 from '../assets/images/HomepageBG3.jpg'
 const HomePage = () => {
   const navigate = useNavigate();
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  const backgroundImages = [
+   bg1, bg2, bg3
+  ];
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentImageIndex((prevIndex) => 
+        (prevIndex + 1) % backgroundImages.length
+      );
+    }, 5000);
+
+    return () => clearInterval(timer);
+  }, []);
 
   const features = [
     {
@@ -26,7 +44,27 @@ const HomePage = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 flex flex-col items-center justify-center p-4 overflow-hidden">
+    <div className="min-h-screen w-full relative flex flex-col items-center justify-center p-4 overflow-hidden">
+
+      {/* Background Image Carousel */}
+      {backgroundImages.map((image, index) => (
+        <div
+          key={index}
+          className={`absolute inset-0 bg-cover bg-center bg-no-repeat transition-opacity duration-1000 
+            ${
+            index === currentImageIndex ? 'opacity-100' : 'opacity-0'
+          }
+        `}
+          style={{
+            backgroundImage: `url('${image}')`,
+            filter: "grayscale(30%)"
+          }}
+        />
+      ))}
+      
+      {/* Gradient Overlay */}
+      <div className="absolute inset-0 bg-gradient-to-b from-gray-50 to-gray-100 opacity-25" />
+
       {/* Background decoration */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-1/2 -left-1/2 w-full h-full bg-cyan-50 rounded-full blur-3xl opacity-20 animate-pulse"></div>
@@ -44,7 +82,7 @@ const HomePage = () => {
           </p>
         </header>
 
-        <main className="bg-white backdrop-blur-lg bg-opacity-90 p-8 rounded-2xl shadow-xl transform transition-all duration-500 hover:shadow-2xl">
+        <main className="bg-white/20 backdrop-blur-lg p-8 rounded-2xl shadow-xl transform transition-all duration-500 hover:shadow-2xl">
           <h2 className="text-4xl font-semibold text-gray-800 mb-8 opacity-0 animate-fade-in">
             Car Rental Made Simple
           </h2>

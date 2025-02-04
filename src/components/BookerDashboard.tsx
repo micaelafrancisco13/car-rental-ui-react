@@ -19,7 +19,6 @@ import BookerLocationSender from "./location/BookerLocation";
 import ValidateRent from "./ValidateRent";
 import { motion } from "framer-motion";
 import BookerTrackingPage from "./location/BookerTracking";
-
 const BookerDashbaord = () => {
 	const {  isFetching } = useGetVehicles()
     const { isOpen, toggleConfirmation, open } = useGlobalStore()
@@ -129,7 +128,7 @@ const BookerDashbaord = () => {
     }
 
     return (
-        <>
+    <>
         <div style={{
             height: "75vh"
         }}>

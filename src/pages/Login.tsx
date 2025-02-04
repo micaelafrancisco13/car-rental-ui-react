@@ -8,6 +8,7 @@ import { IUsersDetails } from '../interfaces/shared';
 import { Lock, Mail, ArrowLeft, Loader2 } from 'lucide-react';
 import { useAuthLogin } from '../hooks/auth/useAuthLogin';
 import { useNavigate } from 'react-router-dom';
+import login from '../assets/images/login.jpg'
 
 const Login = () => {
 const navigate = useNavigate()
@@ -56,6 +57,23 @@ const navigate = useNavigate()
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-cyan-50 to-gray-100 flex flex-col">
+        {/* Background Image Carousel */}
+          <div
+            className={`absolute inset-0 bg-cover bg-center bg-no-repeat transition-opacity duration-1000`}
+            style={{
+              backgroundImage: `url('${login}')`,
+              filter: "grayscale(30%)"
+            }}
+          />
+
+        {/* Gradient Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-b from-gray-50 to-gray-100 opacity-25" />
+
+        {/* Background decoration */}
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute -top-1/2 -left-1/2 w-full h-full bg-cyan-50 rounded-full blur-3xl opacity-20 animate-pulse"></div>
+          <div className="absolute -bottom-1/2 -right-1/2 w-full h-full bg-cyan-50 rounded-full blur-3xl opacity-20 animate-pulse delay-1000"></div>
+        </div>
       {/* Header */}
       <button
         onClick={handleHomeClick}
