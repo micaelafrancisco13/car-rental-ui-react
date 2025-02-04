@@ -22,6 +22,9 @@ const Users = () => {
         mutationDelete.mutate(id, {
           onSuccess: () => {
             toast.success("User deleted successfully.")
+            setTimeout(() => {
+                window.location.reload()
+            }, 1000)
           },
           onError: (error) => {
             toast.error("Error deleting user")

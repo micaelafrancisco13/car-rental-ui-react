@@ -94,10 +94,17 @@ const UserFormModal: React.FC = () => {
                     Object.entries(values).filter(([key]) => !["id", "createdAt", "updatedAt", "confirmPassword"].includes(key))
                   )
                 }
+                  const transformedFormValues = {
+                    ...formValues,
+                    phoneNumber: `0${formValues.phoneNumber}`,
+                    latitude: 15.0594,
+                    longitude: 120.6567,
+                  };
+
                 if (selectedUser) {
                   const updatedUser = await mutationPut.mutateAsync({
                     id: selectedUser.id,
-                    data: formValues,
+                    data: transformedFormValues,
                   });
                   updateUser(updatedUser.id, updatedUser)
                   setUser(null)
@@ -119,9 +126,9 @@ const UserFormModal: React.FC = () => {
                 //     }
                 // })
                 } else {
-                  mutate([formValues], {
+                  mutate(transformedFormValues, {
                     onSuccess: (data) => {
-                        addUsers(data)
+                      addUsers(data)
                         toggleModal();
                         setUser(null)
 

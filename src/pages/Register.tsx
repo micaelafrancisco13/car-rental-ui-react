@@ -5,6 +5,7 @@ import toast, { Toaster } from "react-hot-toast";
 import { AxiosError } from "axios";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
+import register from "../assets/images/register.jpg"
 // import { setJwt } from "../services/api-client";
 // import { IUsersDetails } from "../interfaces/shared";
 // import { jwtDecode } from "jwt-decode";
@@ -56,7 +57,23 @@ const Register = () => {
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-cyan-50 to-gray-100 flex flex-col">
+      {/* Background Image Carousel */}
+      <div
+            className={`absolute inset-0 bg-cover bg-center bg-no-repeat transition-opacity duration-1000`}
+            style={{
+              backgroundImage: `url('${register}')`,
+              filter: "grayscale(30%)"
+            }}
+          />
 
+        {/* Gradient Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-b from-gray-50 to-gray-100 opacity-25" />
+
+        {/* Background decoration */}
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute -top-1/2 -left-1/2 w-full h-full bg-cyan-50 rounded-full blur-3xl opacity-20 animate-pulse"></div>
+          <div className="absolute -bottom-1/2 -right-1/2 w-full h-full bg-cyan-50 rounded-full blur-3xl opacity-20 animate-pulse delay-1000"></div>
+        </div>
         <button
         onClick={()=> navigate("/")}
         className="absolute top-6 left-6 flex items-center space-x-2 text-cyan-700 hover:text-cyan-900 transition-colors duration-300"
@@ -66,7 +83,7 @@ const Register = () => {
       </button>
       <div className="flex-1 flex items-center justify-center px-6 py-12">
         
-      <div className="bg-white/80 backdrop-blur-lg w-full max-w-md rounded-2xl shadow-xl p-8 transform transition-all duration-300 hover:shadow-2xl">
+      <div className="bg-white/80 backdrop-blur-lg w-full max-w-2xl rounded-2xl shadow-xl p-8 transform transition-all duration-300 hover:shadow-2xl">
             <div className="mx-auto">
 
             {/* <img
@@ -159,6 +176,29 @@ const Register = () => {
                     </div>
         
                     <div>
+                    <label htmlFor="phoneNumber" className="block text-sm/6 font-medium text-gray-900">
+                            Phone Number
+                        </label>
+                        <div className="mt-2 relative">
+                            <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-500">
+                                +63
+                            </span>
+
+                            <input
+                            id="phoneNumber"
+                            name="phoneNumber"
+                            type="number"
+                            required
+                            className="block w-full pl-11 rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-cyan-600 sm:text-sm/6"
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            />
+                        </div>
+                        {errors.phoneNumber && (
+                            <p className="text-red-500 text-sm mt-1">{errors.phoneNumber}</p>
+                        )}
+                    </div>
+                    <div>
                     <div className="flex items-center justify-between">
                         <label htmlFor="password" className="block text-sm/6 font-medium text-gray-900">
                         Password
@@ -203,30 +243,6 @@ const Register = () => {
                         )}
                     </div>
                     
-                    <div>
-                        
-                    <label htmlFor="phoneNumber" className="block text-sm/6 font-medium text-gray-900">
-                            Phone Number
-                        </label>
-                        <div className="mt-2 relative">
-                            <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-500">
-                                +63
-                            </span>
-
-                            <input
-                            id="phoneNumber"
-                            name="phoneNumber"
-                            type="number"
-                            required
-                            className="block w-full pl-11 rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-cyan-600 sm:text-sm/6"
-                            onChange={handleChange}
-                            onBlur={handleBlur}
-                            />
-                        </div>
-                        {errors.phoneNumber && (
-                            <p className="text-red-500 text-sm mt-1">{errors.phoneNumber}</p>
-                        )}
-                    </div>
                   </div>
                   <div>
                         <button
