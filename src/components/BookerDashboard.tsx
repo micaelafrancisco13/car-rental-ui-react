@@ -45,6 +45,7 @@ const BookerDashbaord = () => {
         inProgressBookings,
         cancelledBookings,
         completedBookings,
+        // setMyBookings,
     } = useBookingStore();
 
     useEffect(() => {
@@ -90,6 +91,13 @@ const BookerDashbaord = () => {
                 onSuccess: () => {
                     // updateStatus(vehicle.id, event.target.value)
                     toast.success("Vehicle's status has been successfully cancelled.")
+                    // const updatedBookings = [...bookings]
+                    // if (inProgressBookings) {
+                    //     updatedBookings.push({ ...inProgressBookings, status: "CANCELLED"})
+                    // }
+                    // setMyBookings(updatedBookings)
+                    // toggleConfirmation()
+                    window.location.reload()
                 },
                 onError: (error) => {
                     const err = error as AxiosError
