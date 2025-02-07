@@ -1,4 +1,4 @@
-import { Form, Formik } from "formik";
+import { Field, Form, Formik } from "formik";
 import * as Yup from "yup";
 import {useAuthRegister} from "../hooks/auth/useAuthLogin";
 import toast, { Toaster } from "react-hot-toast";
@@ -6,6 +6,7 @@ import { AxiosError } from "axios";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import register from "../assets/images/register.jpg"
+import { validIds } from "../utils/helper";
 // import { setJwt } from "../services/api-client";
 // import { IUsersDetails } from "../interfaces/shared";
 // import { jwtDecode } from "jwt-decode";
@@ -36,8 +37,14 @@ const Register = () => {
         
         confirmPassword: Yup.string()
             .oneOf([Yup.ref('password'), undefined], 'Passwords must match'),
+
+        city: Yup.string().required("City is required"),
+        otherAddress: Yup.string().required("Address is required"),
+        validIdType: Yup.string().required("Valid ID Type is required"),
+        validIdNumber: Yup.string().required("Valid ID Number is required"),
         
     });
+
 
     const handleSubmit = (values: any) => {
       const { confirmPassword, ...filteredValues } = values;
@@ -56,16 +63,29 @@ const Register = () => {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-cyan-50 to-gray-100 flex flex-col">
-      {/* Background Image Carousel */}
-      <div
-            className={`absolute inset-0 bg-cover bg-center bg-no-repeat transition-opacity duration-1000`}
-            style={{
-              backgroundImage: `url('${register}')`,
-              filter: "grayscale(30%)"
-            }}
-          />
-
+        <div className="min-h-screen flex flex-col relative bg-gradient-to-br from-cyan-50 to-gray-100">
+        {/* Background Image */}
+        <div
+          className="absolute inset-0 w-full h-full transition-opacity duration-1000"
+          style={{
+            backgroundImage: `url('${register}')`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+            filter: "grayscale(30%)",
+          }}
+        ></div>
+        <div
+        className="absolute inset-0 transition-opacity duration-1000"
+        style={{
+            backgroundImage: `url('${register}')`,
+            backgroundSize: "cover", // Ensures the image covers the entire container
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+            width: "100%",
+            height: "100%",
+        }}
+        />
         {/* Gradient Overlay */}
         <div className="absolute inset-0 bg-gradient-to-b from-gray-50 to-gray-100 opacity-25" />
 
@@ -100,7 +120,11 @@ const Register = () => {
             <div className="mt-5">
             <Formik
                 validationSchema={schema}
-                initialValues={{ firstName: "", lastName: "", email: "",phoneNumber:"", password:"", confirmPassword:"", role: "BOOKER" }}
+                initialValues={{ 
+                    firstName: "", lastName: "", email: "",phoneNumber:"", 
+                    password:"", confirmPassword:"", role: "BOOKER",
+                    city:"", otherAddress:"", validIdType:"", validIdNumber:""
+                }}
                 onSubmit={handleSubmit}
             >
             {({
@@ -197,6 +221,79 @@ const Register = () => {
                         {errors.phoneNumber && (
                             <p className="text-red-500 text-sm mt-1">{errors.phoneNumber}</p>
                         )}
+                    </div>
+                    <div className="flex flex-col">
+
+                        <label htmlFor="city" className="text-sm font-medium text-gray-700">
+                        City
+                        </label>
+                        <Field
+                        as="select"
+                        id="city"
+                        name="city"
+                        className="mt-1 p-2 border border-gray-300 rounded-md text-gray-700"
+                        >
+                        <option value="">Select City</option>
+                        <option value="San Fernando">San Fernando</option>
+                        <option value="Angeles City">Angeles City</option>
+                        <option value="Other">Other</option>
+                        </Field>
+                        {errors.city && (
+                            <p className="text-red-500 text-sm mt-1">{errors.city}</p>
+                        )}
+                    </div>
+
+                    {/* Other Address Field */}
+                    <div className="flex flex-col">
+                        <label htmlFor="otherAddress" className="text-sm font-medium text-gray-700">
+                        Other Address
+                        </label>
+                        <Field
+                        type="text"
+                        id="otherAddress"
+                        name="otherAddress"
+                        className="mt-1 p-2 border border-gray-300 rounded-md text-gray-700"
+                        />
+                       {errors.otherAddress && (
+                            <p className="text-red-500 text-sm mt-1">{errors.otherAddress}</p>
+                        )}
+                    </div>
+
+                    <div className="flex flex-col">
+                        <label htmlFor="validIdType" className="text-sm font-medium text-gray-700">
+                        Valid ID Type
+                        </label>
+                        <Field
+                        as="select"
+                        id="validIdType"
+                        name="validIdType"
+                        className="mt-1 p-2 border border-gray-300 rounded-md text-gray-700"
+                        >
+                        <option value="">Select ID Type</option>
+                        {
+                            validIds.map(item => <option value={item}>{item}</option>)
+                        }
+                        </Field>
+                        
+                       {errors.validIdType && (
+                            <p className="text-red-500 text-sm mt-1">{errors.validIdType}</p>
+                        )}
+                    </div>
+
+                    <div className="flex flex-col">
+                        <label htmlFor="validIdNumber" className="text-sm font-medium text-gray-700">
+                        Valid ID Number
+                        </label>
+                        <Field
+                        type="text"
+                        id="validIdNumber"
+                        name="validIdNumber"
+                        className="mt-1 p-2 border border-gray-300 rounded-md text-gray-700"
+                        />
+                       
+                       {errors.validIdNumber && (
+                            <p className="text-red-500 text-sm mt-1">{errors.validIdNumber}</p>
+                        )} 
                     </div>
                     <div>
                     <div className="flex items-center justify-between">

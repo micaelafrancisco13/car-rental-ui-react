@@ -124,7 +124,7 @@ const AdminDashboard= () => {
                     width: 380,
                     type: 'pie',
                   },
-              labels:["PENDING", "PAID", "FAILED"],
+              labels:["With Balance", "PAID", "FAILED"],
               colors: ["orange", "lightgreen", "red"],
               responsive: [{
                 breakpoint: 480,
@@ -151,9 +151,9 @@ const AdminDashboard= () => {
         <ReactApexChart
            type="pie" width={380}
            series={[
-                bookingsCount?.ACCEPTED || 0,
+                // bookingsCount?.ACCEPTED || 0,
                 bookingsCount?.COMPLETED || 0,
-                bookingsCount?.PENDING || 0,
+                // bookingsCount?.PENDING || 0,
                 bookingsCount?.CANCELLED || 0,
                 bookingsCount?.IN_PROGRESS || 0,
             ]}
@@ -162,7 +162,8 @@ const AdminDashboard= () => {
                     width: 380,
                     type: 'pie',
                   },
-              labels:["ACCEPTED", "COMPLETED", "PENDING", "CANCELLED", "IN PROGRESS"],
+              labels:[ "COMPLETED", "CANCELLED", "RESERVED"],
+              colors: ["lightgreen", "red", "blue"],
               responsive: [{
                 breakpoint: 480,
                 options: {
@@ -181,7 +182,7 @@ const AdminDashboard= () => {
       {/* Fleet Metrics */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
           <div className="mb-4">
-            <h2 className="text-xl font-semibold">Booking Status</h2>
+            <h2 className="text-xl font-semibold">Vehicle Status</h2>
           </div>
         <ReactApexChart
            type="pie" width={380}

@@ -18,6 +18,8 @@ interface BookingStore {
     setBooking: (booking: IBooking) => void;
     setBookingDetails: (booking: IBooking | null) => void
 
+    updateBalance: (id: string, balance: number) => void
+
     filterBooking: (status: string, paymentStatus: string) => void
 
     requestBooking: (booking: IBooking) => void;
@@ -67,6 +69,13 @@ const useBookingStore = create<BookingStore>((set, get) => ({
     setBookings: (bookings) => set(() => ({ bookings, filteredBookings:bookings})),
     setBooking: (track) => set(() => ({ track })),
     setBookingDetails: (selectedBooking) => set(() => ({ selectedBooking })),
+
+    updateBalance: (id, balance) => set(
+      (state) => ({
+        filteredBookings: state.filteredBookings.map((booking) => 
+          booking.id === id ? { ...booking, balance: booking.balance - balance, paymentStatus: booking.balance - balance === 0 ? "PAID": booking.paymentStatus } : booking
+        ),
+      })),
 
     requestBooking: (booking) => set((state) => ({ 
         bookings: [...state.bookings, booking],

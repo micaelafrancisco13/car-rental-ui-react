@@ -7,6 +7,7 @@ interface ISelectMenu {
     options: any;
     handleFilter: (e: React.ChangeEvent<HTMLSelectElement>) => void;
     defaultValue: string
+    type?: string
 }
 
 const SelectMenu:FC<ISelectMenu> = ({
@@ -14,8 +15,9 @@ const SelectMenu:FC<ISelectMenu> = ({
     options, 
     handleFilter,
     defaultValue,
+    type = "status",
 }) => {
-
+  
   return (
     <div>
       <label htmlFor="location" className="block text-sm/6 font-medium text-gray-900">
@@ -30,7 +32,16 @@ const SelectMenu:FC<ISelectMenu> = ({
           className="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
         >
             {
-                options.map((item: string) => <option value={item}>{`${item ? item : "All"}`}</option>)
+                options.map((item: string) => 
+                  {
+                    let value = item
+                    let label = item
+
+                    if (value === "PENDING" && type === "payment") label = "WITH BALANCE"
+
+                  return (<option value={value}>{`${item ? label : "All"}`}</option>)
+                }
+              )
             }
         </select>
         <ChevronDownIcon

@@ -30,7 +30,7 @@ const StatusBadge: React.FC<{ status?: string }> = ({ status }) => {
     <span
       className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ring-1 ring-inset ${getStatusClasses(status)}`}
     >
-      {status}
+      {status === "IN_PROGRESSS" ? "RESERVED" : status === "PENDING" ? "WITH BALANCE" : status}
     </span>
   );
 };
@@ -39,14 +39,14 @@ const ViewDetails: React.FC = () => {
   const { selectedBooking } = useBookingStore();
   
   const vehicle = selectedBooking?.vehicle;
-  const startDate = formatDate(selectedBooking?.startDate ?? new Date());
-  const endDate = formatDate(selectedBooking?.endDate ?? new Date());
+  const startDate = selectedBooking && formatDate(selectedBooking?.startDate);
+  const endDate = selectedBooking && formatDate(selectedBooking?.endDate);
   if (!vehicle){
     return
   }
 
   const totalRate = React.useMemo(() => 
-    calcualteTotalRate(startDate, endDate, vehicle?.dailyRate ?? 1), 
+    (startDate && endDate) && calcualteTotalRate(startDate, endDate, vehicle?.dailyRate ?? 1), 
     [startDate, endDate, vehicle?.dailyRate]
   );
 
@@ -58,6 +58,8 @@ const ViewDetails: React.FC = () => {
     );
   }
   const navigate = useNavigate()
+
+  const userRole = localStorage.getItem("role") || ""
   return (
     <div className="bg-white">
       <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 lg:grid lg:max-w-7xl lg:grid-cols-2 lg:gap-x-8 lg:px-8">
@@ -121,7 +123,7 @@ const ViewDetails: React.FC = () => {
             </div>
           </div>
           
-          <div className="mt-10">
+          { userRole === "booker" &&<div className="mt-10">
             <button
               type="button"
               onClick={()=> navigate(`/track/${selectedBooking.id}`)}
@@ -129,7 +131,7 @@ const ViewDetails: React.FC = () => {
             >
               Track Booking
             </button>
-          </div>
+          </div>}
         </div>
       </div>
     </div>

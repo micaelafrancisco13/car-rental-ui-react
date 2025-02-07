@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { IUsersDetails } from '../interfaces/shared';
 import LoadingButton from './loaders/LoadingButton';
-import { Form, Formik } from "formik";
+import { Field, Form, Formik } from "formik";
 import * as Yup from "yup";
 import useUpdateUser from '../hooks/user/useUpdateUser';
 import toast from 'react-hot-toast';
@@ -9,6 +9,7 @@ import useUserStore from '../stores/useUsers';
 import { useGetMe } from '../hooks/user/useGetUsers';
 import TableLoading from './loaders/TableLoading';
 import { changePassword } from '../hooks/user/useAddUsers';
+import { validIds } from '../utils/helper';
 
 const schema = Yup.object().shape({
     firstName: Yup.string().required("First Name is required"),
@@ -18,6 +19,10 @@ const schema = Yup.object().shape({
             "Phone number must be exactly 9 digits",
             (value) => value?.toString().length === 10
         ).typeError("Phone number must be a valid number"),
+    city: Yup.string().required("City is required"),
+    otherAddress: Yup.string().required("Address is required"),
+    validIdType: Yup.string().required("Valid ID Type is required"),
+    validIdNumber: Yup.string().required("Valid ID Number is required"),
 });
     
 const passwordSchema = Yup.object().shape({
@@ -48,6 +53,10 @@ const Profile = () => {
         id: "",
         role: "",
         updatedAt:"",
+        city: "",
+        otherAddress: "",
+        validIdNumber: '',
+        validIdType: '',
     });
 
     useEffect(() => {
@@ -84,8 +93,7 @@ const Profile = () => {
     const handleSubmit = async (values: IUsersDetails) => {
         const formValues: IUsersDetails = {
             ...user,
-            firstName: values.firstName,
-            lastName: values.lastName,
+            ...values,
             phoneNumber: `0${values.phoneNumber}`,
         }
         try {
@@ -206,6 +214,86 @@ const Profile = () => {
                             <p className="text-red-500 text-sm mt-1">{errors.phoneNumber}</p>
                         )}
                             </div>
+                            <div className="flex flex-col">
+                                <label htmlFor="city" className="text-sm font-medium text-gray-700">
+                                City
+                                </label>
+                                <Field
+                                as="select"
+                                id="city"
+                                name="city"
+                                onChange={handleChange}
+                                onBlur={handleBlur}
+                                className="mt-1 p-2 border border-gray-300 rounded-md text-gray-700"
+                                >
+                                <option value="">Select City</option>
+                                <option value="San Fernando">San Fernando</option>
+                                <option value="Angeles City">Angeles City</option>
+                                <option value="Other">Other</option>
+                                </Field>
+                                {errors.city && (
+                                    <p className="text-red-500 text-sm mt-1">{errors.city}</p>
+                                )}
+                            </div>
+        
+                            {/* Other Address Field */}
+                            <div className="flex flex-col">
+                                <label htmlFor="otherAddress" className="text-sm font-medium text-gray-700">
+                                Other Address
+                                </label>
+                                <Field
+                                type="text"
+                                id="otherAddress"
+                                name="otherAddress"
+                                onChange={handleChange}
+                                onBlur={handleBlur}
+                                className="mt-1 p-2 border border-gray-300 rounded-md text-gray-700"
+                                />
+                                {errors.otherAddress && (
+                                    <p className="text-red-500 text-sm mt-1">{errors.otherAddress}</p>
+                                )}
+                            </div>
+        
+                            <div className="flex flex-col">
+                                <label htmlFor="validIdType" className="text-sm font-medium text-gray-700">
+                                Valid ID Type
+                                </label>
+                                <Field
+                                as="select"
+                                id="validIdType"
+                                name="validIdType"
+                                onChange={handleChange}
+                                onBlur={handleBlur}
+                                className="mt-1 p-2 border border-gray-300 rounded-md text-gray-700"
+                                >
+                                <option value="">Select ID Type</option>
+                                {
+                                    validIds.map(item => <option value={item}>{item}</option>)
+                                }
+                                </Field>
+                                
+                                {errors.validIdType && (
+                                    <p className="text-red-500 text-sm mt-1">{errors.validIdType}</p>
+                                )}
+                            </div>
+        
+                            <div className="flex flex-col">
+                                <label htmlFor="validIdNumber" className="text-sm font-medium text-gray-700">
+                                Valid ID Number
+                                </label>
+                                <Field
+                                type="text"
+                                id="validIdNumber"
+                                name="validIdNumber"                                
+                                onBlur={handleBlur}
+                                onChange={handleChange}
+                                className="mt-1 p-2 border border-gray-300 rounded-md text-gray-700"
+                                />
+                                
+                                {errors.validIdNumber && (
+                                    <p className="text-red-500 text-sm mt-1">{errors.validIdNumber}</p>
+                                )} 
+                            </div>
                             <div className='flex items-center space-x-4'>
                                 <LoadingButton 
                                     isLoading={false}
@@ -235,6 +323,16 @@ const Profile = () => {
                             <div className='flex space-x-2 items-center h-auto'>
                                 <label className="block text-sm font-medium text-gray-700">Phone Number:</label>
                                 <p className="text-gray-500">{user.phoneNumber}</p>
+                            </div>
+                            
+                            <div className='flex space-x-2 items-center h-auto'>
+                                <label className="block text-sm font-medium text-gray-700">Address:</label>
+                                <p className="text-gray-500">{(user?.city || "") + ", " + (user?.otherAddress || "")}</p>
+                            </div>
+                            
+                            <div className='flex space-x-2 items-center h-auto'>
+                                <label className="block text-sm font-medium text-gray-700">Valid ID:</label>
+                                <p className="text-gray-500">{user.validIdType}: {user.validIdNumber}</p>
                             </div>
                         </div>
                     )}

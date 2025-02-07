@@ -23,6 +23,10 @@ const UserFormModal: React.FC = () => {
             (value) => value?.toString().length === 10
         ).typeError("Phone number must be a valid number"),
       role: Yup.string().required("Role is required"),
+      city: Yup.string().required("City is required"),
+      otherAddress: Yup.string().required("Address is required"),
+      validIdType: Yup.string().required("Valid ID Type is required"),
+      validIdNumber: Yup.string().required("Valid ID Number is required"),
   }
   const validationSchema = Yup.object({
     ...generalSchema,
@@ -56,6 +60,8 @@ const UserFormModal: React.FC = () => {
   } : {
       firstName: "", lastName: "", email: "", phoneNumber: "", role: "BOOKER", password: "", confirmPassword:""
   }
+
+  const validIds = ["Driver's license", "Passport", "Unified Multi-purpose ID", "PhilPost Postal ID (PID)", "Philippine Identification", "Senior Citizen ID", "PRC ID"]
 
   return (
     <>
@@ -227,6 +233,69 @@ const UserFormModal: React.FC = () => {
                       <ErrorMessage name="confirmPassword" component="div" className="text-red-600 text-sm" />
                     </div>)}
                   </div>
+                    <div className="flex flex-col">
+
+                      <label htmlFor="city" className="text-sm font-medium text-gray-700">
+                        City
+                      </label>
+                      <Field
+                        as="select"
+                        id="city"
+                        name="city"
+                        className="mt-1 p-2 border border-gray-300 rounded-md"
+                      >
+                        <option value="">Select City</option>
+                        <option value="San Fernando">San Fernando</option>
+                        <option value="Angeles City">Angeles City</option>
+                        <option value="Other">Other</option>
+                      </Field>
+                      <ErrorMessage name="city" component="div" className="text-red-600 text-sm" />
+                    </div>
+
+                    {/* Other Address Field */}
+                    <div className="flex flex-col">
+                      <label htmlFor="otherAddress" className="text-sm font-medium text-gray-700">
+                        Other Address
+                      </label>
+                      <Field
+                        type="text"
+                        id="otherAddress"
+                        name="otherAddress"
+                        className="mt-1 p-2 border border-gray-300 rounded-md"
+                      />
+                      <ErrorMessage name="otherAddress" component="div" className="text-red-600 text-sm" />
+                    </div>
+
+                    <div className="flex flex-col">
+                      <label htmlFor="validIdType" className="text-sm font-medium text-gray-700">
+                        Valid ID Type
+                      </label>
+                      <Field
+                        as="select"
+                        id="validIdType"
+                        name="validIdType"
+                        className="mt-1 p-2 border border-gray-300 rounded-md"
+                      >
+                        <option value="">Select ID Type</option>
+                        {
+                          validIds.map(item => <option value={item}>{item}</option>)
+                        }
+                      </Field>
+                      <ErrorMessage name="validIdType" component="div" className="text-red-600 text-sm" />
+                    </div>
+
+                    <div className="flex flex-col">
+                      <label htmlFor="validIdNumber" className="text-sm font-medium text-gray-700">
+                        Valid ID Number
+                      </label>
+                      <Field
+                        type="text"
+                        id="validIdNumber"
+                        name="validIdNumber"
+                        className="mt-1 p-2 border border-gray-300 rounded-md"
+                      />
+                      <ErrorMessage name="validIdNumber" component="div" className="text-red-600 text-sm" />
+                    </div>
                   <div className="text-sm text-gray-900 grid grid-cols-1">
                           <select
                               id="location"

@@ -12,6 +12,10 @@ export interface IUsersDetails extends IBase {
     email: string
     phoneNumber: string
     role: string
+    city?: string
+    otherAddress?: string
+    validIdNumber?: string
+    validIdType?: string
 }
 
 export interface IVehicle extends IBase {
@@ -41,6 +45,8 @@ export interface IBooking extends IBase {
     status: string,
     paymentStatus: string,
     deliveryType: DeliveryType,
+    depositPaid: number,
+    balance: number
     // fleetTracking: Fle
 }
 

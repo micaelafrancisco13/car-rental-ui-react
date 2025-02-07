@@ -14,15 +14,23 @@ const VehicleFormModal: React.FC = () => {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isChangeImage, setIsChangeImage] = useState<boolean>(false);
   
-  const validationSchema = Yup.object({
+  const validationSchema = (existingLicensePlates: string[], current: string) => Yup.object({
     make: Yup.string().required('Make is required'),
     model: Yup.string().required('Model is required'),
     year: Yup.number().required('Year is required').min(1900, 'Year must be greater than 1900'),
-    licensePlate: Yup.string().required('License plate is required'),
+    licensePlate: Yup.string().required('License plate is required').test(
+      "unique-license-plate",
+      "This license plate already exists",
+      (value) => {
+        if (!value) return false;
+        return value === current || !existingLicensePlates.includes(value);
+      }
+    ),
     features: Yup.string().required('Features are required'),
     dailyRate: Yup.number().required('Daily rate is required').min(0, 'Rate cannot be negative'),
     briefDescription: Yup.string(),
-    detailedDescription: Yup.string().required("Detailed Description is required")
+    detailedDescription: Yup.string().required("Detailed Description is required"),
+    
   });
 
   const { mutate, isPending } = useAddVehicle();
@@ -31,7 +39,7 @@ const VehicleFormModal: React.FC = () => {
   const updateVehicle= useVehicleStore((state) => state.updateVehicle)
   const addVehicles = useVehicleStore((state) => state.addVehicles);
 
-  const vehicle = useVehicleStore().selectedVehicle
+  const { selectedVehicle:vehicle, vehicles } = useVehicleStore()
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -100,7 +108,7 @@ const VehicleFormModal: React.FC = () => {
             <div className='text-black font-bold text-xl mb-5'>Vehicle Form</div>
             <Formik
               initialValues={initialValues} 
-              validationSchema={validationSchema}
+              validationSchema={validationSchema(vehicles.map(item => item.licensePlate), initialValues.licensePlate)}
               onSubmit={async (values) => {
                 const imageUrl = await handleImageUpload(values.image)
                 const formValues = {
