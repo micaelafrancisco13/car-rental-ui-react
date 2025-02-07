@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import RentVehicle from "./RentVehicle";
+import useVehicleStore from "../stores/useVehicles";
+import BookingVehicle from "./booking/BookingVehicle";
 
 const ValidateRent = () => {
     const [_location, setLocation] = useState<{ latitude: number | null, longitude: number | null }>({ latitude: null, longitude: null });
@@ -16,7 +17,10 @@ const ValidateRent = () => {
 
         setIsAvailable(isInSanFernando || isInAngelesCity);
     };
-
+    const {
+        paginatedVehicles,
+        // setVehicle,
+    } = useVehicleStore();
     useEffect(() => {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
@@ -41,7 +45,11 @@ const ValidateRent = () => {
           {isAvailable === null  ? (
                     <p className="text-gray-600">Checking your location...</p>
                 ) : isAvailable ? 
-                    <RentVehicle />
+                
+                <BookingVehicle 
+                    paginatedVehicles={paginatedVehicles}
+                />
+                    // <RentVehicle />
                 : 
                 (
                     <p className="text-red-600 text-xl">Sorry, the app is not available in your current location.</p>

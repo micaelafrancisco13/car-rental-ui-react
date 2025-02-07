@@ -105,7 +105,7 @@ const Rentals = () => {
     }, [filteredBookings, currentPage]);
 
     useEffect(() => {
-        filterBooking(statusOption, paymentStatusOption)
+        filterBooking(statusOption === "RESERVED" ? "IN_PROGRESS" : statusOption, paymentStatusOption)
     }, [statusOption, paymentStatusOption])
 
     
