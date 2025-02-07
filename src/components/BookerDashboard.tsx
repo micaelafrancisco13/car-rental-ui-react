@@ -14,11 +14,12 @@ import ConfirmationDelete from "./feedback/ConfirmationButton";
 import { patchBookingStatus } from "../hooks/useUpdate";
 import { formatDate, formatMoney } from "../utils/helper";
 import BookingVehicle from "./booking/BookingVehicle";
-import BookingsSection from "./booking/Section";
+// import BookingsSection from "./booking/Section";
 import BookerLocationSender from "./location/BookerLocation";
 import ValidateRent from "./ValidateRent";
 import { motion } from "framer-motion";
 import BookerTrackingPage from "./location/BookerTracking";
+import Badge from "./GetColors";
 const BookerDashbaord = () => {
 	const {  isFetching } = useGetVehicles()
     const { isOpen, toggleConfirmation, open } = useGlobalStore()
@@ -26,7 +27,6 @@ const BookerDashbaord = () => {
         vehicles,
         currentPage,
         itemsPerPage,
-        
         setPage,
         setItemsPerPage,
         setPaginatedVehicles,
@@ -43,8 +43,8 @@ const BookerDashbaord = () => {
     const {
         bookings,
         inProgressBookings,
-        cancelledBookings,
-        completedBookings,
+        // cancelledBookings,
+        // completedBookings,
         // setMyBookings,
     } = useBookingStore();
 
@@ -58,7 +58,8 @@ const BookerDashbaord = () => {
         const filtered = vehicles.filter((vehicle) =>
             `${vehicle.make} ${vehicle.model} ${vehicle.year}`
             .toLowerCase()
-            .includes(searchQuery.toLowerCase()) && vehicle.availabilityStatus == "AVAILABLE"
+            .includes(searchQuery.toLowerCase()) 
+            // && vehicle.availabilityStatus == "AVAILABLE"
         );
         setFilteredVehicles(filtered);
 
@@ -117,23 +118,6 @@ const BookerDashbaord = () => {
         startIndex,
         startIndex + itemsPerPage
       );
-
-    const getStatusColor = (status: string) => {
-        switch(status) {
-            case "PENDING":
-                return`inline-flex items-center rounded-full bg-yellow-50 px-2 py-1 text-xs font-medium text-yellow-700 ring-1 ring-inset ring-yellow-600/10`
-            case "IN_PROGRESS":
-                return`inline-flex items-center rounded-full bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-600/10`
-            case "ACCEPTED":
-                return`inline-flex items-center rounded-full bg-indigo-50 px-2 py-1 text-xs font-medium text-indigo-700 ring-1 ring-inset ring-indigo-600/10`
-            case "COMPLETED":
-            case "PAID":
-                return`inline-flex items-center rounded-full bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/10`
-            case "FAILED":
-            case "CANCELLED":
-                return`inline-flex items-center rounded-full bg-red-50 px-2 py-1 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/10`
-        }
-    }
 
     return (
     <>
@@ -217,15 +201,16 @@ const BookerDashbaord = () => {
                                             <div className="flex space-x-4">
                                             <p className="text-md font-mono font-medium text-gray-700">
                                                 <span className="font-bold">Status:</span>{" "}
-                                                <span className={getStatusColor(inProgressBookings?.status || "")}>
-                                                {inProgressBookings?.status}
-                                                </span>
+                                                    <Badge key={inProgressBookings?.status || ""} status={inProgressBookings?.status === "IN_PROGRESS" ? "RESERVED" : inProgressBookings?.status} />
+                                                {/* <span className={getStatusColor(inProgressBookings?.status || "")}> */}
+                                                {/* <span>{inProgressBookings?.status === "IN_PROGRESS" ? "RESERVED" : inProgressBookings?.status} */}
+                                                {/* </span> */}
                                             </p>
                                             <p className="text-md font-mono font-medium text-gray-700">
                                                 <span className="font-bold">Payment Status:</span>{" "}
-                                                <span className={getStatusColor(inProgressBookings?.paymentStatus || "")}>
-                                                {inProgressBookings?.paymentStatus}
-                                                </span>
+                                                {/* <span className={getStatusColor(inProgressBookings?.paymentStatus || "")}> */}
+                                                <Badge key={inProgressBookings?.paymentStatus || ""} status={inProgressBookings?.paymentStatus === "PENDING" ? "WITH BALANCE" : inProgressBookings?.paymentStatus} />
+                                                {/* </span> */}
                                             </p>
                                             </div>
                                             <p className="text-md font-mono font-medium text-gray-700">
@@ -233,15 +218,23 @@ const BookerDashbaord = () => {
                                                 <span>
                                                     {inProgressBookings?.startDate &&
                                                     inProgressBookings?.endDate &&
-                                                    `${formatDate(inProgressBookings.startDate)} - ${formatDate(inProgressBookings.endDate)}`}
+                                                    `${formatDate(inProgressBookings.startDate)}`}
                                                 </span>
-                                                </p>
-                                                <p className="text-md font-mono font-medium text-gray-700">
+                                            </p>
+                                            <p className="text-md font-mono font-medium text-gray-700">
+                                                <span className="font-bold">Return Date:</span>{" "}
+                                                <span>
+                                                    {inProgressBookings?.startDate &&
+                                                    inProgressBookings?.endDate &&
+                                                    `${formatDate(inProgressBookings.endDate)}`}
+                                                </span>
+                                            </p>
+                                            <p className="text-md font-mono font-medium text-gray-700">
                                                 <span className="font-bold">Total Rate:</span>{" "}
                                                 <span>{formatMoney(inProgressBookings?.totalPrice || 1)}</span>
-                                                </p>
+                                            </p>
                                             </div>
-                                            {inProgressBookings?.status === "PENDING" && (
+                                            {(inProgressBookings?.paymentStatus?.toLowerCase() === "with balance" && inProgressBookings?.balance == 0) && (
                                                 <button
                                                     type="button"
                                                     onClick={toggleConfirmation}
@@ -281,14 +274,14 @@ const BookerDashbaord = () => {
                                 />
                                 }
                           
-                                <BookingsSection
+                                {/* <BookingsSection
                                     bookings={completedBookings}
                                     text={"Completed"}
                                 />
                                 <BookingsSection
                                     bookings={cancelledBookings}
                                     text={"Cancelled"}
-                                />
+                                /> */}
                                 </div>
                             </div>
                             </div>

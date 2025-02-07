@@ -9,12 +9,15 @@ import { useEffect, useState } from "react";
 import TablePagination from "../components/pagination/Table";
 import BookingDetails from "../components/modal/BookingDetails";
 import { useGlobalStore } from "../stores/useGlobal";
-import { formatDate, sendEmail } from "../utils/helper";
+import { formatDateNumber, sendEmail } from "../utils/helper";
 import { patchBookingStatus } from "../hooks/useUpdate";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import useVehicleStore from "../stores/useVehicles";
 import dayjs from "dayjs";
+import EditableBalanceCell from "../components/EditBalance";
+import useUpdateBookings from "../hooks/booking/useUpdate";
+import { AxiosError } from "axios";
 
 const Rentals = () => {
 
@@ -31,6 +34,7 @@ const Rentals = () => {
         setPaginatedBookings,
         filterBooking,
         setBookingDetails,
+        updateBalance,
     } = useBookingStore();
 
     const {
@@ -40,6 +44,7 @@ const Rentals = () => {
     const { openDetails, toggleView } = useGlobalStore()
 
     const patchBooking = patchBookingStatus()
+    const { mutate: updateBooking, isPending: isPendingStatusUpdate } = useUpdateBookings();
 
     const [statusOption, setStatus] = useState<string>("")
     const [paymentStatusOption, setPaymentStatusOption] = useState<string>("")
@@ -50,10 +55,9 @@ const Rentals = () => {
         }
         patchBooking.mutate({ id, data, name: key }, {
             onSuccess: (response) => {
-                console.log({response})
                 toast.success('Status Change Successfully')
                 sendEmail({
-                      email: response.booker.email, 
+                      email:response.booker.email, 
                       name: response.booker.firstName, 
                       message: `Your booking status has been updated to ${response.status}. 
                                 Your booking ID is ${response.id} for the ${response.vehicle?.make || ""} ${response.vehicle?.model || ""}, 
@@ -69,23 +73,33 @@ const Rentals = () => {
     }
 
     const getColor = (status: string) => {
-        switch(status){
+        switch (status) {
             case "PAID":
             case "COMPLETED":
-                return "green-500"
+                return "green-500"; // Success
+            case "RESERVED":
+            case "IN_PROGRESS":
+                return "blue-500"; // Active/Ongoing
+            case "WITH_BALANCE":
+            case "PENDING":
+                return "yellow-500"; // Warning/Requires Attention
             case "FAILED":
             case "CANCELLED":
-                return "red-500"
-            case "IN_PROGRESS":
-            case "PENDING":
-                return "yellow-500"
+                return "red-500"; // Error/Negative
             default:
-                return "gray-500"
+                return "gray-500"; // Default/Unknown status
         }
+    };
+
+    let headers: string[] = ["id", "Booker", "Vehicle", "Rental Date", "Return Date"]
+
+    const userRole = localStorage.getItem("role") || "";
+
+    if (userRole !== "booker"){
+        headers = [...headers, "Balance"]
     }
 
-    const headers: string[] = ["id", "Booker", "Vehicle", "Rental Date", "Status", "Payment Status", "Action"]
-
+    headers = [...headers,"Status", "Payment Status", "Action"]
     useEffect(() => {
         setPaginatedBookings();
     }, [filteredBookings, currentPage]);
@@ -103,8 +117,26 @@ const Rentals = () => {
         setItemsPerPage(itemsPerPage);
     };
 
+    const handleSaveBalance = async (bookingId: string, newValue: number) => {
+        const booking = filteredBookings.find(item => item.id === bookingId)
+        updateBooking({booking, depositPaid: newValue},  {
+            onSuccess: () => {
+                updateBalance(bookingId,newValue)
+                toast.success("Booking's balance has been successfully updated.")
+            },
+            onError: (error) => {
+                const err = error as AxiosError
+                const errMsg = err.response?.data || ""
+                toast.error(String(errMsg))    
+            }
+        })
+      };
+
     return (
         <Wrapper currentTab={"rentals"}>
+        {
+            isPendingStatusUpdate && <TableLoading />
+        }
         <div className="px-4 sm:px-6 lg:px-8">
             <div className="sm:flex sm:items-center">
                 <div className="sm:flex-auto">
@@ -121,7 +153,8 @@ const Rentals = () => {
                         setStatus(e.target.value)
                     }}
                     options={
-                        ["", "PENDING", "ACCEPTED", "IN_PROGRESS", "COMPLETED", "CANCELLED"]
+                        // ["", "PENDING", "ACCEPTED", "IN_PROGRESS", "COMPLETED", "CANCELLED"]
+                        ["", "RESERVED", "COMPLETED"]
                     }
                     title="Status"
                 />
@@ -133,6 +166,7 @@ const Rentals = () => {
                     options={
                         ["", "PENDING", "PAID", "FAILED"]
                     }
+                    type="payment"
                     title="Payment Status"
                 />
             </div>
@@ -179,24 +213,39 @@ const Rentals = () => {
                                 {`${booking.booker?.firstName} ${booking.booker?.lastName}`}
                             </td>
                             <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-900">
-                                {`${formatDate(booking.startDate)} - ${formatDate(booking.endDate)}`}
+                                {`${formatDateNumber(booking.startDate)}`}
                             </td>
+                            <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-900">
+                                {`${formatDateNumber(booking.endDate)}`}
+                            </td>
+                            { userRole !== "booker" && <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-900">
+                                 <EditableBalanceCell
+                                    initialValue={booking.balance || 0}
+                                    total={booking.totalPrice}
+                                    onSave={(newValue) => {
+                                        setBookingDetails(booking)
+                                        handleSaveBalance(booking.id, newValue)
+                                    }}
+                                    disabled={booking.paymentStatus.toLowerCase() === 'paid'} // Example condition
+                                    />
+                            </td>}
                             <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-900">
                                 <div className="grid grid-cols-1">
                                     <select
                                         id="status"
                                         name="status"
+                                        disabled={userRole === "booker"}
                                         defaultValue={booking.status}
                                         onChange={(event) => {
                                             handleChangeStatus(booking.id, "status", event.target.value)
                                         }}
                                         className={`col-start-1 row-start-1 text-${getColor(String(booking.status))} appearance-none rounded-md bg-white py-1.5 pl-3 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-cyan-600 sm:text-sm/6`}
                                         >
-                                        <option value={"PENDING"} className="text-yellow-500">PENDING</option>
-                                        <option value={"ACCEPTED"} className="text-blue-500">ACCEPTED</option>
-                                        <option value={"IN_PROGRESS"} className="text-yellow-500">IN PROGRESS</option>
+                                        {/* <option value={"PENDING"} className="text-yellow-500">PENDING</option>
+                                        <option value={"ACCEPTED"} className="text-blue-500">ACCEPTED</option> */}
+                                        <option value={"IN_PROGRESS"} className="text-blue-500">RESERVED</option>
                                         <option value={"COMPLETED"} className="text-green-500">COMPLETED</option>
-                                        <option value={"CANCELLED"}  className="text-red-500">CANCELLED</option>
+                                       { userRole === "booker" && <option value={"CANCELLED"}  className="text-red-500">CANCELLED</option>}
                                     </select>
                                     <ChevronDownIcon
                                     aria-hidden="true"
@@ -209,13 +258,14 @@ const Rentals = () => {
                                     <select
                                         id="paymentStatus"
                                         name="paymentStatus"
+                                        disabled={userRole === "booker"}
                                         defaultValue={booking.paymentStatus}
                                         onChange={(event) => {
                                             handleChangeStatus(booking.id, "paymentStatus", event.target.value)
                                         }}
                                         className={`col-start-1 row-start-1 text-${getColor(String(booking.paymentStatus))} appearance-none rounded-md bg-white py-1.5 pl-3 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-cyan-600 sm:text-sm/6`}
                                         >
-                                        <option value={"PENDING"} className="text-yellow-500">PENDING</option>
+                                        <option value={"PENDING"} className="text-yellow-500">WITH BALANCE</option>
                                         <option value={"PAID"} className="text-green-500">PAID</option>
                                         <option value={"FAILED"}  className="text-red-500">FAILED</option>
                                     </select>
@@ -235,7 +285,7 @@ const Rentals = () => {
                                     View
                                     
                                 </button>
-                                <button 
+                                { userRole !== "booker" && <button 
                                     onClick={()=>{
                                         setBookingDetails(booking)
                                         if(booking?.vehicle) {
@@ -245,7 +295,7 @@ const Rentals = () => {
                                     }
                                     className="text-cyan-600 hover:text-cyan-900">
                                     Track
-                                </button>
+                                </button>}
                             </td>
                         </tr>
                         ))}

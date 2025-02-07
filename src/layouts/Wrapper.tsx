@@ -13,11 +13,11 @@ import {
 } from '@headlessui/react'
 import {
   Bars3Icon,
-  BellIcon,
   HomeIcon,
   UsersIcon,
   XMarkIcon,
   RectangleGroupIcon,
+  PencilSquareIcon,
   TruckIcon,
 } from '@heroicons/react/24/outline'
 import { ChevronDownIcon } from '@heroicons/react/20/solid'
@@ -43,16 +43,18 @@ const Wrapper:FC<IWrapper> = ({children, currentTab}) => {
   const navigate = useNavigate()
   const navigation = [
     { name: 'Dashboard', href: '', icon: HomeIcon, current: currentTab === "dashboard" },
-   
+    { name: 'Rentals', href: '#', icon: RectangleGroupIcon, current: currentTab === "rentals"  },
   ]
 
   if (userRole === "admin") {
     navigation.push(
-      { name: 'Rentals', href: '#', icon: RectangleGroupIcon, current: currentTab === "rentals"  },
       { name: 'Vehicles', href: '#', icon: TruckIcon, current: currentTab === "vehicles"  },
       { name: 'Users', href: '#', icon: UsersIcon, current: currentTab === "users"  },
     )
   }
+  navigation.push(
+    { name: 'Reports', href: '#', icon: PencilSquareIcon, current: currentTab === "reports"  },
+  )
 
   const logout = () => {
       localStorage.removeItem("authToken");
@@ -210,10 +212,10 @@ const Wrapper:FC<IWrapper> = ({children, currentTab}) => {
                 />
               </form> */}
               <div className="flex items-center gap-x-4 lg:gap-x-6">
-                <button type="button" className="-m-2.5 p-2.5 text-gray-400 hover:text-gray-500">
+                {/* <button type="button" className="-m-2.5 p-2.5 text-gray-400 hover:text-gray-500">
                   <span className="sr-only">View notifications</span>
                   <BellIcon aria-hidden="true" className="size-6" />
-                </button>
+                </button> */}
 
                 {/* Separator */}
                 <div aria-hidden="true" className="hidden lg:block lg:h-6 lg:w-px lg:bg-gray-900/10" />
