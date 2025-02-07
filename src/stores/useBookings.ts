@@ -1,5 +1,6 @@
 import { create } from 'zustand';
-import { IBooking } from '../interfaces/shared';
+import { IBooking, IUsersDetails } from '../interfaces/shared';
+import { jwtDecode } from 'jwt-decode';
 
 interface BookingStore {
     bookings: IBooking[];
@@ -30,6 +31,11 @@ interface BookingStore {
     setPaginatedBookings: () => void
 }
 
+const role = localStorage.getItem("role") || ""
+const token = localStorage.getItem("authToken") || ""
+
+const decode:IUsersDetails = jwtDecode(token)
+
 const useBookingStore = create<BookingStore>((set, get) => ({
     bookings: [],
 
@@ -46,7 +52,9 @@ const useBookingStore = create<BookingStore>((set, get) => ({
       const filteredBookings = bookings.filter((booking) => {
         const matchesStatus = !status || booking.status === status;
         const matchesPaymentStatus = !paymentStatus || booking.paymentStatus === paymentStatus; 
-        return matchesStatus && matchesPaymentStatus;
+        const matchesBooker = role !== "booker" || booking.bookerId === decode.id; 
+
+        return matchesStatus && matchesPaymentStatus && matchesBooker;
       });
 
       const startIndex = (currentPage - 1) * itemsPerPage;
@@ -66,7 +74,14 @@ const useBookingStore = create<BookingStore>((set, get) => ({
       completedBookings: bookings.filter((item) => item.status == "COMPLETED"),
       cancelledBookings: bookings.filter((item) => item.status == "CANCELLED")
     })),
-    setBookings: (bookings) => set(() => ({ bookings, filteredBookings:bookings})),
+    setBookings: (bookings) => {
+      const filteredBookings = bookings.filter((booking) => {
+        const matchesBooker = role !== "booker" || booking.bookerId === decode.id; 
+
+        return  matchesBooker;
+      });
+      set(() => ({ bookings, filteredBookings}))
+    },
     setBooking: (track) => set(() => ({ track })),
     setBookingDetails: (selectedBooking) => set(() => ({ selectedBooking })),
 
