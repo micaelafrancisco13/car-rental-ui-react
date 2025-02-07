@@ -57,7 +57,7 @@ const Rentals = () => {
             onSuccess: (response) => {
                 toast.success('Status Change Successfully')
                 sendEmail({
-                      email: "kerwintry2022@gmail.com", 
+                      email:response.booker.email, 
                       name: response.booker.firstName, 
                       message: `Your booking status has been updated to ${response.status}. 
                                 Your booking ID is ${response.id} for the ${response.vehicle?.make || ""} ${response.vehicle?.model || ""}, 
