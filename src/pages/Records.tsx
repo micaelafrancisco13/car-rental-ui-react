@@ -159,7 +159,7 @@ const ReportSection = () => {
         <div className="mt-6 shadow-lg rounded-lg bg-white p-4">
           <h3 className="text-xl font-semibold mb-4 border-b pb-2">{selectedVehicle.model} {selectedVehicle.make} {selectedVehicle.year} Rental History</h3>
           <div className="space-y-2 max-h-96 overflow-y-auto p-2 scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200 rounded-lg">
-            {bookings.filter(item => item.vehicleId === selectedVehicle.id).map(booking => (
+            {getFilteredBookings().filter(item => item.vehicleId === selectedVehicle.id).map(booking => (
               <div key={booking.id} className="p-4 bg-gray-50 rounded-lg border border-gray-200">
               <div className="flex justify-between items-center">
                 <div>
