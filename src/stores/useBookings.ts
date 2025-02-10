@@ -34,7 +34,20 @@ interface BookingStore {
 const role = localStorage.getItem("role") || ""
 const token = localStorage.getItem("authToken") || ""
 
-const decode:IUsersDetails = jwtDecode(token)
+const decode:IUsersDetails = token ? jwtDecode(token) : {
+  createdAt:"",
+  email:"",
+  firstName:"",
+  id:"",
+  lastName:"",
+  phoneNumber:"",
+  role:"",
+  updatedAt:"",
+  city:"",
+  otherAddress:"",
+  validIdNumber:"",
+  validIdType:"",
+}
 
 const useBookingStore = create<BookingStore>((set, get) => ({
     bookings: [],
