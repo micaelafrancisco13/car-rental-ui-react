@@ -123,7 +123,7 @@ const ViewDetails: React.FC = () => {
             </div>
           </div>
           
-          { userRole === "booker" &&<div className="mt-10">
+          { userRole !== "booker" &&<div className="mt-10">
             <button
               type="button"
               onClick={()=> navigate(`/track/${selectedBooking.id}`)}
