@@ -11,6 +11,8 @@ import ConfirmationDelete from "../components/feedback/ConfirmationButton";
 import { useDeleteUser } from "../hooks/useDelete";
 import toast from "react-hot-toast";
 import { AxiosError } from "axios";
+import { IUsersDetails } from "../interfaces/shared";
+import { jwtDecode } from "jwt-decode";
 
 const Users = () => {
 	const { isFetching } = useGetUsers()
@@ -80,7 +82,22 @@ const Users = () => {
         startIndex,
         startIndex + itemsPerPage
       );
-
+    
+      const token = localStorage.getItem("authToken")
+    const details:IUsersDetails = token ? jwtDecode(token) : {
+    createdAt:"",
+    email:"",
+    firstName:"",
+    id:"",
+    lastName:"",
+    phoneNumber:"",
+    role:"",
+    updatedAt:"",
+    city:"",
+    otherAddress:"",
+    validIdNumber:"",
+    validIdType:"",
+    }
     return (
         <Wrapper currentTab={"users"}>
         <div className="px-4 sm:px-6 lg:px-8">
@@ -149,7 +166,7 @@ const Users = () => {
                         {paginatedUsers.map((person) => (
                         <tr key={person.id} >
                             <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm text-gray-900 sm:pl-2">
-                            {`${person.firstName} ${person.lastName}`}
+                            {`${person.firstName} ${person.lastName}`} {details.id === person.id && <span className="font-bold">(You)</span>}
                             </td>
                             <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-900">{person.email}</td>
                             <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-900">{person.phoneNumber}</td>
@@ -161,12 +178,12 @@ const Users = () => {
                                 }} className="text-cyan-600 hover:text-cyan-900">
                                     Edit<span className="sr-only">, {person.firstName}</span>
                                 </button>
-                                <button onClick={() => {
+                                { details.id !==person.id && <button onClick={() => {
                                     setUser(person)
                                     toggleConfirmation()
                                 }} className="text-cyan-600 hover:text-cyan-900">
                                     Delete<span className="sr-only">, {person.firstName}</span>
-                                </button>
+                                </button>}
                             </td>
                         </tr>
                         ))}
