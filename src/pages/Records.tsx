@@ -10,6 +10,7 @@ import useVehicleStore from "../stores/useVehicles";
 import { formatDate, formatMoney } from "../utils/helper";
 import Badge from "../components/GetColors";
 import { useState } from "react";
+import { useGlobalStore } from "../stores/useGlobal";
 
 const ReportSection = () => {
 
@@ -32,7 +33,8 @@ const ReportSection = () => {
 
     const details: IUsersDetails = jwtDecode(localStorage.getItem("authToken") || "")
     
-    const [selectedView, setSelectedView] = useState<string>("vehicles")
+    const { activeReport: selectedView } = useGlobalStore()
+    console.log({selectedView})
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
 
@@ -91,7 +93,7 @@ const ReportSection = () => {
         <div className="text-gray-900 min-h-screen">
           <div className="grid grid-cols-1 sm:grid-cols-2 mb-2">
             <h2 className="text-3xl font-bold font-weight-500 uppercase text-cyan-900 mb-3">Reports</h2>
-            <div className="flex justify-end pr-5">
+            {/* <div className="flex justify-end pr-5">
               <select
                 value={selectedView}
                 onChange={(e) => setSelectedView(e.target.value)}
@@ -101,7 +103,7 @@ const ReportSection = () => {
                 <option value="vehicles">Vehicles</option>
                 <option value="rentals">Rentals</option>
               </select>
-            </div>
+            </div> */}
           </div>
       <div className="grid grid-cols-1 gap-6">
         {/* Clients List */}
