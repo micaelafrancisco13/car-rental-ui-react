@@ -10,6 +10,7 @@ import TablePagination from "../components/pagination/Table";
 import ConfirmationDelete from "../components/feedback/ConfirmationButton";
 import { useDeleteUser } from "../hooks/useDelete";
 import toast from "react-hot-toast";
+import { AxiosError } from "axios";
 
 const Users = () => {
 	const { isFetching } = useGetUsers()
@@ -27,8 +28,9 @@ const Users = () => {
             }, 1000)
           },
           onError: (error) => {
-            toast.error("Error deleting user")
-            console.log({error})
+            const err = error as AxiosError
+            const msg = err?.response?.data || "Error on deleting the user"
+            toast.error(String(msg))
           }
         });
       };
@@ -113,7 +115,9 @@ const Users = () => {
 
                 <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
                 { people.length > 0 && (<button
-                onClick={toggleModal}
+                onClick={()=> {
+                    setUser(null)
+                    toggleModal()}}
                     type="button"
                     className="block rounded-md bg-cyan-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-cyan-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-600"
                 >

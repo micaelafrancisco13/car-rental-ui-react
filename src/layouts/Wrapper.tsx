@@ -26,6 +26,7 @@ import { Toaster } from 'react-hot-toast';
 import { setJwt } from '../services/api-client'
 import { jwtDecode } from 'jwt-decode'
 import { IUsersDetails } from '../interfaces/shared'
+import { useGlobalStore } from '../stores/useGlobal'
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ')
@@ -38,22 +39,26 @@ interface IWrapper {
 
 const Wrapper:FC<IWrapper> = ({children, currentTab}) => {
   const [sidebarOpen, setSidebarOpen] = useState(false)
-  
+  const [isReportsOpen, setIsReportsOpen] = useState(false)
   const userRole = localStorage.getItem("role") || ""
   const navigate = useNavigate()
+
+  const { toggleActiveReport } = useGlobalStore()
+
   const navigation = [
-    { name: 'Dashboard', href: '', icon: HomeIcon, current: currentTab === "dashboard" },
-    { name: 'Rentals', href: '#', icon: RectangleGroupIcon, current: currentTab === "rentals"  },
+    { name: 'Dashboard', href: '', icon: HomeIcon, current: currentTab === "dashboard", subMenu: [""] },
+    { name: 'Rentals', href: '#', icon: RectangleGroupIcon, current: currentTab === "rentals", subMenu: [""]  },
   ]
 
   if (userRole === "admin") {
     navigation.push(
-      { name: 'Vehicles', href: '#', icon: TruckIcon, current: currentTab === "vehicles"  },
-      { name: 'Users', href: '#', icon: UsersIcon, current: currentTab === "users"  },
+      { name: 'Vehicles', href: '#', icon: TruckIcon, current: currentTab === "vehicles", subMenu: [""]  },
+      { name: 'Users', href: '#', icon: UsersIcon, current: currentTab === "users", subMenu: [""]  },
     )
   }
+
   navigation.push(
-    { name: 'Reports', href: '#', icon: PencilSquareIcon, current: currentTab === "reports"  },
+    { name: 'Reports', href: '#', icon: PencilSquareIcon, current: currentTab === "reports", subMenu: userRole === "booker" ? ["Vehicles", "Rentals"] : ["Bookers", "Vehicles", "Rentals"] },
   )
 
   const logout = () => {
@@ -105,22 +110,56 @@ const Wrapper:FC<IWrapper> = ({children, currentTab}) => {
                   <ul role="list" className="flex flex-1 flex-col gap-y-7">
                     <li>
                       <ul role="list" className="-mx-2 space-y-1">
-                        {navigation.map((item) => (
-                          <li key={item.name}>
+                      {navigation.map((item) => (
+                        <li key={item.name}>
+                          {item.subMenu && item.name === "Reports" ? (
+                            <>
+                              <button
+                                onClick={()=>{ setIsReportsOpen(!isReportsOpen) }}
+                                className={classNames(
+                                  'text-gray-400 hover:bg-gray-800 hover:text-white',
+                                  'group flex w-full justify-between rounded-md p-2 text-sm font-semibold'
+                                )}
+                              >
+                                <div className="flex gap-x-3">
+                                  <item.icon aria-hidden="true" className="size-6 shrink-0" />
+                                  {item.name}
+                                </div>
+                                <span>{isReportsOpen ? '▼' : '▶'}</span>
+                              </button>
+                              {isReportsOpen && (
+                                <ul className="ml-8 mt-1 space-y-1">
+                                  {item.subMenu.map((subItem) => (
+                                    <li key={subItem}>
+                                      <button
+                                        onClick={() => {
+                                          navigate("/reports")
+                                          toggleActiveReport(subItem.toLowerCase())}}
+                                        className="w-full text-left text-gray-400 hover:bg-gray-700 hover:text-white block rounded-md p-2 text-sm"
+                                      >
+                                        {subItem}
+                                      </button>
+                                    </li>
+                                  ))}
+                                </ul>
+                              )}
+                            </>
+                          ) : (
                             <a
-                              onClick={()=>navigate(`/${item.name.toLowerCase()}`)}
+                              onClick={() => navigate(`/${item.name.toLowerCase()}`)}
                               className={classNames(
                                 item.current
                                   ? 'bg-gray-800 text-white'
                                   : 'text-gray-400 hover:bg-gray-800 hover:text-white',
-                                'group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold',
+                                'group flex gap-x-3 rounded-md p-2 text-sm font-semibold'
                               )}
                             >
                               <item.icon aria-hidden="true" className="size-6 shrink-0" />
                               {item.name}
                             </a>
-                          </li>
-                        ))}
+                          )}
+                        </li>
+                      ))}
                       </ul>
                     </li>
                     <li className="mt-auto">
@@ -155,22 +194,56 @@ const Wrapper:FC<IWrapper> = ({children, currentTab}) => {
               <ul role="list" className="flex flex-1 flex-col gap-y-7">
                 <li>
                   <ul role="list" className="-mx-2 space-y-1">
-                    {navigation.map((item) => (
-                      <li key={item.name}>
-                        <a
-                          onClick={()=>navigate(`/${item.name.toLowerCase()}`)}
-                          className={classNames(
-                            item.current
-                              ? 'bg-gray-800 text-white'
-                              : 'text-gray-400 hover:bg-gray-800 hover:text-white',
-                            'group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold',
+                  {navigation.map((item) => (
+                        <li key={item.name}>
+                          {item.subMenu && item.name === "Reports" ? (
+                            <>
+                              <button
+                                onClick={()=>{ setIsReportsOpen(!isReportsOpen) }}
+                                className={classNames(
+                                  'text-gray-400 hover:bg-gray-800 hover:text-white',
+                                  'group flex w-full justify-between rounded-md p-2 text-sm font-semibold'
+                                )}
+                              >
+                                <div className="flex gap-x-3">
+                                  <item.icon aria-hidden="true" className="size-6 shrink-0" />
+                                  {item.name}
+                                </div>
+                                <span>{isReportsOpen ? '▼' : '▶'}</span>
+                              </button>
+                              {isReportsOpen && (
+                                <ul className="ml-8 mt-1 space-y-1">
+                                  {item.subMenu.map((subItem) => (
+                                    <li key={subItem}>
+                                      <button
+                                        onClick={() => {
+                                          navigate("/reports")
+                                          toggleActiveReport(subItem.toLowerCase())}}
+                                        className="w-full text-left text-gray-400 hover:bg-gray-700 hover:text-white block rounded-md p-2 text-sm"
+                                      >
+                                        {subItem}
+                                      </button>
+                                    </li>
+                                  ))}
+                                </ul>
+                              )}
+                            </>
+                          ) : (
+                            <a
+                              onClick={() => navigate(`/${item.name.toLowerCase()}`)}
+                              className={classNames(
+                                item.current
+                                  ? 'bg-gray-800 text-white'
+                                  : 'text-gray-400 hover:bg-gray-800 hover:text-white',
+                                'group flex gap-x-3 rounded-md p-2 text-sm font-semibold'
+                              )}
+                            >
+                              <item.icon aria-hidden="true" className="size-6 shrink-0" />
+                              {item.name}
+                            </a>
                           )}
-                        >
-                          <item.icon aria-hidden="true" className="size-6 shrink-0" />
-                          {item.name}
-                        </a>
-                      </li>
-                    ))}
+                        </li>
+                      ))}
                   </ul>
                 </li>
                 <li className="mt-auto">
