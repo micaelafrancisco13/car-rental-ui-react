@@ -133,11 +133,14 @@ const CarTracker: React.FC = () => {
             Tracking History
           </div>
           <div className="max-h-96 overflow-y-auto text-cyan-800">
-          {history.length && 
+          {history.length ?
             <>
               {filter.today.length > 0 && <div>Today</div>}
-              {filter.today.sort((a, b) => {
-                return b.recordedAt.getTime() - a.recordedAt.getTime(); 
+              {filter.today
+              .sort((a, b) => {
+                const timeB = b.recordedAt ? new Date(b.recordedAt).getTime() : 0; // Fallback to 0 if undefined
+                const timeA = a.recordedAt ? new Date(a.recordedAt).getTime() : 0; // Fallback to 0 if undefined
+                return timeB - timeA; // Sort in descending order
               }).map((item) => {
                 return (
                   <div className="mb-3">
@@ -173,6 +176,9 @@ const CarTracker: React.FC = () => {
                 )
               })}
             </>
+            : <div>
+              No available history
+            </div>
           }
           </div>
         </div>
