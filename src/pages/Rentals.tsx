@@ -91,7 +91,7 @@ const Rentals = () => {
         }
     };
 
-    let headers: string[] = ["id", "Booker", "Vehicle", "Rental Date", "Return Date"]
+    let headers: string[] = ["id", "Vehicle", "Booker", "Rental Date", "Return Date"]
 
     const userRole = localStorage.getItem("role") || "";
 
@@ -207,7 +207,7 @@ const Rentals = () => {
                             {`${booking.bookerId}`}
                             </td> */}
                             <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-900">
-                            {`${booking?.vehicle?.make} ${booking?.vehicle?.model} ${booking?.vehicle?.year}`}
+                            {booking?.vehicle ? `${booking?.vehicle?.make} ${booking?.vehicle?.model} ${booking?.vehicle?.year}` : "[Deleted Vehicle]"}
                             </td>
                             <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-900">
                                 {`${booking.booker?.firstName} ${booking.booker?.lastName}`}
@@ -276,7 +276,7 @@ const Rentals = () => {
                                 </div>
                             </td>
                             <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-sm font-medium sm:pr-0 space-x-3">
-                                <button
+                               { booking?.vehicle && <button
                                     onClick={() => {
                                         setBookingDetails(booking)
                                         toggleView()
@@ -284,8 +284,8 @@ const Rentals = () => {
                                     className="text-cyan-600 hover:text-cyan-900">
                                     View
                                     
-                                </button>
-                                { userRole !== "booker" && <button 
+                                </button>}
+                                { (userRole !== "booker" && booking?.vehicle) && <button 
                                     onClick={()=>{
                                         setBookingDetails(booking)
                                         if(booking?.vehicle) {
