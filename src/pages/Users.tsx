@@ -112,7 +112,7 @@ const Users = () => {
                     <input 
                         type="search" 
                         onChange={handleSearch} 
-                        placeholder="Search Vehicle..." 
+                        placeholder="Search User..." 
                         className="w-full outline-none border border-cyan-500 bg-white text-gray-600 text-sm px-4 py-2 rounded-l-md" 
                     />
                     <button 
