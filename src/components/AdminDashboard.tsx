@@ -28,7 +28,7 @@ const AdminDashboard= () => {
       },
       {
         title: "Revenue",
-        value: `$${result.reduce((acc: number, curr: { totalPrice: any; }) => acc + parseFloat(curr?.totalPrice || "0"), 0).toLocaleString()}`,
+        value: `₱${result.reduce((acc: number, curr: { totalPrice: any; }) => acc + parseFloat(curr?.totalPrice || "0"), 0).toLocaleString()}`,
         icon: <TrendingUp className="h-8 w-8" />
       }
     ];
