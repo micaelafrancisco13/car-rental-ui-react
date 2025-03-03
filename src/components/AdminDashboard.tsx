@@ -83,7 +83,7 @@ const AdminDashboard= () => {
                 curve: 'straight'
             },
             title: {
-                text: 'Total Incone by Month',
+                text: 'Total Income by Month',
                 align: 'left'
             },
             grid: {
