@@ -12,7 +12,7 @@ import toast from "react-hot-toast";
 import { AxiosError } from "axios";
 import ConfirmationDelete from "./feedback/ConfirmationButton";
 import { patchBookingStatus } from "../hooks/useUpdate";
-import { formatDate, formatMoney } from "../utils/helper";
+import { carTypeOptions, formatDate, formatMoney } from "../utils/helper";
 import BookingVehicle from "./booking/BookingVehicle";
 // import BookingsSection from "./booking/Section";
 import BookerLocationSender from "./location/BookerLocation";
@@ -20,6 +20,7 @@ import ValidateRent from "./ValidateRent";
 import { motion } from "framer-motion";
 import BookerTrackingPage from "./location/BookerTracking";
 import Badge from "./GetColors";
+import { ChevronDownIcon } from "@heroicons/react/24/outline";
 const BookerDashbaord = () => {
 	const {  isFetching } = useGetVehicles()
     const { isOpen, toggleConfirmation, open } = useGlobalStore()
@@ -269,9 +270,39 @@ const BookerDashbaord = () => {
                                     </motion.div>
                                     </div>
                                 ) : 
+                                <>
+                                <div>
+                                    <div className="flex text-black">
+                                        <div className="font-bold pt-1 pr-2">
+                                        Sort by:
+                                        </div>
+                                        <div className="text-sm text-gray-900 grid grid-cols-3">
+                                            <select
+                                                id="location"
+                                                name="location"
+                                                // defaultValue={selectedUser?.role || "BOOKER"}
+                                                className={`col-start-1 row-start-1 appearance-none rounded-md bg-white py-1.5 pl-3 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6`}
+                                                >
+                                                    <option value="">All</option>
+                                                    {
+                                                        carTypeOptions.map(item => {
+                                                            return(
+                                                                <option key={item} value={item}>{item}</option>
+                                                            )
+                                                        })
+                                                    }
+                                            </select>
+                                            <ChevronDownIcon
+                                            aria-hidden="true"
+                                            className="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
                                 <BookingVehicle 
                                     paginatedVehicles={paginatedVehicles}
                                 />
+                                </>
                                 }
                           
                                 {/* <BookingsSection

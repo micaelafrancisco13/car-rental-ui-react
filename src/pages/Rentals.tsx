@@ -99,7 +99,7 @@ const Rentals = () => {
         headers = [...headers, "Balance"]
     }
 
-    headers = [...headers,"Status", "Payment Status", "Action"]
+    headers = [...headers,"Status", "Payment Status", "Mode", "Action"]
     useEffect(() => {
         setPaginatedBookings();
     }, [filteredBookings, currentPage]);
@@ -132,6 +132,18 @@ const Rentals = () => {
         })
       };
 
+    const generatePaymentMode = (mode: string) => {
+        switch(mode){
+            case "cash":
+                return "Cash"
+            case "gcash":
+                return "GCash"
+            case "bank-transfer":
+                return "Bank Transfer"
+            default: 
+            return ""
+        }
+    }
     return (
         <Wrapper currentTab={"rentals"}>
         {
@@ -191,7 +203,7 @@ const Rentals = () => {
                             {
                                 headers.map((item, idx) => {
                                     return (
-                                        <th scope="col" key={idx} className={`py-3.5 pl-4 pr-3 text-white text-left text-sm font-semibold text-gray-900 ${item === "id" ? 'hidden' : ""}`}>
+                                        <th scope="col" key={idx} className={`whitespace-nowrap py-3.5 pl-4 pr-3 text-white text-left text-sm font-semibold text-gray-900 ${item === "id" ? 'hidden' : ""}`}>
                                             {item}
                                         </th>
                                     )
@@ -274,6 +286,9 @@ const Rentals = () => {
                                         className="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4"
                                     />
                                 </div>
+                            </td>
+                            <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-900">
+                                { generatePaymentMode(booking?.paymentMode || "cash") }
                             </td>
                             <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-sm font-medium sm:pr-0 space-x-3">
                                { booking?.vehicle && <button
