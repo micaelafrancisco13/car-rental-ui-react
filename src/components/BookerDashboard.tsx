@@ -31,6 +31,7 @@ const BookerDashbaord = () => {
         setPage,
         setItemsPerPage,
         setPaginatedVehicles,
+        setFilterType,
       } = useVehicleStore();
 
     const {
@@ -120,6 +121,11 @@ const BookerDashbaord = () => {
         startIndex + itemsPerPage
       );
 
+    const handleSortType = (e:React.ChangeEvent<HTMLSelectElement>) => {
+        const { value } = e.target
+            setFilterType(value); 
+            setPaginatedVehicles();
+    };
     return (
     <>
         <div style={{
@@ -280,6 +286,7 @@ const BookerDashbaord = () => {
                                             <select
                                                 id="location"
                                                 name="location"
+                                                onChange={handleSortType}
                                                 // defaultValue={selectedUser?.role || "BOOKER"}
                                                 className={`col-start-1 row-start-1 appearance-none rounded-md bg-white py-1.5 pl-3 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6`}
                                                 >
@@ -318,6 +325,7 @@ const BookerDashbaord = () => {
                             </div>
                     ) :
                     <div className="">
+                       
                         <div className="flex m-1 hidden rounded-md border-2 border-indigo-500 overflow-hidden max-w-lg mx-auto font-[sans-serif]">
                             <input type="search" onChange={handleSearch} placeholder="Search Vehicle..."
                             className="w-full outline-none bg-white text-gray-600 text-sm px-4 py-2" />
@@ -328,6 +336,33 @@ const BookerDashbaord = () => {
                                 </path>
                             </svg>
                             </button>
+                        </div>
+                        <div className="flex text-black mb-3">
+                            <div className="font-bold pt-1 pr-2">
+                            Sort by:
+                            </div>
+                            <div className="text-sm text-gray-900 grid grid-cols-3">
+                                <select
+                                    id="location"
+                                    name="location"
+                                    onChange={handleSortType}
+                                    // defaultValue={selectedUser?.role || "BOOKER"}
+                                    className={`col-start-1 row-start-1 appearance-none rounded-md bg-white py-1.5 pl-3 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6`}
+                                    >
+                                        <option value="">All</option>
+                                        {
+                                            carTypeOptions.map(item => {
+                                                return(
+                                                    <option key={item} value={item}>{item}</option>
+                                                )
+                                            })
+                                        }
+                                </select>
+                                <ChevronDownIcon
+                                aria-hidden="true"
+                                className="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4"
+                                />
+                            </div>
                         </div>
                         <ValidateRent />
                     </div>

@@ -15,6 +15,8 @@ import { Calendar } from 'lucide-react';
 import './style.css'
 import { useGetBookings } from '../../hooks/booking/useGetBookings';
 import TableLoading from '../loaders/TableLoading';
+import TermsModal from './Terms';
+import { useState } from 'react';
 
 const RentCarModal: React.FC = () => {
   const { isOpen, toggleModal } = useGlobalStore(); 
@@ -69,6 +71,8 @@ const RentCarModal: React.FC = () => {
   } : {
       vehicleId: '', startDate: "", endDate: ""
   }
+
+  const [openTerms, setOpenTerms] = useState<boolean>(false)
   const getLocation = () => {
    const details = jwtDecode(localStorage.getItem("authToken") || "")
    return String(details.iat) || ""
@@ -206,8 +210,13 @@ const CustomDatePicker = ({ field, form, otherFieldValue, isDisabled, placeholde
 
   return (
     <>
+    
+    {openTerms && <TermsModal 
+            isOpen={openTerms}
+            setIsOpen={()=> setOpenTerms(!openTerms)}
+          />}
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900 bg-opacity-50">
+        <div className="fixed inset-0 z-40 flex items-center justify-center bg-gray-900 bg-opacity-50">
           <div className="bg-white w-3/4 max-w-2xl pl-6 pr-3 py-6 rounded-lg shadow-lg relative 
                           h-5/6 sm:h-auto overflow-hidden flex flex-col">
             <div className="overflow-y-auto flex-grow max-h-[90vh]">
@@ -351,9 +360,9 @@ const CustomDatePicker = ({ field, form, otherFieldValue, isDisabled, placeholde
                         />
                       <label htmlFor="terms" className="text-sm text-gray-700">
                           I agree to the{" "}
-                          <a href="/terms" target="_blank" className="text-blue-600 underline">
+                          <button onClick={()=> setOpenTerms(true)} className="text-blue-600 underline">
                             Terms and Conditions
-                          </a>
+                          </button>
                         </label>
                     </div>
                     <ErrorMessage name={"agreed"} component="div" className="text-red-600 text-sm mt-2" />

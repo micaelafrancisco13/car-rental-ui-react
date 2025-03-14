@@ -7,6 +7,7 @@ interface VehicleStore {
   currentPage: number;
   itemsPerPage: number;
   paginatedVehicles: IVehicle[];
+  filterType: string | null;
 
   setVehicles: (vehicles: IVehicle[]) => void;
   setVehicle: (vehicle: IVehicle | null) => void;
@@ -20,6 +21,7 @@ interface VehicleStore {
   setItemsPerPage: (itemsPerPage: number) => void;
   getPaginatedVehicles: () => IVehicle[];
   setPaginatedVehicles: () => void
+  setFilterType: (type: string | null) => void;
 }
 
 const useVehicleStore = create<VehicleStore>((set, get) => ({
@@ -29,6 +31,7 @@ const useVehicleStore = create<VehicleStore>((set, get) => ({
   currentPage: 1, // Default to the first page
   itemsPerPage: 10, // Default to 10 items per page
   paginatedVehicles: [],
+  filterType: null,
 
   setVehicles: (vehicles) => set(() => ({ vehicles })),
   setVehicle: (selectedVehicle) => set(() => ({ selectedVehicle: selectedVehicle })),
@@ -60,16 +63,24 @@ const useVehicleStore = create<VehicleStore>((set, get) => ({
   setItemsPerPage: (itemsPerPage) => set(() => ({ itemsPerPage })),
   
   getPaginatedVehicles: () => {
-    const { vehicles, currentPage, itemsPerPage } = get();
+    const { vehicles, currentPage, itemsPerPage, filterType } = get();
+    let filteredVehicles = vehicles
+
+    if (filterType) {
+      filteredVehicles = vehicles.filter(vehicle => (vehicle?.type || '').toLowerCase() === filterType.toLowerCase());
+    }
+
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
     
-    return vehicles.slice(startIndex, endIndex);
+
+    return filteredVehicles.slice(startIndex, endIndex);
   },
   
   setPaginatedVehicles: () => {
     set(() => ({ paginatedVehicles: get().getPaginatedVehicles() }));
   },
+  setFilterType: (type) => set(() => ({ filterType: type })),
 }));
 
 export default useVehicleStore;
