@@ -8,7 +8,15 @@ import useVehicleStore from '../../stores/useVehicles';
 import useBookCar from '../../hooks/booking/useBookCar';
 import { calcualteTotalRate } from '../../utils/helper';
 import { jwtDecode } from 'jwt-decode';
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import useBookingStore from '../../stores/useBookings';
+import { Calendar } from 'lucide-react';
+import './style.css'
+import { useGetBookings } from '../../hooks/booking/useGetBookings';
+import TableLoading from '../loaders/TableLoading';
+import TermsModal from './Terms';
+import { useState } from 'react';
 
 const RentCarModal: React.FC = () => {
   const { isOpen, toggleModal } = useGlobalStore(); 
@@ -43,6 +51,10 @@ const RentCarModal: React.FC = () => {
         return value >= startDate;
       }
     ),
+    paymentMode: Yup.string().required("Payment mode is required"),
+    agreed: Yup.boolean()
+    .oneOf([true], "You must agree to the Terms and Conditions.")
+    .required("You must agree to the Terms and Conditions."),
   });
 
   const { mutate: rentCar, isPending: isPendingUpdate } = useBookCar();
@@ -51,12 +63,16 @@ const RentCarModal: React.FC = () => {
   } = useBookingStore()
   const { selectedVehicle } = useVehicleStore()
 
+  const { isPending } = useGetBookings(`isAll=true&&status=IN_PROGRESS&&vehicleId=${selectedVehicle?.id}`)
+  const { bookings } = useBookingStore()
   const initialValues = selectedVehicle ? 
   { 
-    vehicleId:selectedVehicle.id, startDate: "", endDate: ""
+    vehicleId:selectedVehicle.id, startDate: "", endDate: "", agreed: false
   } : {
       vehicleId: '', startDate: "", endDate: ""
   }
+
+  const [openTerms, setOpenTerms] = useState<boolean>(false)
   const getLocation = () => {
    const details = jwtDecode(localStorage.getItem("authToken") || "")
    return String(details.iat) || ""
@@ -100,11 +116,110 @@ const RentCarModal: React.FC = () => {
 //       }
 //     );
 //   };
+  const generateDateList = (start: string, end: string) => {
+    const startDate = new Date(start);
+    const endDate = new Date(end);
+    const dates = [];
+
+    while (startDate <= endDate) {
+      dates.push(startDate.toISOString().split("T")[0]); // Format: YYYY-MM-DD
+      startDate.setDate(startDate.getDate() + 1); // Move to next day
+    }
+
+    return dates;
+  };
+  const filterBookings = bookings.map(item => generateDateList(String(item.startDate), String(item.endDate)))?.[0] || []
+  const unavailableDates = filterBookings.map(date => new Date(date));
+
+  const isDateUnavailable = (date: Date) =>
+    unavailableDates.some(unavailableDate => unavailableDate.toDateString() === date.toDateString());
+  const isRangeBlocked = (start: Date, end: Date) => {
+    if (end <= start) return true;
+    return unavailableDates.some(date => date > start && date < end);
+  };
+
+const CustomDatePicker = ({ field, form, otherFieldValue, isDisabled, placeholder }: any) => {
+  const isStartDate = field.name === "startDate";
+  const isEndDate = field.name === "endDate";
+
+  const handleChange = (date: Date | null) => {
+    if (date && isDateUnavailable(date)) {
+      form.setFieldError(field.name, "This date is unavailable for rental.");
+    } else {
+      form.setFieldValue(field.name, date ? date.toLocaleDateString('en-CA') : "");
+
+      if (isStartDate) {
+        const startDate = date ? new Date(date) : null;
+        const endDate = otherFieldValue ? new Date(otherFieldValue) : null;
+        if (startDate && endDate && isRangeBlocked(startDate, endDate)) {
+          form.setFieldValue("endDate", "");
+        }
+      }
+    }
+  };
+
+  return (
+    <div className="customDatePickerWidth">
+      <DatePicker
+        selected={field.value ? new Date(field.value) : null}
+        onChange={handleChange}
+        filterDate={(date) => {
+          if (isDateUnavailable(date)) return false;
+          if (isEndDate && otherFieldValue) {
+            const startDate = new Date(otherFieldValue);
+            return date > startDate && !isRangeBlocked(startDate, date);
+          }
+          return true;
+        }}
+        minDate={new Date()}
+        disabled={isDisabled}
+        placeholderText={placeholder}
+        icon={<Calendar />}
+        className="block w-full mt-1 p-2 border border-gray-300 rounded-md" 
+        dayClassName={(date) => (isDateUnavailable(date) ? "text-gray-400 cursor-not-allowed" : "")}
+        dateFormat="yyyy-MM-dd"
+      />
+      <ErrorMessage name={field.name} component="div" className="text-red-600 text-sm" />
+    </div>
+  );
+};
+
+  // const CustomDatePicker = ({ field, form,  }: any) => {
+  //   const name = field.name
+  //   const selectedDate = field.value ? new Date(field.value) : null;
+  //   return (
+  //     <DatePicker
+  //       selected={selectedDate}
+  //       onChange={(date) => {
+  //         if (date && isDateUnavailable(date)) {
+  //           form.setFieldError(name, "This date is unavailable for rental.");
+  //         } else {
+  //           form.setFieldValue(name, date ? date.toISOString().split("T")[0] : "");
+  //         }
+  //       }}
+  //       filterDate={(date) => !isDateUnavailable(date)}
+  //       className="mt-1 p-2 border border-gray-300 rounded-md w-full"
+  //       dayClassName={(date) => (isDateUnavailable(date) ? "text-gray-400 cursor-not-allowed" : "")}
+  //       dateFormat="yyyy-MM-dd"
+  //     />
+  //   );
+  // };
+  if (isPending) {
+    return <TableLoading />
+  }
+
   return (
     <>
+    
+    {openTerms && <TermsModal 
+            isOpen={openTerms}
+            setIsOpen={()=> setOpenTerms(!openTerms)}
+          />}
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex  items-center justify-center bg-gray-900 bg-opacity-50">
-          <div className="bg-white w-3/4 overflow-y-auto h-5/6 sm:h-auto max-w-2xl p-6 rounded-lg shadow-lg relative">
+        <div className="fixed inset-0 z-40 flex items-center justify-center bg-gray-900 bg-opacity-50">
+          <div className="bg-white w-3/4 max-w-2xl pl-6 pr-3 py-6 rounded-lg shadow-lg relative 
+                          h-5/6 sm:h-auto overflow-hidden flex flex-col">
+            <div className="overflow-y-auto flex-grow max-h-[90vh]">
             <button
               onClick={toggleModal}
               className="absolute top-3 right-3 text-gray-600 hover:text-gray-900"
@@ -186,52 +301,72 @@ const RentCarModal: React.FC = () => {
                 // }
               
             >
-              {({ values }) => (
+              {({ values, handleBlur, handleChange }) => (
                 <Form className="h-5/6 overflow-hidden text-black">
-                  <div className="space-y-6 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-500 scrollbar-track-gray-200  w-full max-h-96 ">
+                  <div className="space-y-6 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-500 scrollbar-track-gray-200  w-full max-h-96 pr-2">
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     <div className="flex flex-col">
                       <label htmlFor="startDate" className="text-sm font-medium text-gray-700">
                         Start Date
                       </label>
-                      <Field 
-                        name="startDate">
-                        {({ field }: any) => (
-                            <input
-                            {...field}
-                            id="startDate"
-                            type="date"
-                            className="mt-1 p-2 border border-gray-300 rounded-md"
-                            />
-                        )}
-                        </Field>
-                      <ErrorMessage name="startDate" component="div" className="text-red-600 text-sm" />
+                      <Field name="startDate" className="w-full" component={CustomDatePicker} otherFieldValue={values.endDate} />
                     </div>
 
                     <div className="flex flex-col">
                       <label htmlFor="endDate" className="text-sm font-medium text-gray-700">
                       End Date
                       </label>
-                      <Field 
-                        name="endDate">
-                        {({ field }: any) => (
-                            <input
-                            {...field}
-                            id="endDate"
-                            type="date"
-                        className="mt-1 p-2 border border-gray-300 rounded-md"
-                            />
-                        )}
-                        </Field>
-                      <ErrorMessage name="endDate" component="div" className="text-red-600 text-sm" />
+                      <Field name="endDate" component={CustomDatePicker} otherFieldValue={values.startDate} />
                     </div>
+                    
+                    <div className="flex flex-col">
+                        <label htmlFor="paymentMode" className="text-sm font-medium text-gray-700">
+                        Payment Mode
+                        </label>
+                        <Field
+                        as="select"
+                        id="paymentMode"
+                        name="paymentMode"
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        className="mt-1 p-2 border border-gray-300 rounded-md text-gray-700"
+                        >
+                        <option value="">Select Payment Mode</option>
+                        <option value="cash">Cash</option>
+                        <option value="bank-transfer">Bank Transfer</option>
+                        <option value="gcash">GCash</option>
+                        </Field>
+                        <ErrorMessage name="paymentMode" component="div" className="text-red-600 text-sm" />
+                    </div>
+                    <div className='flex flex-col justify-center h-100'>
                       <div>
-                        
-                    <span className="font-bold text-slate-500 text-sm">Total Rate: </span><span className="inline-flex items-center rounded-full bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
-                    PHP {calcualteTotalRate(values.startDate || "", values.endDate || "", selectedVehicle?.dailyRate || 1)}
-                        </span>
+                      <span className="font-bold text-slate-500 text-sm">Total Rate: </span><span className="inline-flex items-center rounded-full bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
+                      PHP {calcualteTotalRate(values.startDate || "", values.endDate || "", selectedVehicle?.dailyRate || 1)}
+                      </span>
                       </div>
+                    </div>
+                    
+                    <div className='w-full'>
+                    <div className="flex items-center space-x-2">
+                      <input
+                          type="checkbox"
+                          id="terms"
+                          name="agreed"
+                          checked={values.agreed}
+                          onChange={handleChange}
+                          onBlur={handleBlur}
+                          className="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring focus:ring-blue-300"
+                        />
+                      <label htmlFor="terms" className="text-sm text-gray-700">
+                          I agree to the{" "}
+                          <button onClick={()=> setOpenTerms(true)} className="text-blue-600 underline">
+                            Terms and Conditions
+                          </button>
+                        </label>
+                    </div>
+                    <ErrorMessage name={"agreed"} component="div" className="text-red-600 text-sm mt-2" />
+                    </div>
                   </div>
                   </div>
                   <LoadingButton 
@@ -241,6 +376,7 @@ const RentCarModal: React.FC = () => {
                 </Form>
               )}
             </Formik>
+          </div>
           </div>
         </div>
       )}

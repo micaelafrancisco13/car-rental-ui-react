@@ -8,6 +8,7 @@ import toast from 'react-hot-toast';
 import axios, { AxiosError } from 'axios';
 import LoadingButton from '../loaders/LoadingButton';
 import useUpdateVehicle from '../../hooks/vehicle/useUpdateVehicle';
+import { carTypeOptions } from '../../utils/helper';
 
 const VehicleFormModal: React.FC = () => {
   const { isOpen, toggleModal } = useGlobalStore(); 
@@ -27,6 +28,7 @@ const VehicleFormModal: React.FC = () => {
       }
     ),
     features: Yup.string().required('Features are required'),
+    type: Yup.string().required('Car Type is required'),
     dailyRate: Yup.number().required('Daily rate is required').min(0, 'Rate cannot be negative'),
     briefDescription: Yup.string(),
     detailedDescription: Yup.string().required("Detailed Description is required"),
@@ -180,6 +182,27 @@ const VehicleFormModal: React.FC = () => {
                       <ErrorMessage name="model" component="div" className="text-red-600 text-sm" />
                     </div>
 
+                    <div className="flex flex-col">
+                    <label htmlFor="type" className="text-sm font-medium text-gray-700">
+                      Type
+                    </label>
+                    <Field
+                      as="select"
+                      id="type"
+                      name="type"
+                      className="mt-1 p-2 border border-gray-300 rounded-md"
+                    >
+                      <option value="">Select Type</option>
+                        {
+                            carTypeOptions?.map(item => {
+                                return(
+                                    <option key={item} value={item}>{item}</option>
+                                )
+                            })
+                        }
+                    </Field>
+                    <ErrorMessage name="type" component="div" className="text-red-600 text-sm" />
+                    </div>
                     <div className="flex flex-col">
                       <label htmlFor="year" className="text-sm font-medium text-gray-700">
                         Year

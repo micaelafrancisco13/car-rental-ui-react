@@ -7,13 +7,11 @@ import useDashboardStore from "../../stores/useDashboard";
 import useVehicleStore from "../../stores/useVehicles";
 import useHistoryStore from "../../stores/useHistory";
 
-const useGetBookings = () => {
-  // const {query} = useBookingStore();
-  const query = ""
+const useGetBookings = (customQuery?: string) => {
   let endpoint = "/bookings";
 
-  if (query) {
-    endpoint += `?${query}`
+  if (customQuery) {
+    endpoint += `?${customQuery}`
   }
   const queryKey = ["bookings"];
   const requestConfig: AxiosRequestConfig = {
@@ -110,11 +108,14 @@ const useBookingHistory = (id: string) => {
   });
 }
 
-const useGetDashboard = () => {
-  // const {query} = useBookingStore();
-  let endpoint = "/bookings/dashboard";
 
-  const queryKey = ["bookings"];
+const useGetDashboard = (fromDate?: string, toDate?: string) => {
+  let endpoint = "/bookings/dashboard";
+  if (fromDate || toDate) {
+    endpoint += `?fromDate=${fromDate}&toDate=${toDate}`;
+  }
+
+  const queryKey = ["bookings", fromDate, toDate];
   const requestConfig: AxiosRequestConfig = {
     headers: {
       Authorization: `${localStorage.getItem("authToken")}`,

@@ -3,12 +3,28 @@ import useDashboardStore from "../stores/useDashboard";
 import { useGetDashboard } from "../hooks/booking/useGetBookings";
 import TableLoading from "./loaders/TableLoading";
 import { Car, CreditCard, Calendar, TrendingUp } from "lucide-react";
+import { useEffect, useState } from "react";
 
 const AdminDashboard= () => {
-	const { isFetching } = useGetDashboard()
     
     const { vehicleCount, bookingsCount, bookingsPaymentCount, result } = useDashboardStore()
+    
+    const [startDate, setStartDate] = useState('');
+    const [endDate, setEndDate] = useState('');
+    const { isFetching, refetch } = useGetDashboard(startDate, endDate)
 
+    const handleClear = () => {
+      setStartDate('')
+      setEndDate('')
+    }
+
+    const handleRefresh = () => {
+      refetch()
+    }
+
+    useEffect(() => {
+      handleRefresh
+    },[startDate, endDate])
     const stats = [
       {
         title: "Total Vehicles",
@@ -34,8 +50,36 @@ const AdminDashboard= () => {
     ];
     return (
     <div className="p-6 space-y-6 bg-gray-50 min-h-screen text-cyan-800 uppercase">
-       <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold tracking-tight">Car Rental Dashboard</h1>
+        <div>
+          
+        <div className="mb-6 sm:flex gap-4">
+                <div className="grow">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
+                  <input
+                    type="date"
+                    value={startDate}
+                    onChange={(e) => setStartDate(e.target.value)}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
+                  />
+                </div>
+                <div className="grow">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">End Date</label>
+                  <input
+                    type="date"
+                    value={endDate}
+                    onChange={(e) => setEndDate(e.target.value)}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
+                  />
+                </div>
+                <div className="flex-none flex justify-center pt-5">
+                  <button onClick={handleClear} className="text-cyan-700 hover:text-cyan-900 hover:underline">
+                    Clear
+                  </button>
+                </div>
+              </div>
+        </div>
       </div>
       {
         isFetching && <TableLoading /> 

@@ -22,6 +22,7 @@ export interface IVehicle extends IBase {
 	make: string,
 	model: string,
 	year: string,
+    type?: string,
 	licensePlate: string,
 	dailyRate: number,
     briefDescription?: string,
@@ -44,9 +45,11 @@ export interface IBooking extends IBase {
     totalPrice: number,
     status: string,
     paymentStatus: string,
+    paymentMode: string,
     deliveryType: DeliveryType,
     depositPaid: number,
     balance: number
+    type?: string,
     // fleetTracking: Fle
 }
 

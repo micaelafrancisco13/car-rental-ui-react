@@ -53,3 +53,4 @@ export const sendEmail = (form: { email: string, name: string, message: string} 
 
 export const validIds = ["Driver's license", "Passport", "Unified Multi-purpose ID", "PhilPost Postal ID (PID)", "Philippine Identification", "Senior Citizen ID", "PRC ID"]
      
+export const carTypeOptions = ["Sedan", "Hatchback", "SUV", "Pickup Truck", "Van", "Electric Vehicle (EV)"]

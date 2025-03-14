@@ -60,7 +60,6 @@ const Wrapper:FC<IWrapper> = ({children, currentTab}) => {
   navigation.push(
     { name: 'Reports', href: '#', icon: PencilSquareIcon, current: currentTab === "reports", subMenu: userRole === "booker" ? ["Vehicles", "Rentals"] : ["Bookers", "Vehicles", "Rentals"] },
   )
-
   const logout = () => {
       localStorage.removeItem("authToken");
       localStorage.removeItem("role");
