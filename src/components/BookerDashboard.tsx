@@ -26,6 +26,7 @@ const BookerDashbaord = () => {
     const { isOpen, toggleConfirmation, open } = useGlobalStore()
     const {
         vehicles,
+        paginatedVehicles,
         currentPage,
         itemsPerPage,
         setPage,
@@ -116,15 +117,16 @@ const BookerDashbaord = () => {
     }
     
     const startIndex = (currentPage - 1) * itemsPerPage;
-    const paginatedVehicles = filteredVehicles.slice(
-        startIndex,
-        startIndex + itemsPerPage
-      );
 
+    // const paginatedVehicles = filteredVehicles.slice(
+    //     startIndex,
+    //     startIndex + itemsPerPage
+    //   );
     const handleSortType = (e:React.ChangeEvent<HTMLSelectElement>) => {
+        console.log({startIndex})
         const { value } = e.target
-            setFilterType(value); 
-            setPaginatedVehicles();
+        setFilterType(value); 
+        setPaginatedVehicles();
     };
     return (
     <>
