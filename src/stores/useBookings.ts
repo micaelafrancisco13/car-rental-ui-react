@@ -13,12 +13,13 @@ interface BookingStore {
     currentPage: number;
     itemsPerPage: number;
     paginated: IBooking[];
+    searchQuery: string;
 
     setMyBookings: (bookings: IBooking[]) => void;
     setBookings: (bookings: IBooking[]) => void;
     setBooking: (booking: IBooking) => void;
     setBookingDetails: (booking: IBooking | null) => void
-
+    setSearchQuery: (query: string) => void
     updateBalance: (id: string, balance: number) => void
 
     filterBooking: (status: string, paymentStatus: string) => void
@@ -60,6 +61,31 @@ const useBookingStore = create<BookingStore>((set, get) => ({
     cancelledBookings: [],
     completedBookings: [],
 
+    searchQuery: "",
+    setSearchQuery: (query) => {
+      const { filteredBookings } = get();
+      set((state) => {
+
+        if (!query) {
+          return {
+            searchQuery: "", 
+            paginated: filteredBookings
+          }
+        }
+        const filtered = filteredBookings.filter((booking) =>
+          booking.booker.firstName.toLowerCase().includes(query.toLowerCase()) ||
+        booking.booker.lastName.toLowerCase().includes(query.toLowerCase()) ||
+        booking.booker.email.toLowerCase().includes(query.toLowerCase()) ||
+        booking.vehicle?.make.toLowerCase().includes(query.toLowerCase()) ||
+        booking.vehicle?.model.toLowerCase().includes(query.toLowerCase())
+        );
+        return { 
+          searchQuery: query, 
+          currentPage: 1, // Reset to first page when searching
+          paginated: filtered.slice(0, state.itemsPerPage)
+        };
+    })
+    },
     filterBooking: (status, paymentStatus) => {
       const { bookings, currentPage, itemsPerPage } = get();
       const filteredBookings = bookings.filter((booking) => {
