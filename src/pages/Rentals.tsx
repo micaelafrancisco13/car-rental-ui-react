@@ -18,6 +18,7 @@ import dayjs from "dayjs";
 import EditableBalanceCell from "../components/EditBalance";
 import useUpdateBookings from "../hooks/booking/useUpdate";
 import { AxiosError } from "axios";
+import { ChevronUp, ChevronDown } from "lucide-react";
 
 const Rentals = () => {
 
@@ -31,6 +32,8 @@ const Rentals = () => {
         currentPage,
         itemsPerPage,
         searchQuery,
+        sortOrder,
+        setSort,
         setPage,
         setItemsPerPage,
         setPaginatedBookings,
@@ -230,8 +233,22 @@ const Rentals = () => {
                             {
                                 headers.map((item, idx) => {
                                     return (
-                                        <th scope="col" key={idx} className={`whitespace-nowrap py-3.5 pl-4 pr-3 text-white text-left text-sm font-semibold text-gray-900 ${item === "id" ? 'hidden' : ""}`}>
-                                            {item}
+                                        <th scope="col" key={idx} 
+                                        onClick={() => {
+                                            if(["Vehicle", "Booker"].includes(item)){
+                                            const orderBy = sortOrder === "asc" ? "desc" : "asc"
+                                            setSort(item, orderBy)
+                                            
+                                            }
+                                        }}
+                                        className={`whitespace-nowrap py-3.5 pl-4 pr-3 text-white text-left text-sm font-semibold text-gray-900 hover:cursor-pointer ${item === "id" ? 'hidden' : ""}`}>
+                                            <div className="flex">
+                                                {item}
+                                                {["Vehicle", "Booker"].includes(item) && <span className="inline-flex flex-col ml-1">
+                                                    <ChevronUp className={`w-3 h-3 text-gray-200`} />
+                                                    <ChevronDown className={`w-3 h-3 -mt-1 text-gray-200`} />
+                                                </span>}
+                                                </div>
                                         </th>
                                     )
                                 })
