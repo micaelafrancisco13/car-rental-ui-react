@@ -14,6 +14,8 @@ interface BookingStore {
     itemsPerPage: number;
     paginated: IBooking[];
     searchQuery: string;
+    sortBy: string;
+    sortOrder: string;
 
     setMyBookings: (bookings: IBooking[]) => void;
     setBookings: (bookings: IBooking[]) => void;
@@ -21,7 +23,7 @@ interface BookingStore {
     setBookingDetails: (booking: IBooking | null) => void
     setSearchQuery: (query: string) => void
     updateBalance: (id: string, balance: number) => void
-
+    setSort: (sortBy:string, sortOrder: string) => void
     filterBooking: (status: string, paymentStatus: string) => void
 
     requestBooking: (booking: IBooking) => void;
@@ -62,6 +64,9 @@ const useBookingStore = create<BookingStore>((set, get) => ({
     completedBookings: [],
 
     searchQuery: "",
+    sortBy: "",
+    sortOrder: "",
+
     setSearchQuery: (query) => {
       const { filteredBookings } = get();
       set((state) => {
@@ -75,9 +80,11 @@ const useBookingStore = create<BookingStore>((set, get) => ({
         const filtered = filteredBookings.filter((booking) =>
           booking.booker.firstName.toLowerCase().includes(query.toLowerCase()) ||
         booking.booker.lastName.toLowerCase().includes(query.toLowerCase()) ||
+        booking.vehicle?.licensePlate.toLowerCase().includes(query.toLowerCase()) ||
         booking.booker.email.toLowerCase().includes(query.toLowerCase()) ||
         booking.vehicle?.make.toLowerCase().includes(query.toLowerCase()) ||
-        booking.vehicle?.model.toLowerCase().includes(query.toLowerCase())
+        booking.vehicle?.model.toLowerCase().includes(query.toLowerCase()) || 
+        booking.vehicle?.type?.toLowerCase().includes(query.toLowerCase())
         );
         return { 
           searchQuery: query, 
@@ -153,11 +160,48 @@ const useBookingStore = create<BookingStore>((set, get) => ({
       }),
 
     getPaginatedBookings: () => {
-      const { filteredBookings, currentPage, itemsPerPage } = get();
+      const { filteredBookings, currentPage, itemsPerPage, } = get();
       const startIndex = (currentPage - 1) * itemsPerPage;
       const endIndex = startIndex + itemsPerPage;
+
       return filteredBookings.slice(startIndex, endIndex);
     },
+    
+  setSort: (sortBy, order) =>{
+    
+    const { filteredBookings } = get();
+    
+    filteredBookings.sort((a, b) => {
+      let valueA, valueB;
+      switch (sortBy) {
+        case 'Vehicle':
+          valueA = a.vehicle?.make.toLowerCase() || "";
+          valueB = b.vehicle?.make.toLowerCase() || "";
+          break;
+        case 'Booker':
+          valueA = a.booker.firstName.toLowerCase() || "";
+          valueB = b.booker.firstName.toLowerCase() || "";
+          break;
+        case 'type':
+          valueA = (a.type || '').toLowerCase();
+          valueB = (b.type || '').toLowerCase();
+          break;
+        case 'date':
+          valueA = new Date(a.createdAt).getTime();
+          valueB = new Date(b.createdAt).getTime();
+          break;
+        default:
+          return 0;
+      }
+
+      return order === 'asc' ? (valueA > valueB ? 1 : -1) : (valueA < valueB ? 1 : -1);
+    });
+    set(() => ({
+      sortBy: sortBy,
+      sortOrder: order,
+      paginated: filteredBookings
+    }));
+  },
 
     setPaginatedBookings: () => {
       set(() => ({ paginated: get().getPaginatedBookings() }));

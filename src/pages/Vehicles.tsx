@@ -13,6 +13,7 @@ import { AxiosError } from "axios";
 import VehicleFormModal from "../components/modal/UpsertVehicle";
 import ConfirmationDelete from "../components/feedback/ConfirmationButton";
 import { useDeleteVehicle } from "../hooks/useDelete";
+// import { ChevronDown, ChevronUp } from "lucide-react";
 
 const Vehicles = () => {
 	const {  isFetching } = useGetVehicles()
@@ -22,12 +23,14 @@ const Vehicles = () => {
         vehicles,
         selectedVehicle,
         currentPage,
+        sortOrder,
         itemsPerPage,
         setPage,
         setItemsPerPage,
         setPaginatedVehicles,
         setVehicle,
         updateStatus,
+        setSort,
       } = useVehicleStore();
 
     const [searchQuery, setSearchQuery] = useState(""); // State for the search query
@@ -35,7 +38,7 @@ const Vehicles = () => {
 
     useEffect(() => {
         const filtered = vehicles.filter((vehicle) =>
-            `${vehicle.make} ${vehicle.model} ${vehicle.year}`
+            `${vehicle.make} ${vehicle.model} ${vehicle.year} ${vehicle.licensePlate} ${vehicle.dailyRate} ${vehicle.availabilityStatus}`
             .toLowerCase()
             .includes(searchQuery.toLowerCase())
         );
@@ -154,8 +157,24 @@ const Vehicles = () => {
                             {
                                 headers.map((item, idx) => {
                                     return (
-                                        <th scope="col" key={idx} className={`py-3.5 pl-4 pr-3 text-white text-left text-sm font-semibold text-gray-900 ${item === "id" ? 'hidden' : ""}`}>
+                                        <th scope="col" key={idx} 
+                                        onClick={() => {
+                                            if(["Car", "License Plate"].includes(item)){
+                                            const orderBy = sortOrder === "asc" ? "desc" : "asc"
+                                            setSort(item, orderBy)
+                                            
+                                            }
+                                        }}
+                                        className={`py-3.5 pl-4 pr-3 text-white hover:cursor-pointer text-left text-sm font-semibold text-gray-900 ${item === "id" ? 'hidden' : ""}`}>
+                                            <div className="flex">
                                             {item}
+
+                                            {/* {["Car", "License Plate"].includes(item) && <span className="inline-flex flex-col ml-1">
+                                                 <ChevronUp className={`w-3 h-3 text-gray-200`} />
+                                                 <ChevronDown className={`w-3 h-3 -mt-1 text-gray-200`} />
+                                             </span>} */}
+                                            </div>
+
                                         </th>
                                     )
                                 })

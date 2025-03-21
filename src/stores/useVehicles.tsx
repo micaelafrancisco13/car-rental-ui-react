@@ -8,6 +8,8 @@ interface VehicleStore {
   itemsPerPage: number;
   paginatedVehicles: IVehicle[];
   filterType: string | null;
+  sortBy: string;
+  sortOrder: string;
 
   setVehicles: (vehicles: IVehicle[]) => void;
   setVehicle: (vehicle: IVehicle | null) => void;
@@ -22,6 +24,7 @@ interface VehicleStore {
   getPaginatedVehicles: () => IVehicle[];
   setPaginatedVehicles: () => void
   setFilterType: (type: string | null) => void;
+  setSort: (sortBy: string, order: string) => void;
 }
 
 const useVehicleStore = create<VehicleStore>((set, get) => ({
@@ -32,6 +35,9 @@ const useVehicleStore = create<VehicleStore>((set, get) => ({
   itemsPerPage: 10, // Default to 10 items per page
   paginatedVehicles: [],
   filterType: null,
+
+  sortBy: 'name', // Default sorting field
+  sortOrder: 'asc',
 
   setVehicles: (vehicles) => set(() => ({ vehicles })),
   setVehicle: (selectedVehicle) => set(() => ({ selectedVehicle: selectedVehicle })),
@@ -73,7 +79,6 @@ const useVehicleStore = create<VehicleStore>((set, get) => ({
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
     
-
     return filteredVehicles.slice(startIndex, endIndex);
   },
   
@@ -81,6 +86,43 @@ const useVehicleStore = create<VehicleStore>((set, get) => ({
     set(() => ({ paginatedVehicles: get().getPaginatedVehicles() }));
   },
   setFilterType: (type) => set(() => ({ filterType: type })),
+  
+  
+  setSort: (sortBy, order) =>{
+    
+    const { vehicles } = get();
+    
+    vehicles.sort((a, b) => {
+      let valueA, valueB;
+      switch (sortBy) {
+        case 'Car':
+          valueA = a.make.toLowerCase() || "";
+          valueB = b.make.toLowerCase() || "";
+          break;
+        case 'License Plate':
+          valueA = a.licensePlate.toLowerCase() || "";
+          valueB = b.licensePlate.toLowerCase() || "";
+          break;
+        case 'type':
+          valueA = (a.type || '').toLowerCase();
+          valueB = (b.type || '').toLowerCase();
+          break;
+        case 'date':
+          valueA = new Date(a.createdAt).getTime();
+          valueB = new Date(b.createdAt).getTime();
+          break;
+        default:
+          return 0;
+      }
+
+      return order === 'asc' ? (valueA > valueB ? 1 : -1) : (valueA < valueB ? 1 : -1);
+    });
+    set(() => ({
+      sortBy: sortBy,
+      sortOrder: order,
+      vehicles: vehicles
+    }));
+  },
 }));
 
 export default useVehicleStore;
