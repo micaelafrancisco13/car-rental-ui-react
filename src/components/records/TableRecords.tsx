@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { formatMoney } from "../../utils/helper";
-import { ChevronUp, ChevronDown } from "lucide-react";
+import { ChevronUp, ChevronDown, ChevronsLeft, ChevronsRight } from "lucide-react";
 
 const TableRecords = ({ data, columns, keys }: { data: any[]; columns: string[]; keys: string[] }) => {
   const [sortConfig, setSortConfig] = useState<{ key: string | null; direction: "asc" | "desc" | null }>({
@@ -8,6 +8,11 @@ const TableRecords = ({ data, columns, keys }: { data: any[]; columns: string[];
     direction: null,
   });
 
+  const [searchQuery, setSearchQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 10; // Number of rows per page
+
+  // Handle sorting
   const handleSort = (key: string) => {
     let direction: "asc" | "desc" = "asc";
     if (sortConfig.key === key && sortConfig.direction === "asc") {
@@ -16,7 +21,12 @@ const TableRecords = ({ data, columns, keys }: { data: any[]; columns: string[];
     setSortConfig({ key, direction });
   };
 
-  const sortedData = [...data].sort((a, b) => {
+  // Filter and sort data
+  const filteredData = data.filter((item) =>
+    keys.some((key) => item[key]?.toString().toLowerCase().includes(searchQuery.toLowerCase()))
+  );
+
+  const sortedData = [...filteredData].sort((a, b) => {
     if (!sortConfig.key) return 0;
 
     const aValue = a[sortConfig.key];
@@ -31,8 +41,27 @@ const TableRecords = ({ data, columns, keys }: { data: any[]; columns: string[];
       : String(bValue).localeCompare(String(aValue));
   });
 
+  // Pagination logic
+  const totalPages = Math.ceil(sortedData.length / pageSize);
+  const paginatedData = sortedData.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+
   return (
-    <div className="overflow-x-auto">
+    <div className="overflow-x-auto p-4">
+      {/* Search Input */}
+      <div className="mb-4 flex justify-between">
+        <input
+          type="text"
+          placeholder="Search..."
+          className="border p-2 rounded-md w-1/3"
+          value={searchQuery}
+          onChange={(e) => {
+            setSearchQuery(e.target.value);
+            setCurrentPage(1); // Reset to first page on search
+          }}
+        />
+      </div>
+
+      {/* Table */}
       <table className="w-full border border-gray-300">
         <thead className="bg-gray-100">
           <tr>
@@ -54,7 +83,7 @@ const TableRecords = ({ data, columns, keys }: { data: any[]; columns: string[];
           </tr>
         </thead>
         <tbody>
-          {sortedData.map((item, index) => (
+          {paginatedData.map((item, index) => (
             <tr key={index} className="border-b hover:bg-gray-50">
               {keys.map((key, idx) => {
                 let label = item[key];
@@ -84,6 +113,43 @@ const TableRecords = ({ data, columns, keys }: { data: any[]; columns: string[];
           ))}
         </tbody>
       </table>
+
+      {/* Pagination Controls */}
+      <div className="flex justify-between items-center mt-4">
+        <p className="text-sm">
+          Page {currentPage} of {totalPages}
+        </p>
+        <div className="flex gap-2">
+          <button
+            className="p-2 border rounded-md disabled:opacity-50"
+            disabled={currentPage === 1}
+            onClick={() => setCurrentPage(1)}
+          >
+            <ChevronsLeft className="w-4 h-4" />
+          </button>
+          <button
+            className="p-2 border rounded-md disabled:opacity-50"
+            disabled={currentPage === 1}
+            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+          >
+            Prev
+          </button>
+          <button
+            className="p-2 border rounded-md disabled:opacity-50"
+            disabled={currentPage === totalPages}
+            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+          >
+            Next
+          </button>
+          <button
+            className="p-2 border rounded-md disabled:opacity-50"
+            disabled={currentPage === totalPages}
+            onClick={() => setCurrentPage(totalPages)}
+          >
+            <ChevronsRight className="w-4 h-4" />
+          </button>
+        </div>
+      </div>
     </div>
   );
 };
